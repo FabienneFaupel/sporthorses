@@ -1,0 +1,16 @@
+mat-card {
+  border-radius: 1rem;
+  overflow: hidden;
+
+  img {
+    height: 180px;
+    object-fit: cover;
+  }
+
+  table {
+    font-size: 0.9rem;
+    th {
+      font-weight: 600;
+    }
+  }
+}

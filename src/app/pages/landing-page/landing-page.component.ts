@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
+
 
 import { LandingHorseBoxComponent } from '../../components/landing-horse-box/landing-horse-box.component';
 
@@ -15,6 +17,7 @@ import { LandingHorseBoxComponent } from '../../components/landing-horse-box/lan
     MatCardModule,
     MatButtonModule,
     MatIconModule,
+    RouterLink,
     LandingHorseBoxComponent,
   ],
   templateUrl: './landing-page.component.html',
