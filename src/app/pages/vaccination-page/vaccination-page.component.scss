@@ -1,16 +1,29 @@
-mat-card {
-  border-radius: 1rem;
-  overflow: hidden;
+.container {
+  padding: 1rem;
+  max-width: 800px;
+  margin: auto;
+}
 
-  img {
-    height: 180px;
-    object-fit: cover;
-  }
+.horse-card {
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 1rem;
+}
 
-  table {
-    font-size: 0.9rem;
-    th {
-      font-weight: 600;
-    }
-  }
+.vaccination-card {
+  background: #f9f9f9;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Statusfarben */
+.geimpft .status {
+  color: green;
+  font-weight: bold;
+}
+.überfällig .status {
+  color: red;
+  font-weight: bold;
 }

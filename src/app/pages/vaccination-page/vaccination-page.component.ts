@@ -13,22 +13,7 @@ import { MatNativeDateModule } from '@angular/material/core'; // oder MatMomentD
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button'; // für die Delete-Buttons
-
-interface Impfung {
-  name: string;
-  datum: string;
-  naechste: string;
-  status: 'Geimpft' | 'Fällig';
-}
-
-interface Pferd {
-  name: string;
-  bild: string;
-  impfungen: Impfung[];
-}
-
-
-
+import { MatTabsModule } from '@angular/material/tabs';
 
 
 
@@ -46,28 +31,76 @@ interface Pferd {
     MatNativeDateModule,
     MatTableModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTabsModule,
   ],
   templateUrl: './vaccination-page.component.html',
   styleUrl: './vaccination-page.component.scss'
 })
 export class VaccinationPageComponent {
-pferde: Pferd[] = [
-    {
-      name: 'Check Point Charly',
-      bild: 'images/horse.svg',
-      impfungen: [
-        { name: 'Tetanus', datum: '2025-03-01', naechste: '2026-03-01', status: 'Geimpft' },
-        { name: 'Influenza', datum: '2025-02-10', naechste: '2025-08-10', status: 'Fällig' },
-      ],
-    },
+horses = [
     {
       name: 'Bella',
-      bild: 'images/horse.svg',
-      impfungen: [
-        { name: 'Tetanus', datum: '2025-01-15', naechste: '2026-01-15', status: 'Geimpft' },
-        { name: 'Herpes', datum: '2025-02-01', naechste: '2025-08-01', status: 'Fällig' },
-      ],
+      age: 7,
+      gender: 'Stute',
+      vaccinations: [
+        {
+          type: 'Influenza',
+          date: '2025-04-12',
+          next: '2025-10-12',
+          status: 'geimpft'
+        },
+        {
+          type: 'Tetanus',
+          date: '2024-01-05',
+          next: '2025-01-05',
+          status: 'überfällig'
+        }
+      ]
+    },
+    {
+      name: 'Max',
+      age: 10,
+      gender: 'Wallach',
+      vaccinations: [
+        {
+          type: 'Herpes',
+          date: '2025-02-10',
+          next: '2025-08-10',
+          status: 'geimpft'
+        }
+      ]
+    },
+    {
+      name: 'Holly',
+      age: 7,
+      gender: 'Stute',
+      vaccinations: [
+        {
+          type: 'Influenza',
+          date: '2025-04-12',
+          next: '2025-10-12',
+          status: 'geimpft'
+        },
+        {
+          type: 'Tetanus',
+          date: '2024-01-05',
+          next: '2025-01-05',
+          status: 'überfällig'
+        },
+        {
+          type: 'Influenza',
+          date: '2025-04-12',
+          next: '2025-10-12',
+          status: 'geimpft'
+        },
+        {
+          type: 'Tetanus',
+          date: '2024-01-05',
+          next: '2025-01-05',
+          status: 'überfällig'
+        }
+      ]
     },
   ];
 }
