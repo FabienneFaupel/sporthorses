@@ -1,3 +1,10 @@
+<div>
+  <button mat-raised-button color="primary" (click)="openVaccinationDialog()">
+    ➕ Impfung hinzufügen
+  </button>
+</div>
+
+
 <mat-tab-group>
   <mat-tab *ngFor="let horse of horses" label="{{ horse.name }}">
     <div class="horse-card">
@@ -12,3 +19,7 @@
     </div>
   </mat-tab>
 </mat-tab-group>
+
+
+
+

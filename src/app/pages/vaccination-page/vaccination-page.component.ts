@@ -9,11 +9,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core'; // oder MatMomentDateModule
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button'; // für die Delete-Buttons
+import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+
+import { VaccinationDialogComponent } from '../../components/vaccination-dialog/vaccination-dialog.component';
 
 
 
@@ -33,6 +36,8 @@ import { MatTabsModule } from '@angular/material/tabs';
     MatIconModule,
     MatButtonModule,
     MatTabsModule,
+    MatDialogModule,
+    VaccinationDialogComponent
   ],
   templateUrl: './vaccination-page.component.html',
   styleUrl: './vaccination-page.component.scss'
@@ -103,4 +108,12 @@ horses = [
       ]
     },
   ];
+constructor(private dialog: MatDialog) {}
+
+  openVaccinationDialog(): void {
+    this.dialog.open(VaccinationDialogComponent, {
+      width: '400px',
+      data: { horses: this.horses }
+    });
+  }
 }
