@@ -1,0 +1,87 @@
+<body>
+
+    <mat-toolbar>
+        <div class="toolbar">
+            <button mat-icon-button aria-label="menu icon" (click)="side.toggle()">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <a [routerLink]="['/start']">
+                <img src="finalLogo.png" style="width: 150px; margin-left: 20px;"></a>
+        </div>
+
+        <div class="toolbar-icons">
+            <button mat-icon-button [routerLink]="['/start']"> <mat-icon>home</mat-icon></button>
+
+            <button mat-icon-button>
+                <mat-icon>person</mat-icon>
+            </button>
+
+            <button mat-icon-button>
+                <mat-icon>settings</mat-icon>
+            </button>
+
+
+        </div>
+
+
+    </mat-toolbar>
+
+    <mat-sidenav-container class="container" [class.menu-opened]="side.opened">
+
+        <mat-sidenav #side mode="side" opened="false" class="sidenav">
+            <mat-nav-list>
+
+                <mat-list-item routerLink="/start">
+                    <div class="nav-item">
+                        <div>
+                            <mat-icon>home</mat-icon>
+                        </div>
+                        <p>Start</p>
+                    </div>
+                </mat-list-item>
+
+                <mat-list-item routerLink="/calendar">
+                    <div class="nav-item">
+                        <div>
+                            <mat-icon>event</mat-icon>
+                        </div>
+                        <p>Kalender</p>
+                    </div>
+                </mat-list-item>
+
+                <mat-list-item routerLink="/contact">
+                    <div class="nav-item">
+                        <div>
+                            <mat-icon>mail</mat-icon>
+                        </div>
+                        <p>Kontakt</p>
+                    </div>
+                </mat-list-item>
+
+                <mat-list-item routerLink="/imprint">
+                    <div class="nav-item">
+                        <div>
+                            <mat-icon>info</mat-icon>
+                        </div>
+                        <p>Impressum</p>
+                    </div>
+                </mat-list-item>
+
+            </mat-nav-list>
+        </mat-sidenav>
+
+        <mat-sidenav-content class="content">
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+
+</body>
+
+<footer>
+    <div class="footer-content">
+
+        <div class="footer-text">
+            <p>&copy; 2025 EventAccess | Alle Rechte vorbehalten.</p>
+        </div>
+    </div>
+</footer>
