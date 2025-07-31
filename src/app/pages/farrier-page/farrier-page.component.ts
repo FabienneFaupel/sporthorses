@@ -60,7 +60,7 @@ export class FarrierPageComponent {
       farrierEntries: [
         {
           date: '2025-07-15',
-          type: 'Beschlagen (neu)',
+          type: 'Beschlagen',
           comment: 'Sehr ruhig und brav.',
           hooves: [
             { position: 'VL', action: 'beschlagen-neu' },

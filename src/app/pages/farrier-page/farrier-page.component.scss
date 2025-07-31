@@ -17,7 +17,9 @@ body {
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
-
+hr {
+  color: #ec4899;
+}
 
 
 
@@ -38,6 +40,10 @@ body {
 }
 
 .hoof-detail-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   background: #fff;
   padding: 0.5rem 0.75rem;
   border: 1px solid #e5e7eb;

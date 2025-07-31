@@ -7,6 +7,7 @@
 
             <div *ngFor="let entry of horse.farrierEntries" class="farrier-card">
                 <p><strong>🔨 {{ entry.type }}</strong></p>
+                <hr>
                 <p>📅 Datum: {{ entry.date }}</p>
                 <p *ngIf="entry.comment">📝 Kommentar: {{ entry.comment }}</p>
 
@@ -24,11 +25,21 @@
                 <!-- Detaillierte Infos zu jedem behandelten Huf -->
                 <div class="hoof-details">
                     <div *ngFor="let hoof of entry.hooves" class="hoof-detail-card">
+                        <div>
                         <p><strong>{{ hoof.position }}</strong> –
                             <span *ngIf="hoof.action === 'ausgeschnitten'">Ausgeschnitten</span>
                             <span *ngIf="hoof.action === 'beschlagen-alt'">Beschlagen (alte Eisen)</span>
                             <span *ngIf="hoof.action === 'beschlagen-neu'">Beschlagen (neue Eisen)</span>
                         </p>
+                        </div>
+                        <div>
+                            <img src="/images/shoe-new.svg" style="width: 25px;" *ngIf="hoof.action === 'beschlagen-neu'">
+                            <img src="/images/shoe-old.svg" style="width: 25px;" *ngIf="hoof.action === 'beschlagen-alt'">
+                            <img src="/images/knife.svg" style="width: 25px;" *ngIf="hoof.action === 'ausgeschnitten'">
+
+                          
+
+                        </div>
                     </div>
                 </div>
 
