@@ -14,10 +14,10 @@
                 <!-- Hufeisen-Icons -->
                 <div class="hoof-icons">
                     <ng-container *ngFor="let pos of hoofPositions">
-                        <mat-icon [ngClass]="isHoofActive(entry, pos) ? 'hoof-active' : 'hoof-inactive'"
-                            [attr.title]="pos">
+                        <mat-icon [ngClass]="getHoofClass(entry, pos)" [attr.title]="pos">
                             circle
                         </mat-icon>
+                
                     </ng-container>
                 </div>
 

@@ -48,9 +48,21 @@ export class FarrierPageComponent {
 
   hoofPositions: Hoof['position'][] = ['VL', 'VR', 'HL', 'HR'];
 
- isHoofActive(entry: FarrierEntry, pos: Hoof['position']): boolean {
-    return entry.hooves.some((h) => h.position === pos);
+ getHoofClass(entry: FarrierEntry, pos: Hoof['position']): string {
+  const hoof = entry.hooves.find(h => h.position === pos);
+  if (!hoof) return 'hoof-inactive';
+
+  switch (hoof.action) {
+    case 'beschlagen-neu':
+    case 'beschlagen-alt':
+      return 'hoof-beschlagen';
+    case 'ausgeschnitten':
+      return 'hoof-ausgeschnitten';
+    default:
+      return 'hoof-inactive';
   }
+}
+
 
   horses: Horse[] = [
     {
@@ -77,24 +89,24 @@ export class FarrierPageComponent {
         },
         {
           date: '2025-07-15',
-          type: 'Beschlagen (neu)',
+          type: 'Beschlagen',
           comment: 'Sehr ruhig und brav.',
           hooves: [
-            { position: 'VL', action: 'beschlagen-neu' },
-            { position: 'VR', action: 'beschlagen-neu' }
+            { position: 'HL', action: 'beschlagen-neu' },
+            { position: 'HR', action: 'beschlagen-neu' }
           ]
         },
         {
           date: '2025-04-15',
           type: 'Nur ausgeschnitten',
           hooves: [
-            { position: 'HL', action: 'ausgeschnitten' },
-            { position: 'HR', action: 'ausgeschnitten' }
+            { position: 'VL', action: 'ausgeschnitten' },
+            { position: 'VR', action: 'ausgeschnitten' }
           ]
         },
         {
           date: '2025-07-15',
-          type: 'Beschlagen (neu)',
+          type: 'Beschlagen',
           comment: 'Sehr ruhig und brav.',
           hooves: [
             { position: 'VL', action: 'beschlagen-neu' },
@@ -118,7 +130,7 @@ export class FarrierPageComponent {
       farrierEntries: [
         {
           date: '2025-07-15',
-          type: 'Beschlagen (neu)',
+          type: 'Beschlagen',
           comment: 'Sehr ruhig und brav.',
           hooves: [
             { position: 'VL', action: 'beschlagen-neu' },

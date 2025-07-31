@@ -23,13 +23,20 @@ hr {
 
 
 
-.hoof-active {
-  color: #ec4899; /* Tailwind pink-500 */
+.hoof-beschlagen {
+  color: #ec4899; /* pink-500 */
+}
+
+.hoof-ausgeschnitten {
+  color: #3b82f6; /* blue-500 */
 }
 
 .hoof-inactive {
-  color: #d1d5db; /* Tailwind gray-300 */
+  color: #d1d5db; /* gray-300 */
 }
+
+
+
 
 
 .hoof-details {
