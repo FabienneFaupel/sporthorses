@@ -5,6 +5,9 @@ import { MatCardModule } from '@angular/material/card'; // optional
 import { MatButtonModule } from '@angular/material/button'; // optional
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+
+import { FarrierDialogComponent } from '../../components/farrier-dialog/farrier-dialog.component';
 
 
 type HoofAction = 'ausgeschnitten' | 'beschlagen-alt' | 'beschlagen-neu';
@@ -39,6 +42,8 @@ interface Horse {
     MatCardModule,       // optional
     MatButtonModule,
     MatIconModule,
+    MatDialogModule,
+    FarrierDialogComponent
 
   ],
   templateUrl: './farrier-page.component.html',
@@ -62,6 +67,15 @@ export class FarrierPageComponent {
       return 'hoof-inactive';
   }
 }
+
+constructor(private dialog: MatDialog) {}
+
+  openVaccinationDialog(): void {
+    this.dialog.open(FarrierDialogComponent, {
+      width: '400px',
+      data: { horses: this.horses }
+    });
+  }
 
 
   horses: Horse[] = [

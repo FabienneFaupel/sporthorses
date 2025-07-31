@@ -1,51 +1,61 @@
-
 <body>
-<mat-tab-group>
-    <mat-tab *ngFor="let horse of horses" label="{{ horse.name }}">
-        <div class="horse-card">
-            <h2>🐴 {{ horse.name }} ({{ horse.age }} Jahre, {{ horse.gender }})</h2>
-
-            <div *ngFor="let entry of horse.farrierEntries" class="farrier-card">
-                <p><strong>🔨 {{ entry.type }}</strong></p>
-                <hr>
-                <p>📅 Datum: {{ entry.date }}</p>
-                <p *ngIf="entry.comment">📝 Kommentar: {{ entry.comment }}</p>
-
-                <!-- Hufeisen-Icons -->
-                <div class="hoof-icons">
-                    <ng-container *ngFor="let pos of hoofPositions">
-                        <mat-icon [ngClass]="getHoofClass(entry, pos)" [attr.title]="pos">
-                            circle
-                        </mat-icon>
-                
-                    </ng-container>
-                </div>
+    
+    <div class="btn-box">
+        <button mat-raised-button color="primary" (click)="openVaccinationDialog()">
+            ➕ Beschlag hinzufügen
+        </button>
+    </div>
 
 
-                <!-- Detaillierte Infos zu jedem behandelten Huf -->
-                <div class="hoof-details">
-                    <div *ngFor="let hoof of entry.hooves" class="hoof-detail-card">
-                        <div>
-                        <p><strong>{{ hoof.position }}</strong> –
-                            <span *ngIf="hoof.action === 'ausgeschnitten'">Ausgeschnitten</span>
-                            <span *ngIf="hoof.action === 'beschlagen-alt'">Beschlagen (alte Eisen)</span>
-                            <span *ngIf="hoof.action === 'beschlagen-neu'">Beschlagen (neue Eisen)</span>
-                        </p>
-                        </div>
-                        <div>
-                            <img src="/images/shoe-new.svg" style="width: 25px;" *ngIf="hoof.action === 'beschlagen-neu'">
-                            <img src="/images/shoe-old.svg" style="width: 25px;" *ngIf="hoof.action === 'beschlagen-alt'">
-                            <img src="/images/knife.svg" style="width: 25px;" *ngIf="hoof.action === 'ausgeschnitten'">
+    <mat-tab-group>
+        <mat-tab *ngFor="let horse of horses" label="{{ horse.name }}">
+            <div class="horse-card">
+                <h2>🐴 {{ horse.name }} ({{ horse.age }} Jahre, {{ horse.gender }})</h2>
 
-                          
+                <div *ngFor="let entry of horse.farrierEntries" class="farrier-card">
+                    <p><strong>🔨 {{ entry.type }}</strong></p>
+                    <hr>
+                    <p>📅 Datum: {{ entry.date }}</p>
+                    <p *ngIf="entry.comment">📝 Kommentar: {{ entry.comment }}</p>
 
+                    <!-- Hufeisen-Icons -->
+                    <div class="hoof-icons">
+                        <ng-container *ngFor="let pos of hoofPositions">
+                            <mat-icon [ngClass]="getHoofClass(entry, pos)" [attr.title]="pos">
+                                circle
+                            </mat-icon>
+
+                        </ng-container>
+                    </div>
+
+
+                    <!-- Detaillierte Infos zu jedem behandelten Huf -->
+                    <div class="hoof-details">
+                        <div *ngFor="let hoof of entry.hooves" class="hoof-detail-card">
+                            <div>
+                                <p><strong>{{ hoof.position }}</strong> –
+                                    <span *ngIf="hoof.action === 'ausgeschnitten'">Ausgeschnitten</span>
+                                    <span *ngIf="hoof.action === 'beschlagen-alt'">Beschlagen (alte Eisen)</span>
+                                    <span *ngIf="hoof.action === 'beschlagen-neu'">Beschlagen (neue Eisen)</span>
+                                </p>
+                            </div>
+                            <div>
+                                <img src="/images/shoe-new.svg" style="width: 25px;"
+                                    *ngIf="hoof.action === 'beschlagen-neu'">
+                                <img src="/images/shoe-old.svg" style="width: 25px;"
+                                    *ngIf="hoof.action === 'beschlagen-alt'">
+                                <img src="/images/knife.svg" style="width: 25px;"
+                                    *ngIf="hoof.action === 'ausgeschnitten'">
+
+
+
+                            </div>
                         </div>
                     </div>
-                </div>
 
+                </div>
             </div>
-        </div>
-    </mat-tab>
-</mat-tab-group>
+        </mat-tab>
+    </mat-tab-group>
 
 </body>

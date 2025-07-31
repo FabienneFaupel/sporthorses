@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>Neuer Beschlag</h2>
+
+<mat-dialog-content>
+  <form class="farrier-form">
+    <!-- Pferde-Auswahl -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Pfed</mat-label>
+      <mat-select multiple>
+        <mat-option *ngFor="let horse of data.horses" [value]="horse.name">
+          {{ horse.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Behandlungsart -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Huf(e)</mat-label>
+      <mat-select>
+        <mat-option value="beschlagen">Beschlagen</mat-option>
+        <mat-option value="ausgeschnitten">Ausgeschnitten</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Datum -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Schmieddatum</mat-label>
+      <input matInput [matDatepicker]="picker">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Abbrechen</button>
+  <button mat-raised-button color="primary" (click)="close()">Speichern</button>
+</mat-dialog-actions>
