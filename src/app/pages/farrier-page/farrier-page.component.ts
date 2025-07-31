@@ -47,7 +47,7 @@ interface Horse {
 export class FarrierPageComponent {
 
   hoofPositions: Hoof['position'][] = ['VL', 'VR', 'HL', 'HR'];
-  
+
  isHoofActive(entry: FarrierEntry, pos: Hoof['position']): boolean {
     return entry.hooves.some((h) => h.position === pos);
   }
@@ -65,6 +65,66 @@ export class FarrierPageComponent {
           hooves: [
             { position: 'VL', action: 'beschlagen-neu' },
             { position: 'VR', action: 'beschlagen-neu' }
+          ]
+        },
+        {
+          date: '2025-04-15',
+          type: 'Nur ausgeschnitten',
+          hooves: [
+            { position: 'HL', action: 'ausgeschnitten' },
+            { position: 'HR', action: 'ausgeschnitten' }
+          ]
+        },
+        {
+          date: '2025-07-15',
+          type: 'Beschlagen (neu)',
+          comment: 'Sehr ruhig und brav.',
+          hooves: [
+            { position: 'VL', action: 'beschlagen-neu' },
+            { position: 'VR', action: 'beschlagen-neu' }
+          ]
+        },
+        {
+          date: '2025-04-15',
+          type: 'Nur ausgeschnitten',
+          hooves: [
+            { position: 'HL', action: 'ausgeschnitten' },
+            { position: 'HR', action: 'ausgeschnitten' }
+          ]
+        },
+        {
+          date: '2025-07-15',
+          type: 'Beschlagen (neu)',
+          comment: 'Sehr ruhig und brav.',
+          hooves: [
+            { position: 'VL', action: 'beschlagen-neu' },
+            { position: 'VR', action: 'beschlagen-neu' }
+          ]
+        },
+        {
+          date: '2025-04-15',
+          type: 'Nur ausgeschnitten',
+          hooves: [
+            { position: 'HL', action: 'ausgeschnitten' },
+            { position: 'HR', action: 'ausgeschnitten' }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'Holly',
+      age: 7,
+      gender: 'Stute',
+      farrierEntries: [
+        {
+          date: '2025-07-15',
+          type: 'Beschlagen (neu)',
+          comment: 'Sehr ruhig und brav.',
+          hooves: [
+            { position: 'VL', action: 'beschlagen-neu' },
+            { position: 'VR', action: 'beschlagen-neu' },
+            { position: 'HL', action: 'beschlagen-alt' },
+            { position: 'HR', action: 'beschlagen-alt' }
           ]
         },
         {

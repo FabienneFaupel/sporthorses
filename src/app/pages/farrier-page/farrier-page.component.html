@@ -1,3 +1,5 @@
+
+<body>
 <mat-tab-group>
     <mat-tab *ngFor="let horse of horses" label="{{ horse.name }}">
         <div class="horse-card">
@@ -9,29 +11,30 @@
                 <p *ngIf="entry.comment">📝 Kommentar: {{ entry.comment }}</p>
 
                 <!-- Hufeisen-Icons -->
-<div class="hoof-icons">
-  <ng-container *ngFor="let pos of hoofPositions">
-    <mat-icon 
-      [ngClass]="isHoofActive(entry, pos) ? 'hoof-active' : 'hoof-inactive'" 
-      [attr.title]="pos">
-      circle
-    </mat-icon>
-  </ng-container>
-</div>
+                <div class="hoof-icons">
+                    <ng-container *ngFor="let pos of hoofPositions">
+                        <mat-icon [ngClass]="isHoofActive(entry, pos) ? 'hoof-active' : 'hoof-inactive'"
+                            [attr.title]="pos">
+                            circle
+                        </mat-icon>
+                    </ng-container>
+                </div>
 
 
-<!-- Detaillierte Infos zu jedem behandelten Huf -->
-<div class="hoof-details">
-  <div *ngFor="let hoof of entry.hooves" class="hoof-detail-card">
-    <p><strong>{{ hoof.position }}</strong> – 
-      <span *ngIf="hoof.action === 'ausgeschnitten'">Ausgeschnitten</span>
-      <span *ngIf="hoof.action === 'beschlagen-alt'">Beschlagen (alte Eisen)</span>
-      <span *ngIf="hoof.action === 'beschlagen-neu'">Beschlagen (neue Eisen)</span>
-    </p>
-  </div>
-</div>
+                <!-- Detaillierte Infos zu jedem behandelten Huf -->
+                <div class="hoof-details">
+                    <div *ngFor="let hoof of entry.hooves" class="hoof-detail-card">
+                        <p><strong>{{ hoof.position }}</strong> –
+                            <span *ngIf="hoof.action === 'ausgeschnitten'">Ausgeschnitten</span>
+                            <span *ngIf="hoof.action === 'beschlagen-alt'">Beschlagen (alte Eisen)</span>
+                            <span *ngIf="hoof.action === 'beschlagen-neu'">Beschlagen (neue Eisen)</span>
+                        </p>
+                    </div>
+                </div>
 
             </div>
         </div>
     </mat-tab>
 </mat-tab-group>
+
+</body>
