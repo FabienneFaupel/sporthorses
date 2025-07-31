@@ -7,14 +7,29 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 
 
+type HoofAction = 'ausgeschnitten' | 'beschlagen-alt' | 'beschlagen-neu';
+
+
+
 interface Hoof {
-  position: string;
+  position: 'VL' | 'VR' | 'HL' | 'HR';
+  action: HoofAction;
 }
 
 interface FarrierEntry {
+  date: string;
+  type: string;
+  comment?: string;
   hooves: Hoof[];
-  // ... weitere Eigenschaften, falls vorhanden
 }
+
+interface Horse {
+  name: string;
+  age: number;
+  gender: string;
+  farrierEntries: FarrierEntry[];
+}
+
 
 @Component({
   selector: 'app-farrier-page',
@@ -23,7 +38,7 @@ interface FarrierEntry {
     MatTabsModule,
     MatCardModule,       // optional
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
 
   ],
   templateUrl: './farrier-page.component.html',
@@ -31,37 +46,36 @@ interface FarrierEntry {
 })
 export class FarrierPageComponent {
 
-  isHoofActive(entry: FarrierEntry, pos: string): boolean {
-  return entry.hooves?.some((h: Hoof) => h.position === pos);
-}
+  hoofPositions: Hoof['position'][] = ['VL', 'VR', 'HL', 'HR'];
+  
+ isHoofActive(entry: FarrierEntry, pos: Hoof['position']): boolean {
+    return entry.hooves.some((h) => h.position === pos);
+  }
 
-  horses = [
-  {
-    name: 'Bella',
-    age: 7,
-    gender: 'Stute',
-    farrierEntries: [
-      {
-        date: '2025-07-15',
-        type: 'Beschlagen (neu)',
-        comment: 'Sehr ruhig und brav.',
-        hooves: [
-          { position: 'VL' },
-          { position: 'VR' }
-        ]
-      },
-      {
-        date: '2025-04-15',
-        type: 'Nur ausgeschnitten',
-        hooves: [
-          { position: 'HL' },
-          { position: 'HR' }
-        ]
-      }
-    ]
-  },
-  // weitere Pferde …
-];
-
-
+  horses: Horse[] = [
+    {
+      name: 'Bella',
+      age: 7,
+      gender: 'Stute',
+      farrierEntries: [
+        {
+          date: '2025-07-15',
+          type: 'Beschlagen (neu)',
+          comment: 'Sehr ruhig und brav.',
+          hooves: [
+            { position: 'VL', action: 'beschlagen-neu' },
+            { position: 'VR', action: 'beschlagen-neu' }
+          ]
+        },
+        {
+          date: '2025-04-15',
+          type: 'Nur ausgeschnitten',
+          hooves: [
+            { position: 'HL', action: 'ausgeschnitten' },
+            { position: 'HR', action: 'ausgeschnitten' }
+          ]
+        }
+      ]
+    }
+  ];
 }

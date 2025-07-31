@@ -19,3 +19,19 @@
 .hoof-inactive {
   color: #d1d5db; /* Tailwind gray-300 */
 }
+
+
+.hoof-details {
+  margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+}
+
+.hoof-detail-card {
+  background: #fff;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
