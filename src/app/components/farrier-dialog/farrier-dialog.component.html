@@ -2,36 +2,80 @@
 
 <mat-dialog-content>
   <form class="farrier-form">
+
     <!-- Pferde-Auswahl -->
-    <mat-form-field appearance="outline" class="form-field">
-      <mat-label>Pfed</mat-label>
-      <mat-select multiple>
-        <mat-option *ngFor="let horse of data.horses" [value]="horse.name">
-          {{ horse.name }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+   
+        <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Pferd</mat-label>
+            <mat-select [(ngModel)]="selectedHorse" name="horse" required>
+                <mat-option *ngFor="let horse of data.horses" [value]="horse.name">
+                    {{ horse.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+   
 
-    <!-- Behandlungsart -->
-    <mat-form-field appearance="outline" class="form-field">
-      <mat-label>Huf(e)</mat-label>
-      <mat-select>
-        <mat-option value="beschlagen">Beschlagen</mat-option>
-        <mat-option value="ausgeschnitten">Ausgeschnitten</mat-option>
-      </mat-select>
-    </mat-form-field>
-
+    
     <!-- Datum -->
+     
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Schmieddatum</mat-label>
-      <input matInput [matDatepicker]="picker">
+      <input matInput [matDatepicker]="picker" [(ngModel)]="treatmentDate" name="treatmentDate" required>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
+    
+
+     <!-- Behandlungsart -->
+   <div class="treatment-toggle">
+      <mat-button-toggle-group 
+        [(ngModel)]="treatmentType" 
+        name="treatmentType" 
+        aria-label="Behandlungsart auswählen" 
+        class="full-width"
+        >
+        <mat-button-toggle value="beschlagen">Beschlagen</mat-button-toggle>
+        <mat-button-toggle value="ausgeschnitten">Ausgeschnitten</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <!-- Hufe Auswahl -->
+    <div class="hooves-container">
+      <div class="hoof" *ngFor="let hoof of hooves; let i = index">
+        <!-- Kürzel links -->
+        <span class="hoof-label">{{ hoof.short }}</span>
+
+        <!-- Kreis als Icon -->
+        <div 
+          class="hoof-circle" 
+          [class.selected]="selectedHooves[i]" 
+          (click)="toggleHoof(i)">
+        </div>
+
+        <!-- Nur bei "beschlagen": Toggle für Eisen -->
+        <mat-button-toggle-group 
+          *ngIf="treatmentType === 'beschlagen' && selectedHooves[i]" 
+          [(ngModel)]="hoofIron[i]" 
+          name="iron-{{i}}" 
+          class="iron-toggle" 
+          >
+          <mat-button-toggle value="alt">Alt</mat-button-toggle>
+          <mat-button-toggle value="neu">Neu</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div>
+
+
   </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="close()">Abbrechen</button>
-  <button mat-raised-button color="primary" (click)="close()">Speichern</button>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    (click)="save()" 
+    [disabled]="isSaveDisabled()">
+    Speichern
+  </button>
 </mat-dialog-actions>

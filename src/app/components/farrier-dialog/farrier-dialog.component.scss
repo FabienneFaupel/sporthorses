@@ -1,0 +1,42 @@
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.hooves-container {
+  display: flex;
+  flex-direction: column; /* <-- Vertikal untereinander */
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.hoof {
+  display: flex;
+  align-items: center; /* Kürzel + Kreis in einer Linie */
+  gap: 1rem;
+}
+
+.hoof-label {
+  width: 40px;
+  text-align: right;
+  font-weight: bold;
+}
+
+.hoof-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: gray;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.hoof-circle.selected {
+  background-color: deeppink;
+}
+
+.iron-toggle {
+  margin-left: 1rem;
+}
