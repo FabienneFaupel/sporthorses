@@ -15,13 +15,23 @@
 
     h2 {
       margin-bottom: 12px;
+      margin-top: 0px;
       font-size: 1.8rem;
     }
 
+    .feed-icon {
+    width: 35px;
+    vertical-align: middle;
+    margin-right: 0px;
+}
+
+
     .feed-value {
-      font-size: 1.4rem;
-      font-weight: bold;
-      margin-bottom: 12px;
+        display: flex;
+        text-align: center;
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin-bottom: 15px;
     }
 
     mat-progress-bar {
@@ -31,7 +41,7 @@
   }
 
   // Responsiv: untereinander bei kleiner Breite
-  @media (max-width: 768px) {
+  @media (max-width: 200px) {
     flex-direction: column;
   }
 }

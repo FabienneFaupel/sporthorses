@@ -3,7 +3,9 @@
   <!-- Heu Card -->
   <mat-card class="feed-card">
     <h2>Heu</h2>
-    <div class="feed-value">{{ hayCurrent }} / {{ hayMax }} Ballen</div>
+    <div class="feed-value">
+        {{ hayCurrent }} / {{ hayMax }}
+    </div>
     <mat-progress-bar
       mode="determinate"
       [value]="(hayCurrent / hayMax) * 100">
@@ -13,7 +15,7 @@
   <!-- Stroh Card -->
   <mat-card class="feed-card">
     <h2>Stroh</h2>
-    <div class="feed-value">{{ strawCurrent }} / {{ strawMax }} Ballen</div>
+    <div class="feed-value">{{ strawCurrent }} / {{ strawMax }}</div>
     <mat-progress-bar
       mode="determinate"
       color="warn"
