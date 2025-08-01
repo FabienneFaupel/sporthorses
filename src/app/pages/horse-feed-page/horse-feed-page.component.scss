@@ -53,48 +53,73 @@
   margin: 20px auto;
 }
 
-.feed-history {
-  margin-top: 30px;
-  width: 100%;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
+.feed-log-card {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: solid 1px #e5e5e5;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 
   h3 {
-    text-align: left;
-    margin-bottom: 16px;
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
   }
 
-  .history-card {
+  .feed-header {
     display: flex;
-    flex-direction: column; // Alles untereinander
-    align-items: flex-start;
-    margin-bottom: 12px;
-    padding: 12px 16px;
+    justify-content: space-between;
+    width: 100%;
 
-    .history-date {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 4px;
-    }
+    .action-icon {
+      font-size: 1.5rem;
+      font-weight: bold;
 
-    .history-details {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 16px;
-
-      .type {
-        font-weight: bold;
-
-        &.Heu {
-          color: #1976d2; // Blau
-        }
-
-        &.Stroh {
-          color: #f57c00; // Orange
-        }
+      &.add {
+        color: #28a745; // Grün für Plus
+      }
+      &.consume {
+        color: #dc3545; // Rot für Minus
       }
     }
+  }
+
+  
+  
+
+  hr {
+    width: 100%;
+    margin: 0.5rem 0;
+    border: 0;
+    height: 3px;
+    border-radius: 3px;
+
+    &.add {
+      background-color: #28a745;
+    }
+    &.consume {
+      background-color: #dc3545;
+    }
+  }
+
+  .history-date {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0.3rem 0 0.5rem;
+  }
+
+  .feed-amount {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .feed-action {
+    font-size: 0.9rem;
+    color: #444;
   }
 }

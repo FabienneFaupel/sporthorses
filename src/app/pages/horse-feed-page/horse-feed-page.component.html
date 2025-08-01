@@ -32,19 +32,25 @@
 </div>
 
 <!-- Verlauf / History -->
-<div class="feed-history">
-  <h3>Verlauf</h3>
+<div *ngFor="let log of feedLog" class="feed-log-card">
+  <div class="feed-header">
+    
+    <h3>{{ log.type | titlecase }}</h3>
+    <span class="action-icon" [ngClass]="log.action">
+      {{ log.action === 'add' ? '+' : '−' }}
+    </span>
+  </div>
 
-  <mat-card *ngFor="let log of feedLog" class="history-card">
-    <div class="history-date">
-      {{ log.date | date:'dd.MM.yyyy' }}
-    </div>
-    <div class="history-details">
-      <span class="type" [ngClass]="log.type">{{ log.type | titlecase }}</span>
-      <span>{{ log.action === 'add' ? 'Eingelagert' : 'Verbraucht' }}</span>
-      <strong>{{ log.amount }}</strong> Ballen
-    </div>
-  </mat-card>
+  <hr [ngClass]="log.action">
 
+  <p class="history-date">{{ log.date | date:'dd.MM.yyyy' }}</p>
 
-  
+  <div class="feed-amount">
+    <strong>{{ log.amount }}</strong> Ballen
+  </div>
+
+  <span class="feed-action">
+    {{ log.action === 'add' ? 'Eingelagert' : 'Verbraucht' }}
+  </span>
+</div>
+
