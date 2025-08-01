@@ -27,15 +27,17 @@
 
 <!-- Buttons unter den Cards -->
 <div class="feed-actions">
-  <button mat-raised-button color="primary" >➕ Hinzufügen</button>
-  <button mat-raised-button color="accent" >➖ Verbrauch</button>
+  <button mat-raised-button color="primary" class="add-btn"><mat-icon>add2</mat-icon>Hinzufügen</button>
+  <button mat-raised-button color="accent" class="add-btn"><mat-icon>remove</mat-icon>Verbrauch</button>
 </div>
 
 <!-- Verlauf / History -->
 <div *ngFor="let log of feedLog" class="feed-log-card">
   <div class="feed-header">
-    
+    <div class="feed-icon-box">
+    <img [src]="'/images/' + log.type + '.svg'" alt="{{ log.type }}" class="feed-icon" />
     <h3>{{ log.type | titlecase }}</h3>
+    </div>
     <span class="action-icon" [ngClass]="log.action">
       {{ log.action === 'add' ? '+' : '−' }}
     </span>
@@ -45,6 +47,9 @@
 
   <p class="history-date">{{ log.date | date:'dd.MM.yyyy' }}</p>
 
+  <div class="feed-content">
+    <div class="feed-infos">
+
   <div class="feed-amount">
     <strong>{{ log.amount }}</strong> Ballen
   </div>
@@ -52,5 +57,17 @@
   <span class="feed-action">
     {{ log.action === 'add' ? 'Eingelagert' : 'Verbraucht' }}
   </span>
+  </div>
+
+  <!-- Footer mit Buttons -->
+  <div class="feed-card-actions">
+    <button mat-icon-button color="primary">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-icon-button color="warn">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+  </div>
 </div>
 

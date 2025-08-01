@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-horse-feed-page',
@@ -18,7 +19,8 @@ import { MatButtonModule } from '@angular/material/button';
     MatCardModule,
     MatProgressBarModule,
     MatListModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
   ],
   templateUrl: './horse-feed-page.component.html',
   styleUrl: './horse-feed-page.component.scss'
