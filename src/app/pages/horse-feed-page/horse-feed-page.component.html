@@ -1,1 +1,48 @@
-<p>horse-feed-page works!</p>
+<div class="feed-container">
+
+  <!-- Heu Card -->
+  <mat-card class="feed-card">
+    <h2>Heu</h2>
+    <div class="feed-value">{{ hayCurrent }} / {{ hayMax }} Ballen</div>
+    <mat-progress-bar
+      mode="determinate"
+      [value]="(hayCurrent / hayMax) * 100">
+    </mat-progress-bar>
+  </mat-card>
+
+  <!-- Stroh Card -->
+  <mat-card class="feed-card">
+    <h2>Stroh</h2>
+    <div class="feed-value">{{ strawCurrent }} / {{ strawMax }} Ballen</div>
+    <mat-progress-bar
+      mode="determinate"
+      color="warn"
+      [value]="(strawCurrent / strawMax) * 100">
+    </mat-progress-bar>
+  </mat-card>
+
+</div>
+
+<!-- Buttons unter den Cards -->
+<div class="feed-actions">
+  <button mat-raised-button color="primary" >➕ Hinzufügen</button>
+  <button mat-raised-button color="accent" >➖ Verbrauch</button>
+</div>
+
+<!-- Verlauf / History -->
+<div class="feed-history">
+  <h3>Verlauf</h3>
+
+  <mat-card *ngFor="let log of feedLog" class="history-card">
+    <div class="history-date">
+      {{ log.date | date:'dd.MM.yyyy' }}
+    </div>
+    <div class="history-details">
+      <span class="type" [ngClass]="log.type">{{ log.type | titlecase }}</span>
+      <span>{{ log.action === 'add' ? 'Eingelagert' : 'Verbraucht' }}</span>
+      <strong>{{ log.amount }}</strong> Ballen
+    </div>
+  </mat-card>
+
+
+  
