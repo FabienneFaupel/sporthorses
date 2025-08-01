@@ -1,4 +1,4 @@
-<div>
+<div class="btn-box">
   <button mat-raised-button color="primary" (click)="openVaccinationDialog()">
     ➕ Impfung hinzufügen
   </button>
@@ -12,6 +12,7 @@
 
       <div *ngFor="let vac of horse.vaccinations" class="vaccination-card" [ngClass]="vac.status">
         <p><strong>💉 {{ vac.type }}</strong></p>
+        <hr>
         <p>📅 Datum: {{ vac.date }}</p>
         <p>🔁 Nächste: {{ vac.next }}</p>
         <p>Status: <span class="status">{{ vac.status }}</span></p>

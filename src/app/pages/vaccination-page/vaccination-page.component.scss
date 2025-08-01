@@ -6,18 +6,28 @@
   margin: auto;
 }
 
+.btn-box {
+  margin-bottom: 15px;
+}
+
+
+hr {
+  border-top: 2px solid #ec4899;
+}
+
+
 .horse-card {
   margin-bottom: 2rem;
-  border-bottom: 2px solid #ccc;
-  padding-bottom: 1rem;
+  padding: 1rem;
 }
 
 .vaccination-card {
-  background: #f9f9f9;
-  padding: 0.8rem;
-  margin: 0.5rem 0;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border: solid 1px #e5e5e5;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
 /* Statusfarben */
@@ -25,6 +35,7 @@
   color: green;
   font-weight: bold;
 }
+
 .überfällig .status {
   color: red;
   font-weight: bold;
