@@ -33,8 +33,21 @@
 
 <hr>
 
+<!-- Jahr-Auswahl oben -->
+<div class="year-filter">
+  <mat-form-field appearance="outline">
+    <mat-label>Jahr auswählen</mat-label>
+    <mat-select [(value)]="selectedYear">
+      <mat-option *ngFor="let year of availableYears" [value]="year">
+        {{ year }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+
 <!-- Verlauf / History -->
-<div *ngFor="let log of feedLog" class="feed-log-card">
+<div *ngFor="let log of filteredFeedLog()" class="feed-log-card">
   <div class="feed-header">
     <div class="feed-icon-box">
     <img [src]="'/images/' + log.type + '.svg'" alt="{{ log.type }}" class="feed-icon" />

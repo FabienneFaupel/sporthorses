@@ -10,6 +10,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-horse-feed-page',
@@ -20,7 +21,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatProgressBarModule,
     MatListModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatSelectModule
   ],
   templateUrl: './horse-feed-page.component.html',
   styleUrl: './horse-feed-page.component.scss'
@@ -32,12 +34,28 @@ export class HorseFeedPageComponent {
   hayCurrent = 20;
   strawCurrent = 33;
 
-  feedLog = [
-  { date: new Date(), type: 'Heu', action: 'consume', amount: 1 },
-  { date: new Date(), type: 'Stroh', action: 'add', amount: 5 },
-  { date: new Date(), type: 'Heu', action: 'add', amount: 10 },
-];
+  // Jahr-Filter
+  selectedYear: number = new Date().getFullYear();
+  availableYears: number[] = [];
+  
+feedLog = [
+    { date: new Date('2025-01-01'), type: 'heu', action: 'consume', amount: 1 },
+    { date: new Date('2025-02-12'), type: 'stroh', action: 'add', amount: 5 },
+    { date: new Date('2024-06-23'), type: 'heu', action: 'add', amount: 10 },
+  ];
 
+  ngOnInit() {
+    const currentYear = new Date().getFullYear();
+    for (let i = 0; i < 5; i++) {
+      this.availableYears.push(currentYear - i);
+    }
+  }
+
+  filteredFeedLog() {
+    return this.feedLog.filter(log => {
+      return new Date(log.date).getFullYear() === this.selectedYear;
+    });
+  }
 
   openConsumeDialog(type: 'hay' | 'straw') {
     // MatDialog öffnen, Menge abfragen, dann Wert anpassen
