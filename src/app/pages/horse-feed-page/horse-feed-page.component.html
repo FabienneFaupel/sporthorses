@@ -38,7 +38,7 @@
 <div class="year-filter">
   <mat-form-field >
     <mat-label>Jahr auswählen</mat-label>
-    <mat-select [(value)]="selectedYear">
+    <mat-select [(value)]="selectedYear" panelClass="open-down">
       <mat-option *ngFor="let year of availableYears" [value]="year">
         {{ year }}
       </mat-option>
@@ -71,6 +71,12 @@
   <div class="feed-amount">
     <strong>{{ log.amount }}</strong> Ballen
   </div>
+
+    <!-- Preis nur anzeigen, wenn vorhanden -->
+    <div class="feed-price" *ngIf="log.action === 'add' && log.price">
+  Preis: {{ log.price | currency:'EUR' }}
+</div>
+
 
   <span class="feed-action">
     {{ log.action === 'add' ? 'Eingelagert' : 'Verbraucht' }}
