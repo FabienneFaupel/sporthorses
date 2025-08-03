@@ -31,11 +31,10 @@
   <button mat-raised-button color="accent" class="add-btn"><mat-icon>remove</mat-icon>Verbrauch</button>
 </div>
 
-<hr>
 
 <!-- Jahr-Auswahl oben -->
 <div class="year-filter">
-  <mat-form-field appearance="outline">
+  <mat-form-field >
     <mat-label>Jahr auswählen</mat-label>
     <mat-select [(value)]="selectedYear">
       <mat-option *ngFor="let year of availableYears" [value]="year">
@@ -46,11 +45,13 @@
 </div>
 
 
+
 <!-- Verlauf / History -->
+<div class="history-container">
 <div *ngFor="let log of filteredFeedLog()" class="feed-log-card">
   <div class="feed-header">
     <div class="feed-icon-box">
-    <img [src]="'/images/' + log.type + '.svg'" alt="{{ log.type }}" class="feed-icon" />
+    <img [src]="'/images/' + log.type + 'Icong.svg'" alt="{{ log.type }}" class="feed-icon"/>
     <h3>{{ log.type | titlecase }}</h3>
     </div>
     <span class="action-icon" [ngClass]="log.action">
@@ -84,5 +85,6 @@
     </button>
   </div>
   </div>
+</div>
 </div>
 

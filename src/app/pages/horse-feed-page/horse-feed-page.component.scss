@@ -59,7 +59,22 @@
   border: solid 1px #e5e5e5;
 }
 
+.year-filter {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: flex-end;
+  margin: 0px auto;
+}
 
+
+.history-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0px auto;
+}
 
 .feed-log-card {
   margin: 1rem 0;
@@ -105,7 +120,8 @@
   }
 
   .feed-icon {
-    width: 30px;
+    width: 25px;
+    
   }
 
   
