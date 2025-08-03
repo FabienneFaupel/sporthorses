@@ -29,8 +29,8 @@
 
 <!-- Buttons unter den Cards -->
 <div class="feed-actions">
-  <button mat-raised-button color="primary" class="add-btn"><mat-icon>add2</mat-icon>Hinzufügen</button>
-  <button mat-raised-button color="accent" class="add-btn"><mat-icon>remove</mat-icon>Verbrauch</button>
+  <button mat-raised-button color="primary" class="add-btn" (click)="openAddDialog()"><mat-icon>add2</mat-icon>Hinzufügen</button>
+  <button mat-raised-button color="accent" class="add-btn" (click)="openConsumeDialog()"><mat-icon>remove</mat-icon>Verbrauch</button>
 </div>
 
 

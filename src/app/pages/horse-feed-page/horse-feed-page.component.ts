@@ -11,6 +11,14 @@ import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+
+import { FeedAddDialogComponent } from '../../components/feed-add-dialog/feed-add-dialog.component';
+import { FeedConsumeDialogComponent } from '../../components/feed-consume-dialog/feed-consume-dialog.component';
+
 
 @Component({
   selector: 'app-horse-feed-page',
@@ -22,12 +30,20 @@ import { MatSelectModule } from '@angular/material/select';
     MatListModule,
     MatButtonModule,
     MatIconModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FeedAddDialogComponent,
+    FeedConsumeDialogComponent
   ],
   templateUrl: './horse-feed-page.component.html',
   styleUrl: './horse-feed-page.component.scss'
 })
 export class HorseFeedPageComponent {
+
+  constructor(private dialog: MatDialog) {}
+
   hayMax = 50;
   strawMax = 60;
 
@@ -61,11 +77,30 @@ feedLog = [
 }
 
 
-  openConsumeDialog(type: 'hay' | 'straw') {
-    // MatDialog öffnen, Menge abfragen, dann Wert anpassen
-  }
+  openAddDialog() {
+  const dialogRef = this.dialog.open(FeedAddDialogComponent, {
+    width: '300px'
+  });
 
-  openAddDialog(type: 'hay' | 'straw') {
-    // MatDialog öffnen, Menge abfragen, dann Wert anpassen
-  }
+  dialogRef.afterClosed().subscribe(result => {
+    if (result?.amount && result?.type) {
+      console.log(`Hinzugefügt: ${result.amount} Ballen ${result.type} für ${result.price}€`);
+      // Hier dann Logik, um die Daten zu speichern
+    }
+  });
+}
+
+openConsumeDialog() {
+  const dialogRef = this.dialog.open(FeedConsumeDialogComponent, {
+    width: '300px'
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result?.amount && result?.type) {
+      console.log(`Verbraucht: ${result.amount} Ballen ${result.type}`);
+      // Hier Logik für Verbrauch
+    }
+  });
+}
+
 }

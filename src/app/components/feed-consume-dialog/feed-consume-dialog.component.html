@@ -1,0 +1,31 @@
+<h2 mat-dialog-title>Verbrauch eingeben</h2>
+
+
+<mat-dialog-content>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Futterart</mat-label>
+        <mat-select [(ngModel)]="selectedFeed">
+            <mat-option value="hay">Heu</mat-option>
+            <mat-option value="straw">Stroh</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Datum</mat-label>
+        <input matInput [matDatepicker]="picker"/>
+        <mat-datepicker-toggle matSuffix [for]="picker" [(ngModel)]="selectedDate"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+
+    <mat-form-field appearance="outline">
+        <mat-label>Menge in Ballen</mat-label>
+        <input matInput type="number" [(ngModel)]="amount" min="1" />
+    </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="cancel()">Abbrechen</button>
+    <button mat-raised-button color="warn" (click)="confirm()">Verbrauchen</button>
+</mat-dialog-actions>
