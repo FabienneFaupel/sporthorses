@@ -18,6 +18,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { VaccinationDialogComponent } from '../../components/vaccination-dialog/vaccination-dialog.component';
 
+import { DataService, Horse } from '../../services/data.service';
+
 
 
 @Component({
@@ -43,72 +45,17 @@ import { VaccinationDialogComponent } from '../../components/vaccination-dialog/
   styleUrl: './vaccination-page.component.scss'
 })
 export class VaccinationPageComponent {
-horses = [
-    {
-      name: 'Bella',
-      age: 7,
-      gender: 'Stute',
-      vaccinations: [
-        {
-          type: 'Influenza',
-          date: '2025-04-12',
-          next: '2025-10-12',
-          status: 'geimpft'
-        },
-        {
-          type: 'Tetanus',
-          date: '2024-01-05',
-          next: '2025-01-05',
-          status: 'überfällig'
-        }
-      ]
-    },
-    {
-      name: 'Max',
-      age: 10,
-      gender: 'Wallach',
-      vaccinations: [
-        {
-          type: 'Herpes',
-          date: '2025-02-10',
-          next: '2025-08-10',
-          status: 'geimpft'
-        }
-      ]
-    },
-    {
-      name: 'Holly',
-      age: 7,
-      gender: 'Stute',
-      vaccinations: [
-        {
-          type: 'Influenza',
-          date: '2025-04-12',
-          next: '2025-10-12',
-          status: 'geimpft'
-        },
-        {
-          type: 'Tetanus',
-          date: '2024-01-05',
-          next: '2025-01-05',
-          status: 'überfällig'
-        },
-        {
-          type: 'Influenza',
-          date: '2025-04-12',
-          next: '2025-10-12',
-          status: 'geimpft'
-        },
-        {
-          type: 'Tetanus',
-          date: '2024-01-05',
-          next: '2025-01-05',
-          status: 'überfällig'
-        }
-      ]
-    },
-  ];
-constructor(private dialog: MatDialog) {}
+
+  horses: Horse[] = [];
+
+  constructor(
+    private dialog: MatDialog,
+    private dataService: DataService
+  ) {}
+
+  ngOnInit(): void {
+    this.horses = this.dataService.getHorses();
+  }
 
   openVaccinationDialog(): void {
     this.dialog.open(VaccinationDialogComponent, {

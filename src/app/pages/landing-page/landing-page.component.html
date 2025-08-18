@@ -21,10 +21,10 @@
     <div class="row">
         <div class="col" *ngFor="let horse of horses">
             <app-landing-horse-box 
-                [horseName]="horse.horseName" 
-                [horseAge]="horse.horseAge" 
-                [horseBirth]="horse.horseBirth"
-                [horseBreed]="horse.horseBreed"
+                [horseName]="horse.name" 
+                [horseAge]="horse.age" 
+                [horseBirth]="horse.birth"
+                [horseBreed]="horse.breed"
                 [horseImage]="horse.image">
             </app-landing-horse-box>
 

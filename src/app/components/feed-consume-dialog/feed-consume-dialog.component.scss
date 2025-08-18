@@ -1,0 +1,15 @@
+mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; // Abstand zwischen den Feldern
+  min-width: 200px;
+
+  mat-form-field {
+    width: 100%;
+
+    .mat-form-field-wrapper {
+      padding-bottom: 0.5rem;
+    }
+  }
+}
+

@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
+import { DataService, Horse } from '../../services/data.service';
 
 
 import { LandingHorseBoxComponent } from '../../components/landing-horse-box/landing-horse-box.component';
@@ -28,21 +29,13 @@ export class LandingPageComponent {
   isLoaded = false;
   isFailed = false;
 
-  horses = [
-    {
-      horseName: 'Check Point Charly',
-      horseBreed: 'Hannoveraner',
-      horseAge: 7,
-      horseBirth: '12.05.2025',
-      image: '/images/horse.svg'
-    },
-    {
-      horseName: 'Bella',
-      horseBreed: 'Friese',
-      horseAge: 10,
-      horseBirth: '01.04.2025',
-      image: '/images/horse.svg'
-    }
-  ];
+  horses: Horse[] = [];
+
+  constructor(private dataService: DataService) {}
+
+  ngOnInit(): void {
+    this.horses = this.dataService.getHorses();
+    this.isLoaded = true;
+  }
 
 }
