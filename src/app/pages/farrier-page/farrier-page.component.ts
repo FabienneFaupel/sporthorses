@@ -9,29 +9,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { FarrierDialogComponent } from '../../components/farrier-dialog/farrier-dialog.component';
 
-
-type HoofAction = 'ausgeschnitten' | 'beschlagen-alt' | 'beschlagen-neu';
-
+import { DataService, Horse, FarrierEntry, Hoof } from '../../services/data.service';
 
 
-interface Hoof {
-  position: 'VL' | 'VR' | 'HL' | 'HR';
-  action: HoofAction;
-}
-
-interface FarrierEntry {
-  date: string;
-  type: string;
-  comment?: string;
-  hooves: Hoof[];
-}
-
-interface Horse {
-  name: string;
-  age: number;
-  gender: string;
-  farrierEntries: FarrierEntry[];
-}
 
 
 @Component({
@@ -51,117 +31,41 @@ interface Horse {
 })
 export class FarrierPageComponent {
 
+  
+
+
+  horses: Horse[] = [];
   hoofPositions: Hoof['position'][] = ['VL', 'VR', 'HL', 'HR'];
 
- getHoofClass(entry: FarrierEntry, pos: Hoof['position']): string {
-  const hoof = entry.hooves.find(h => h.position === pos);
-  if (!hoof) return 'hoof-inactive';
+  constructor(
+    private dialog: MatDialog,
+    private dataService: DataService
+  ) {}
 
-  switch (hoof.action) {
-    case 'beschlagen-neu':
-    case 'beschlagen-alt':
-      return 'hoof-beschlagen';
-    case 'ausgeschnitten':
-      return 'hoof-ausgeschnitten';
-    default:
-      return 'hoof-inactive';
+  ngOnInit(): void {
+    this.horses = this.dataService.getHorses();
   }
-}
 
-constructor(private dialog: MatDialog) {}
+  getHoofClass(entry: FarrierEntry, pos: Hoof['position']): string {
+    const hoof = entry.hooves.find(h => h.position === pos);
+    if (!hoof) return 'hoof-inactive';
 
-  openVaccinationDialog(): void {
+    switch (hoof.action) {
+      case 'beschlagen-neu':
+      case 'beschlagen-alt':
+        return 'hoof-beschlagen';
+      case 'ausgeschnitten':
+        return 'hoof-ausgeschnitten';
+      default:
+        return 'hoof-inactive';
+    }
+  }
+
+  openFarrierDialog(): void {
     this.dialog.open(FarrierDialogComponent, {
       width: '400px',
       data: { horses: this.horses }
     });
   }
 
-
-  horses: Horse[] = [
-    {
-      name: 'Bella',
-      age: 7,
-      gender: 'Stute',
-      farrierEntries: [
-        {
-          date: '2025-07-15',
-          type: 'Beschlagen',
-          comment: 'Sehr ruhig und brav.',
-          hooves: [
-            { position: 'VL', action: 'beschlagen-neu' },
-            { position: 'VR', action: 'beschlagen-neu' }
-          ]
-        },
-        {
-          date: '2025-04-15',
-          type: 'Nur ausgeschnitten',
-          hooves: [
-            { position: 'HL', action: 'ausgeschnitten' },
-            { position: 'HR', action: 'ausgeschnitten' }
-          ]
-        },
-        {
-          date: '2025-07-15',
-          type: 'Beschlagen',
-          comment: 'Sehr ruhig und brav.',
-          hooves: [
-            { position: 'HL', action: 'beschlagen-neu' },
-            { position: 'HR', action: 'beschlagen-neu' }
-          ]
-        },
-        {
-          date: '2025-04-15',
-          type: 'Nur ausgeschnitten',
-          hooves: [
-            { position: 'VL', action: 'ausgeschnitten' },
-            { position: 'VR', action: 'ausgeschnitten' }
-          ]
-        },
-        {
-          date: '2025-07-15',
-          type: 'Beschlagen',
-          comment: 'Sehr ruhig und brav.',
-          hooves: [
-            { position: 'VL', action: 'beschlagen-neu' },
-            { position: 'VR', action: 'beschlagen-neu' }
-          ]
-        },
-        {
-          date: '2025-04-15',
-          type: 'Nur ausgeschnitten',
-          hooves: [
-            { position: 'HL', action: 'ausgeschnitten' },
-            { position: 'HR', action: 'ausgeschnitten' }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Holly',
-      age: 7,
-      gender: 'Stute',
-      farrierEntries: [
-        {
-          date: '2025-07-15',
-          type: 'Beschlagen',
-          comment: 'Sehr ruhig und brav.',
-          hooves: [
-            { position: 'VL', action: 'beschlagen-neu' },
-            { position: 'VR', action: 'beschlagen-neu' },
-            { position: 'HL', action: 'beschlagen-alt' },
-            { position: 'HR', action: 'beschlagen-alt' }
-          ]
-        },
-        {
-          date: '2025-04-15',
-          type: 'Nur ausgeschnitten',
-          hooves: [
-            { position: 'HL', action: 'ausgeschnitten' },
-            { position: 'HR', action: 'ausgeschnitten' }
-          ]
-        }
-      ]
-    }
-  ];
 }
