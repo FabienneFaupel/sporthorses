@@ -37,8 +37,8 @@ export interface ConsumeDialogData {
 })
 export class FeedConsumeDialogComponent {
  amount: number = 1;
- selectedDate: Date = new Date();
- selectedFeed: 'hay' | 'straw' = 'hay'; // Default: Heu
+ date: Date = new Date();
+ type: 'heu' | 'stroh' = 'heu'; // Default: Heu
 
   constructor(
     public dialogRef: MatDialogRef<FeedConsumeDialogComponent>,
@@ -46,8 +46,12 @@ export class FeedConsumeDialogComponent {
   ) {}
 
   confirm() {
-    this.dialogRef.close({ amount: this.amount });
-  }
+  this.dialogRef.close({
+    type: this.type,
+    date: this.date,
+    amount: this.amount,
+  });
+}
 
   cancel() {
     this.dialogRef.close();

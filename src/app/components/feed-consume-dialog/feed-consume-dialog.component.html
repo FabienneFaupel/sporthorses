@@ -5,16 +5,16 @@
 
     <mat-form-field appearance="fill">
         <mat-label>Futterart</mat-label>
-        <mat-select [(ngModel)]="selectedFeed">
-            <mat-option value="hay">Heu</mat-option>
-            <mat-option value="straw">Stroh</mat-option>
+        <mat-select [(ngModel)]="type">
+            <mat-option value="heu">Heu</mat-option>
+            <mat-option value="stroh">Stroh</mat-option>
         </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
         <mat-label>Datum</mat-label>
         <input matInput [matDatepicker]="picker"/>
-        <mat-datepicker-toggle matSuffix [for]="picker" [(ngModel)]="selectedDate"></mat-datepicker-toggle>
+        <mat-datepicker-toggle matSuffix [for]="picker" [(ngModel)]="date"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
