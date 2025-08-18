@@ -34,10 +34,10 @@ export interface AddDialogData {
   styleUrl: './feed-add-dialog.component.scss'
 })
 export class FeedAddDialogComponent {
-amount: number = 1;
+  amount: number = 1;
   price: number = 0;
- selectedDate: Date = new Date();
- selectedFeed: 'hay' | 'straw' = 'hay'; // Default: Heu
+  date: Date = new Date();
+  type: 'heu' | 'stroh' = 'heu'; // Default: Heu
 
   constructor(
     public dialogRef: MatDialogRef<FeedAddDialogComponent>,
@@ -45,8 +45,13 @@ amount: number = 1;
   ) {}
 
   confirm() {
-    this.dialogRef.close({ amount: this.amount, price: this.price });
-  }
+  this.dialogRef.close({
+    type: this.type,
+    date: this.date,
+    amount: this.amount,
+    price: this.price
+  });
+}
 
   cancel() {
     this.dialogRef.close();

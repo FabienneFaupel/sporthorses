@@ -33,6 +33,15 @@ export interface Horse {
   farrierEntries: FarrierEntry[];
 }
 
+export interface FeedLogEntry {
+  date: Date;
+  type: 'heu' | 'stroh';
+  action: 'add' | 'consume';
+  amount: number;
+  price?: number;
+}
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -153,6 +162,24 @@ export class DataService {
     }
   ];
 
+  // Maximalmengen
+  private hayMax = 50;
+  private strawMax = 60;
+
+  // Aktuelle Mengen
+  private hayCurrent = 20;
+  private strawCurrent = 33;
+
+  // Feed-Historie
+  private feedLog: FeedLogEntry[] = [
+    { date: new Date('2025-01-01'), type: 'heu', action: 'consume', amount: 1 },
+    { date: new Date('2025-02-12'), type: 'stroh', action: 'add', amount: 5, price: 75  },
+    { date: new Date('2024-06-23'), type: 'heu', action: 'add', amount: 10, price: 75  },
+    { date: new Date('2025-01-01'), type: 'heu', action: 'consume', amount: 1 },
+    { date: new Date('2025-03-12'), type: 'stroh', action: 'add', amount: 5, price: 75  },
+    { date: new Date('2025-04-23'), type: 'heu', action: 'add', amount: 10, price: 75  },
+  ];
+
   constructor() {}
 
   getHorses(): Horse[] {
@@ -161,5 +188,43 @@ export class DataService {
 
   addHorse(horse: Horse) {
     this.horses.push(horse);
+  }
+
+   // Getter für Max-Werte
+  getHayMax(): number {
+    return this.hayMax;
+  }
+
+  getStrawMax(): number {
+    return this.strawMax;
+  }
+
+  // Getter für aktuelle Mengen
+  getHayCurrent(): number {
+    return this.hayCurrent;
+  }
+
+  getStrawCurrent(): number {
+    return this.strawCurrent;
+  }
+
+  // Getter für Feed-Log
+  getFeedLog(): FeedLogEntry[] {
+    return this.feedLog;
+  }
+
+  // Methoden zum Hinzufügen/Verbrauchen
+  addFeed(type: 'heu' | 'stroh', amount: number, price?: number) {
+    this.feedLog.push({ date: new Date(), type, action: 'add', amount, price });
+
+    if (type === 'heu') this.hayMax += amount;
+    if (type === 'stroh') this.strawMax += amount;
+  }
+
+  consumeFeed(type: 'heu' | 'stroh', amount: number) {
+    this.feedLog.push({ date: new Date(), type, action: 'consume', amount });
+
+    if (type === 'heu') this.hayCurrent = Math.max(0, this.hayCurrent - amount);
+    if (type === 'stroh') this.strawCurrent = Math.max(0, this.strawCurrent - amount);
   }
 }

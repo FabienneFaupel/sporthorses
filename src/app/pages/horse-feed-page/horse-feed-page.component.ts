@@ -18,6 +18,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { FeedAddDialogComponent } from '../../components/feed-add-dialog/feed-add-dialog.component';
 import { FeedConsumeDialogComponent } from '../../components/feed-consume-dialog/feed-consume-dialog.component';
+import { DataService, FeedLogEntry } from '../../services/data.service';
 
 
 @Component({
@@ -42,26 +43,13 @@ import { FeedConsumeDialogComponent } from '../../components/feed-consume-dialog
 })
 export class HorseFeedPageComponent {
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private dataService: DataService) {}
 
-  hayMax = 50;
-  strawMax = 60;
-
-  hayCurrent = 20;
-  strawCurrent = 33;
+  
 
   // Jahr-Filter
   selectedYear: number = new Date().getFullYear();
   availableYears: number[] = [];
-  
-feedLog = [
-    { date: new Date('2025-01-01'), type: 'heu', action: 'consume', amount: 1 },
-    { date: new Date('2025-02-12'), type: 'stroh', action: 'add', amount: 5, price: 75  },
-    { date: new Date('2024-06-23'), type: 'heu', action: 'add', amount: 10, price: 75  },
-    { date: new Date('2025-01-01'), type: 'heu', action: 'consume', amount: 1 },
-    { date: new Date('2025-03-12'), type: 'stroh', action: 'add', amount: 5, price: 75  },
-    { date: new Date('2025-04-23'), type: 'heu', action: 'add', amount: 10, price: 75  },
-  ];
 
   ngOnInit() {
     const currentYear = new Date().getFullYear();
@@ -69,6 +57,17 @@ feedLog = [
       this.availableYears.push(currentYear - i);
     }
   }
+  
+// Getter für Template
+  get hayMax() { return this.dataService.getHayMax(); }
+  get strawMax() { return this.dataService.getStrawMax(); }
+  get hayCurrent() { return this.dataService.getHayCurrent(); }
+  get strawCurrent() { return this.dataService.getStrawCurrent(); }
+
+  get feedLog(): FeedLogEntry[] {
+    return this.dataService.getFeedLog();
+  }
+
 
   filteredFeedLog() {
   return this.feedLog
@@ -78,29 +77,23 @@ feedLog = [
 
 
   openAddDialog() {
-  const dialogRef = this.dialog.open(FeedAddDialogComponent, {
-    width: '300px'
-  });
+    const dialogRef = this.dialog.open(FeedAddDialogComponent, { width: '300px' });
 
-  dialogRef.afterClosed().subscribe(result => {
-    if (result?.amount && result?.type) {
-      console.log(`Hinzugefügt: ${result.amount} Ballen ${result.type} für ${result.price}€`);
-      // Hier dann Logik, um die Daten zu speichern
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.amount && result?.type) {
+        this.dataService.addFeed(result.type, result.amount, result.price);
+      }
+    });
+  }
 
-openConsumeDialog() {
-  const dialogRef = this.dialog.open(FeedConsumeDialogComponent, {
-    width: '300px'
-  });
+  openConsumeDialog() {
+    const dialogRef = this.dialog.open(FeedConsumeDialogComponent, { width: '300px' });
 
-  dialogRef.afterClosed().subscribe(result => {
-    if (result?.amount && result?.type) {
-      console.log(`Verbraucht: ${result.amount} Ballen ${result.type}`);
-      // Hier Logik für Verbrauch
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.amount && result?.type) {
+        this.dataService.consumeFeed(result.type, result.amount);
+      }
+    });
+  }
 
 }
