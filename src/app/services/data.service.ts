@@ -163,12 +163,12 @@ export class DataService {
   ];
 
   // Maximalmengen
-  private hayMax = 50;
-  private strawMax = 60;
+  private hayMax = 0;
+  private strawMax = 0;
 
   // Aktuelle Mengen
-  private hayCurrent = 20;
-  private strawCurrent = 33;
+  private hayCurrent = 0;
+  private strawCurrent = 0;
 
   // Feed-Historie
   private feedLog: FeedLogEntry[] = [
@@ -214,17 +214,32 @@ export class DataService {
   }
 
   // Methoden zum Hinzufügen/Verbrauchen
-  addFeed(type: 'heu' | 'stroh', amount: number, price?: number) {
-    this.feedLog.push({ date: new Date(), type, action: 'add', amount, price });
+addFeed(type: 'heu' | 'stroh', amount: number, price?: number) {
+  this.feedLog.push({ date: new Date(), type, action: 'add', amount, price });
 
-    if (type === 'heu') this.hayMax += amount;
-    if (type === 'stroh') this.strawMax += amount;
+  if (type === 'heu') {
+    this.hayCurrent += amount;       // Bestand erhöhen
+    this.hayMax = this.hayCurrent;   // neues Maximum = aktueller Bestand
   }
 
-  consumeFeed(type: 'heu' | 'stroh', amount: number) {
-    this.feedLog.push({ date: new Date(), type, action: 'consume', amount });
-
-    if (type === 'heu') this.hayCurrent = Math.max(0, this.hayCurrent - amount);
-    if (type === 'stroh') this.strawCurrent = Math.max(0, this.strawCurrent - amount);
+  if (type === 'stroh'){ 
+    this.strawCurrent += amount;
+    this.strawMax = this.strawCurrent;
   }
+}
+
+consumeFeed(type: 'heu' | 'stroh', amount: number) {
+  this.feedLog.push({ date: new Date(), type, action: 'consume', amount });
+
+  if (type === 'heu') {
+    this.hayCurrent = Math.max(0, this.hayCurrent - amount);
+    // hayMax bleibt gleich!
+  }
+  
+  if (type === 'stroh') {
+    this.strawCurrent = Math.max(0, this.strawCurrent - amount);
+    // strawMax bleibt gleich!
+  }
+}
+
 }
