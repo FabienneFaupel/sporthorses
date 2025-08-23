@@ -4,6 +4,7 @@ import { MainLayoutComponent } from './pages/main-layout/main-layout.component';
 import { VaccinationPageComponent } from './pages/vaccination-page/vaccination-page.component';
 import { FarrierPageComponent } from './pages/farrier-page/farrier-page.component';
 import { HorseFeedPageComponent } from './pages/horse-feed-page/horse-feed-page.component';
+import { AddHorsePageComponent } from './pages/add-horse-page/add-horse-page.component';
 
 export const routes: Routes = [
     { 
@@ -14,6 +15,8 @@ export const routes: Routes = [
             { path: 'vaccination', component: VaccinationPageComponent },
             { path: 'farrier', component: FarrierPageComponent },
             { path: 'feed', component: HorseFeedPageComponent },
+            { path: 'addHorse', component: AddHorsePageComponent },
+
 
 
 

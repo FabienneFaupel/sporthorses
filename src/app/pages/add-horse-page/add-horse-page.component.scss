@@ -1,0 +1,62 @@
+$bg: #fbf7fb;
+$pink: #ffc1e3;
+
+.page {
+  padding: 16px;
+  background: $bg;
+  min-height: 100dvh;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+
+  h1 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 20px;
+  }
+}
+
+.horse-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 0;
+
+  .side {
+    background: $pink;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      opacity: 0.9;
+    }
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+mat-form-field {
+  width: 100%;
+}

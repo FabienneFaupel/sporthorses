@@ -1,1 +1,71 @@
-<p>add-horse-page works!</p>
+<section class="page">
+  <header class="page-header">
+    <button mat-icon-button aria-label="Zurück" routerLink="/horses">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>Neues Pferd hinzufügen</h1>
+  </header>
+
+  <mat-card class="horse-card">
+    <div class="side">
+      <mat-icon fontIcon="pets" aria-hidden="true"></mat-icon>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <!-- Name -->
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput placeholder="z. B. Bella" formControlName="name" />
+        <mat-error *ngIf="f['name'].hasError('required')">Name ist erforderlich.</mat-error>
+        <mat-error *ngIf="f['name'].hasError('maxlength')">Max. 60 Zeichen.</mat-error>
+      </mat-form-field>
+
+      <!-- Alter -->
+      <mat-form-field appearance="outline">
+        <mat-label>Alter</mat-label>
+        <input matInput type="number" placeholder="z. B. 7" formControlName="age" />
+        <mat-error *ngIf="f['age'].hasError('required')">Alter ist erforderlich.</mat-error>
+        <mat-error *ngIf="f['age'].hasError('min') || f['age'].hasError('max')">
+          Bitte einen plausiblen Wert (0–50) eingeben.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Geschlecht -->
+      <mat-form-field appearance="outline">
+        <mat-label>Geschlecht</mat-label>
+        <mat-select formControlName="gender">
+          <mat-option *ngFor="let g of genders" [value]="g">{{ g }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="f['gender'].hasError('required')">Bitte auswählen.</mat-error>
+      </mat-form-field>
+
+      <!-- Geburtsdatum -->
+      <mat-form-field appearance="outline">
+        <mat-label>Geburtsdatum (optional)</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="birth" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker startView="multi-year"></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Rasse -->
+      <mat-form-field appearance="outline">
+        <mat-label>Rasse (optional)</mat-label>
+        <input
+          type="text"
+          matInput
+          [matAutocomplete]="auto"
+          placeholder="z. B. Hannoveraner"
+          formControlName="breed"
+        />
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let b of breeds" [value]="b">{{ b }}</mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <div class="actions">
+        <button mat-stroked-button type="button" (click)="onCancel()">Abbrechen</button>
+        <button color="primary" mat-flat-button type="submit">Speichern</button>
+      </div>
+    </form>
+  </mat-card>
+</section>

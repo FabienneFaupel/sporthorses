@@ -167,6 +167,9 @@ export class DataService {
     }
   ];
 
+  
+
+
   // Maximalmengen
   private hayMax = 0;
   private strawMax = 0;
