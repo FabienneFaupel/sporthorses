@@ -70,28 +70,42 @@ async onDelete(entry: FeedLogEntry) {
 }
 
 async edit(entry: FeedLogEntry) {
-  // wähle den richtigen Dialog je nach action
-  const dialogRef = this.dialog.open(
-    entry.action === 'add' ? FeedAddDialogComponent : FeedConsumeDialogComponent,
-    {
+  if (entry.action === 'add') {
+    const dialogRef = this.dialog.open(FeedAddDialogComponent, {
       width: '300px',
-      data: { ...entry } // bestehende werte rein
-    }
-  );
+      data: { ...entry }
+    });
 
-  dialogRef.afterClosed().subscribe(async result => {
-    if (!result) return; // abgebrochen
+    dialogRef.afterClosed().subscribe(async result => {
+      if (result) {
+        await this.dataService.updateFeed(entry, {
+          type: result.type,
+          amount: result.amount,
+          price: result.price,
+          date: result.date
+        });
+      }
+    });
+  } else {
+    const dialogRef = this.dialog.open(FeedConsumeDialogComponent, {
+      width: '300px',
+      data: {
+        ...entry,
+        hayCurrent: this.hayCurrent,
+        strawCurrent: this.strawCurrent
+      }
+    });
 
-    // patch zusammenbauen
-    const patch: Partial<FeedLogEntry> = {
-      type: result.type,
-      amount: result.amount,
-      date: result.date,
-      price: result.price
-    };
-
-    await this.dataService.updateFeed(entry, patch);
-  });
+    dialogRef.afterClosed().subscribe(async result => {
+      if (result) {
+        await this.dataService.updateFeed(entry, {
+          type: result.type,
+          amount: result.amount,
+          date: result.date
+        });
+      }
+    });
+  }
 }
 
 
@@ -126,13 +140,25 @@ async edit(entry: FeedLogEntry) {
   }
 
   openConsumeDialog() {
-    const dialogRef = this.dialog.open(FeedConsumeDialogComponent, { width: '300px' });
+  const dialogRef = this.dialog.open(FeedConsumeDialogComponent, {
+    width: '300px',
+    data: {
+      hayCurrent: this.hayCurrent,
+      strawCurrent: this.strawCurrent
+    }
+  });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result?.amount && result?.type) {
-        this.dataService.consumeFeed(result.type, result.amount);
+  dialogRef.afterClosed().subscribe(async result => {
+    if (result?.amount && result?.type) {
+      // Sicherheits-Check auch hier:
+      if (!this.dataService.canConsume(result.type, result.amount)) {
+        alert('Nicht genug Bestand für diesen Verbrauch.');
+        return;
       }
-    });
-  }
+      await this.dataService.consumeFeed(result.type, result.amount);
+    }
+  });
+}
+
 
 }

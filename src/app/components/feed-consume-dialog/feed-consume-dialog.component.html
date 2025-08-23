@@ -13,7 +13,7 @@
 
     <mat-form-field appearance="outline">
         <mat-label>Datum</mat-label>
-        <input matInput [matDatepicker]="picker"/>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="date" />
         <mat-datepicker-toggle matSuffix [for]="picker" [(ngModel)]="date"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
@@ -21,11 +21,21 @@
 
     <mat-form-field appearance="outline">
         <mat-label>Menge in Ballen</mat-label>
-        <input matInput type="number" [(ngModel)]="amount" min="1" />
-    </mat-form-field>
+        <input matInput type="number" 
+        [(ngModel)]="amount" 
+        #amountCtrl="ngModel"
+         [min]="1"
+         [max]="maxAmount"
+         required />
+        <mat-error *ngIf="amountCtrl.errors?.['required']">Pflichtfeld</mat-error>
+        <mat-error *ngIf="amountCtrl.errors?.['min']">Menge muss ≥ 1 sein</mat-error>
+        <mat-error *ngIf="amountCtrl.errors?.['max']">
+        Maximal {{ maxAmount }} Ballen verfügbar
+        </mat-error>
+        </mat-form-field>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
     <button mat-button (click)="cancel()">Abbrechen</button>
-    <button mat-raised-button color="warn" (click)="confirm()">Verbrauchen</button>
+    <button mat-raised-button color="warn" (click)="confirm()" [disabled]="amountCtrl.invalid || !type || !date">Verbrauchen</button>
 </mat-dialog-actions>

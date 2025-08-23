@@ -288,6 +288,12 @@ async consumeFeed(type: 'heu' | 'stroh', amount: number) {
   }
 }
 
+canConsume(type: 'heu' | 'stroh', amount: number): boolean {
+  const stock = type === 'heu' ? this.hayCurrent : this.strawCurrent;
+  return amount > 0 && amount <= stock;
+}
+
+
 
 async deleteFeed(entry: FeedLogEntry) {
   if (!entry._id || !entry._rev) {

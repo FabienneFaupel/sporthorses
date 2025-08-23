@@ -39,6 +39,8 @@ export class FeedConsumeDialogComponent {
  amount: number = 1;
  date: Date = new Date();
  type: 'heu' | 'stroh' = 'heu'; // Default: Heu
+ hayCurrent = 0;
+ strawCurrent = 0;
 
   constructor(
   public dialogRef: MatDialogRef<FeedConsumeDialogComponent>,
@@ -48,7 +50,15 @@ export class FeedConsumeDialogComponent {
     this.type = data.type ?? this.type;
     this.amount = data.amount ?? this.amount;
     this.date = data.date ? new Date(data.date) : this.date;
+
+    this.hayCurrent = data.hayCurrent ?? 0;
+    this.strawCurrent = data.strawCurrent ?? 0;
   }
+}
+
+
+get maxAmount(): number {
+  return this.type === 'heu' ? this.hayCurrent : this.strawCurrent;
 }
 
   confirm() {
