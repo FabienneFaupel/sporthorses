@@ -6,34 +6,50 @@
     <h1>{{ h.name }}</h1>
   </header>
 
-  <mat-card class="horse-card">
-    <div class="side">
-      <img [src]="h.image" [alt]="h.name" />
+  <mat-card class="info-card">
+  <div class="info-header">
+    <img class="horse-avatar" [src]="horse?.image" alt="{{ horse?.name }}" />
+    <div class="info-title">
+      <h2>{{ horse?.name }}</h2>
+      <p class="age">{{ horse?.age }} Jahre</p>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="info-details">
+    <div class="detail">
+      <mat-icon>cake</mat-icon>
+      <span>Geburtsdatum:</span>
+      <strong>{{ horse?.birth || 'keine Angabe' }}</strong>
     </div>
 
-    <div class="content">
-      <div class="item">
-        <span class="label">Name</span>
-        <span class="value">{{ h.name }}</span>
-      </div>
-      <div class="item">
-        <span class="label">Geschlecht</span>
-        <span class="value">{{ h.gender }}</span>
-      </div>
-      <div class="item">
-        <span class="label">Alter</span>
-        <span class="value">{{ h.age }} Jahre</span>
-      </div>
-      <div class="item" *ngIf="h.birth">
-        <span class="label">Geburtsdatum</span>
-        <span class="value">{{ h.birth }}</span>
-      </div>
-      <div class="item" *ngIf="h.breed">
-        <span class="label">Rasse</span>
-        <span class="value">{{ h.breed }}</span>
-      </div>
+    <div class="detail">
+      <mat-icon>pets</mat-icon>
+      <span>Rasse:</span>
+      <strong>{{ horse?.breed || 'keine Angabe' }}</strong>
     </div>
-  </mat-card>
+
+    <div class="detail">
+      <mat-icon>transgender</mat-icon>
+      <span>Geschlecht:</span>
+      <strong>{{ horse?.gender || 'keine Angabe' }}</strong>
+    </div>
+  </div>
+
+   <!-- Footer mit Buttons -->
+  <div class="info-card-actions">
+    <button mat-icon-button color="primary">
+  <mat-icon>edit</mat-icon>
+</button>
+
+    <button mat-icon-button color="warn">
+  <mat-icon>delete</mat-icon>
+</button>
+
+  </div>
+</mat-card>
+
 
   <!-- Optional: Nur Links, keine Datenanzeige -->
   <div class="actions">

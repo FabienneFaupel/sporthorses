@@ -1,9 +1,7 @@
-$bg: #fbf7fb;
-$pink: #ffc1e3;
+@import '../../styles/colors.scss';
 
 .page {
   padding: 16px;
-  background: $bg;
   min-height: 100dvh;
 }
 
@@ -16,40 +14,78 @@ $pink: #ffc1e3;
   h1 { margin: 0; font-weight: 700; font-size: 20px; }
 }
 
-.horse-card {
-  display: grid;
-  grid-template-columns: 120px 1fr;
+.info-card {
+  padding: 16px;
   border-radius: 16px;
-  overflow: hidden;
-  padding: 0;
-  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  margin-bottom: 20px;
+  background: #fff;
 
-  @media (min-width: 900px) { grid-template-columns: 160px 1fr; }
+  .info-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
 
-  .side {
-    background: $pink;
-    display: grid;
-    place-items: center;
-    padding: 16px;
+    .horse-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: $primarycolor;
+    }
 
-    img { width: 84px; height: 84px; object-fit: contain; }
+    .info-title {
+      h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .age {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.7;
+      }
+    }
   }
 
-  .content {
-    padding: 16px;
-    display: grid;
+  .info-details {
+    display: flex;
+    flex-direction: column;
     gap: 10px;
+    padding-top: 12px;
 
-    .item {
+    .detail {
       display: flex;
-      justify-content: space-between;
-      gap: 10px;
+      align-items: center;
+      gap: 8px;
+      
 
-      .label { opacity: 0.7; }
-      .value { font-weight: 600; }
+      mat-icon {
+        font-size: 20px;
+        color: $secondarycolor;
+      }
+
+      span {
+        flex: 0 0 120px;
+        opacity: 0.8;
+      }
+
+      strong {
+        font-weight: 600;
+      }
     }
   }
 }
+
+.info-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.3rem;
+    width: 100%;
+    height: fit-content;
+}
+
 
 .actions {
   display: flex;
