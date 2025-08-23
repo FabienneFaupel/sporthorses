@@ -1,0 +1,58 @@
+$bg: #fbf7fb;
+$pink: #ffc1e3;
+
+.page {
+  padding: 16px;
+  background: $bg;
+  min-height: 100dvh;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  h1 { margin: 0; font-weight: 700; font-size: 20px; }
+}
+
+.horse-card {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 0;
+  margin-bottom: 16px;
+
+  @media (min-width: 900px) { grid-template-columns: 160px 1fr; }
+
+  .side {
+    background: $pink;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+
+    img { width: 84px; height: 84px; object-fit: contain; }
+  }
+
+  .content {
+    padding: 16px;
+    display: grid;
+    gap: 10px;
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+
+      .label { opacity: 0.7; }
+      .value { font-weight: 600; }
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}

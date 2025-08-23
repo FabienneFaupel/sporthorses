@@ -50,6 +50,10 @@
     box-sizing: border-box;
 }
 
+.box-link { display:block; text-decoration:none; color:inherit; }
+.box-link:hover { opacity:.98; }
+
+
 .add-horse {
     display: flex;
     flex-direction: column;

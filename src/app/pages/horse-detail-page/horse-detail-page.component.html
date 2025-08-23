@@ -1,1 +1,43 @@
-<p>horse-detail-page works!</p>
+<section class="page" *ngIf="horse as h">
+  <header class="page-header">
+    <button mat-icon-button aria-label="Zurück" (click)="back()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>{{ h.name }}</h1>
+  </header>
+
+  <mat-card class="horse-card">
+    <div class="side">
+      <img [src]="h.image" [alt]="h.name" />
+    </div>
+
+    <div class="content">
+      <div class="item">
+        <span class="label">Name</span>
+        <span class="value">{{ h.name }}</span>
+      </div>
+      <div class="item">
+        <span class="label">Geschlecht</span>
+        <span class="value">{{ h.gender }}</span>
+      </div>
+      <div class="item">
+        <span class="label">Alter</span>
+        <span class="value">{{ h.age }} Jahre</span>
+      </div>
+      <div class="item" *ngIf="h.birth">
+        <span class="label">Geburtsdatum</span>
+        <span class="value">{{ h.birth }}</span>
+      </div>
+      <div class="item" *ngIf="h.breed">
+        <span class="label">Rasse</span>
+        <span class="value">{{ h.breed }}</span>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Optional: Nur Links, keine Datenanzeige -->
+  <div class="actions">
+    <a mat-stroked-button routerLink="/vaccination">Impfungen öffnen</a>
+    <a mat-stroked-button routerLink="/farrier">Hufschmied öffnen</a>
+  </div>
+</section>

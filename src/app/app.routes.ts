@@ -5,6 +5,7 @@ import { VaccinationPageComponent } from './pages/vaccination-page/vaccination-p
 import { FarrierPageComponent } from './pages/farrier-page/farrier-page.component';
 import { HorseFeedPageComponent } from './pages/horse-feed-page/horse-feed-page.component';
 import { AddHorsePageComponent } from './pages/add-horse-page/add-horse-page.component';
+import { HorseDetailPageComponent } from './pages/horse-detail-page/horse-detail-page.component';
 
 export const routes: Routes = [
     { 
@@ -16,6 +17,7 @@ export const routes: Routes = [
             { path: 'farrier', component: FarrierPageComponent },
             { path: 'feed', component: HorseFeedPageComponent },
             { path: 'addHorse', component: AddHorsePageComponent },
+            { path: 'horses/:id', component: HorseDetailPageComponent },
 
 
 
