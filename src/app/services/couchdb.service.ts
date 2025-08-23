@@ -31,4 +31,19 @@ export class CouchDbService {
     if (!res.ok) throw new Error(await res.text());
     return res.json(); // {docs: [...]}
   }
+
+  async deleteDoc(id: string, rev: string) {
+  const res = await fetch(
+    `${this.couchUrl}/${this.dbName}/${encodeURIComponent(id)}?rev=${encodeURIComponent(rev)}`,
+    {
+      method: 'DELETE',
+      headers: { ...this.authHeader() }
+    }
+  );
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+  return res.json(); // { ok: true, id, rev }
+}
+
 }

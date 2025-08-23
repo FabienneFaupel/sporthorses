@@ -63,6 +63,13 @@ async ngOnInit() {
   this.loading = false;
 }
 
+async onDelete(entry: FeedLogEntry) {
+  const ok = confirm('Willst du diesen Eintrag wirklich löschen?');
+  if (!ok) return;
+  await this.dataService.deleteFeed(entry);
+}
+
+
   
 // Getter für Template
   get hayMax() { return this.dataService.getHayMax(); }

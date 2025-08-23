@@ -36,12 +36,15 @@ export interface Horse {
 }
 
 export interface FeedLogEntry {
+  _id?: string;   // neu
+  _rev?: string;  // neu
   date: Date;
   type: 'heu' | 'stroh';
   action: 'add' | 'consume';
   amount: number;
   price?: number;
 }
+
 
 
 
@@ -263,7 +266,9 @@ export class DataService {
   this.recomputeStocks();
 
   try {
-    await this.feedRepo.add(type, amount, price);
+    const res = await this.feedRepo.add(type, amount, price); // { id, rev }
+    entry._id = res.id;
+    entry._rev = res.rev;
   } catch (e) {
     console.error('Error saving feed:', e);
   }
@@ -275,11 +280,36 @@ async consumeFeed(type: 'heu' | 'stroh', amount: number) {
   this.recomputeStocks();
 
   try {
-    await this.feedRepo.consume(type, amount);
+    const res = await this.feedRepo.consume(type, amount); // { id, rev }
+    entry._id = res.id;
+    entry._rev = res.rev;
   } catch (e) {
     console.error('Error consuming feed:', e);
   }
 }
+
+
+async deleteFeed(entry: FeedLogEntry) {
+  if (!entry._id || !entry._rev) {
+    console.error('Kein _id/_rev im Eintrag – erst neu laden oder IDs korrekt setzen.');
+    return;
+  }
+
+  // Optimistic UI: sofort entfernen
+  const prev = this.feedLog;
+  this.feedLog = this.feedLog.filter(e => e !== entry);
+  this.recomputeStocks();
+
+  try {
+    await this.feedRepo.remove(entry);
+  } catch (e) {
+    console.error('Delete failed:', e);
+    // Rollback bei Fehler
+    this.feedLog = prev;
+    this.recomputeStocks();
+  }
+}
+
 
 
 }

@@ -28,6 +28,8 @@ constructor(private db: CouchDbService) {}
     const price = d.price ?? d.preis;
 
     return {
+      _id: d._id,         
+      _rev: d._rev,
       date: new Date(dateStr),
       type,
       action,
@@ -65,4 +67,10 @@ constructor(private db: CouchDbService) {}
       updatedAt: now.toISOString()
     });
   }
+  
+  async remove(entry: FeedLogEntry) {
+  if (!entry._id || !entry._rev) throw new Error('id/rev fehlt');
+  return this.db.deleteDoc(entry._id, entry._rev);
+}
+
 }
