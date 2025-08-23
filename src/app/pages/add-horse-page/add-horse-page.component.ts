@@ -92,7 +92,6 @@ form!: FormGroup;
       gender: v['gender'],
       birth: this.toDDMMYYYY(v['birth']),
       breed: (v['breed'] ?? '').trim(),
-      image: '/images/horse.svg',
       vaccinations: [],
       farrierEntries: [],
       pedigree: {

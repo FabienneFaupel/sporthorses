@@ -12,7 +12,6 @@ export class LandingHorseBoxComponent {
   @Input() horseAge!: number;
   @Input() horseBirth!: string;
   @Input() horseBreed!: string;
-  @Input() horseImage!: string;
 
 
 

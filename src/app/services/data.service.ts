@@ -38,7 +38,6 @@ export interface Horse {
   breed: string;
   age: number;
   birth: string;
-  image: string;
   gender: string;
   vaccinations: Vaccination[];
   farrierEntries: FarrierEntry[];
@@ -69,7 +68,6 @@ export class DataService {
       breed: 'Hannoveraner',
       age: 7,
       birth: '12.05.2025',
-      image: '/images/horse.svg',
       gender: 'Wallach',
       vaccinations: [
         {
@@ -109,7 +107,6 @@ export class DataService {
       breed: 'Friese',
       age: 10,
       birth: '01.04.2025',
-      image: '/images/horse.svg',
       gender: 'Stute',
       vaccinations: [
         {
@@ -144,7 +141,6 @@ export class DataService {
       breed: 'Oldenburger',
       age: 7,
       birth: '15.03.2025',
-      image: '/images/horse.svg',
       gender: 'Stute',
       vaccinations: [
         {
