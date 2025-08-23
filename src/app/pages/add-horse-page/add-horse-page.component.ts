@@ -54,7 +54,12 @@ form!: FormGroup;
       age: [null, [Validators.required, Validators.min(0), Validators.max(50)]],
       gender: [null, Validators.required],
       birth: [''], // optional
-      breed: ['']  // optional
+      breed: [''],
+      father: [''],
+    mother: [''],
+    motherFather: [''],
+    grandfather: [''],
+    grandmother: ['']  // optional
     });
   }
 
@@ -89,7 +94,14 @@ form!: FormGroup;
       breed: (v['breed'] ?? '').trim(),
       image: '/images/horse.svg',
       vaccinations: [],
-      farrierEntries: []
+      farrierEntries: [],
+      pedigree: {
+    father: v.father?.trim(),
+    mother: v.mother?.trim(),
+    motherFather: v.motherFather?.trim(),
+    grandfather: v.grandfather?.trim(),
+    grandmother: v.grandmother?.trim()
+  }
     };
 
     this.data.addHorse(newHorse);

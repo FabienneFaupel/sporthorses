@@ -23,6 +23,15 @@ export interface FarrierEntry {
   hooves: Hoof[];
 }
 
+export interface Pedigree {
+  father?: string;       // Vater
+  mother?: string;       // Mutter
+  motherFather?: string; // Muttervater
+  grandfather?: string;  // Opa (väterlicherseits)
+  grandmother?: string;  // Oma (mütterlicherseits)
+  // du kannst beliebig erweitern
+}
+
 
 export interface Horse {
   name: string;
@@ -33,6 +42,7 @@ export interface Horse {
   gender: string;
   vaccinations: Vaccination[];
   farrierEntries: FarrierEntry[];
+  pedigree?: Pedigree;
 }
 
 export interface FeedLogEntry {

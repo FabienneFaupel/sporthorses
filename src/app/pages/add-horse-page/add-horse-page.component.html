@@ -62,6 +62,34 @@
         </mat-autocomplete>
       </mat-form-field>
 
+      <h3>Abstammung (optional)</h3>
+
+<mat-form-field appearance="outline">
+  <mat-label>Vater</mat-label>
+  <input matInput formControlName="father" />
+</mat-form-field>
+
+<mat-form-field appearance="outline">
+  <mat-label>Mutter</mat-label>
+  <input matInput formControlName="mother" />
+</mat-form-field>
+
+<mat-form-field appearance="outline">
+  <mat-label>Muttervater</mat-label>
+  <input matInput formControlName="motherFather" />
+</mat-form-field>
+
+<mat-form-field appearance="outline">
+  <mat-label>Großvater (väterlich)</mat-label>
+  <input matInput formControlName="grandfather" />
+</mat-form-field>
+
+<mat-form-field appearance="outline">
+  <mat-label>Großmutter (mütterlich)</mat-label>
+  <input matInput formControlName="grandmother" />
+</mat-form-field>
+
+
       <div class="actions">
         <button mat-stroked-button type="button" (click)="onCancel()">Abbrechen</button>
         <button color="primary" mat-flat-button type="submit">Speichern</button>

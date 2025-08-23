@@ -40,4 +40,72 @@
     <a mat-stroked-button routerLink="/vaccination">Impfungen öffnen</a>
     <a mat-stroked-button routerLink="/farrier">Hufschmied öffnen</a>
   </div>
+
+<mat-card class="section-card pedigree-card">
+  <h2><mat-icon>account_tree</mat-icon> Abstammung</h2>
+
+  <!-- Hinweis, falls GAR KEINE Daten -->
+  <ng-container *ngIf="(horse?.pedigree?.father || horse?.pedigree?.mother || horse?.pedigree?.motherFather || horse?.pedigree?.grandfather || horse?.pedigree?.grandmother); else noPedigree">
+
+    <div class="pedigree-tree">
+      <!-- Eltern -->
+      <div class="row parents">
+        <div class="node">
+          <div class="badge"><mat-icon>male</mat-icon></div>
+          <div class="text">
+            <div class="role">Vater</div>
+            <div class="name">{{ horse?.pedigree?.father || 'keine Angabe' }}</div>
+          </div>
+        </div>
+
+        <div class="node">
+          <div class="badge"><mat-icon>female</mat-icon></div>
+          <div class="text">
+            <div class="role">Mutter</div>
+            <div class="name">{{ horse?.pedigree?.mother || 'keine Angabe' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- zarte Verbindungslinie zwischen den Reihen -->
+      <div class="branch"></div>
+
+      <!-- Großeltern -->
+      <div class="row grandparents">
+
+        <div class="node">
+          <div class="badge"><mat-icon>chair_alt</mat-icon></div>
+          <div class="text">
+            <div class="role">Muttervater</div>
+            <div class="name">{{ horse?.pedigree?.motherFather || 'keine Angabe' }}</div>
+          </div>
+        </div>
+
+
+        <div class="node">
+          <div class="badge"><mat-icon>chair_alt</mat-icon></div>
+          <div class="text">
+            <div class="role">Großvater (väterlich)</div>
+            <div class="name">{{ horse?.pedigree?.grandfather || 'keine Angabe' }}</div>
+          </div>
+        </div>
+
+        <div class="node">
+          <div class="badge"><mat-icon>chair_alt</mat-icon></div>
+          <div class="text">
+            <div class="role">Großvater (mütterlich)</div>
+            <div class="name">{{ horse?.pedigree?.grandmother || 'keine Angabe' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #noPedigree>
+    <p class="muted">Noch keine Abstammungsdaten vorhanden.</p>
+  </ng-template>
+</mat-card>
+
+  
 </section>
+
