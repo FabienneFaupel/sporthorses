@@ -67,10 +67,27 @@ constructor(private db: CouchDbService) {}
       updatedAt: now.toISOString()
     });
   }
-  
+
   async remove(entry: FeedLogEntry) {
   if (!entry._id || !entry._rev) throw new Error('id/rev fehlt');
   return this.db.deleteDoc(entry._id, entry._rev);
 }
+
+async update(entry: FeedLogEntry) {
+  if (!entry._id || !entry._rev) throw new Error('id/rev fehlt');
+  const payload = {
+    _id: entry._id,
+    _rev: entry._rev,
+    docType: 'feedLog',
+    action: entry.action,
+    type: entry.type,
+    amount: entry.amount,
+    price: entry.price,
+    date: entry.date.toISOString().slice(0,10),
+    updatedAt: new Date().toISOString()
+  };
+  return this.db.putDoc(entry._id, payload);
+}
+
 
 }

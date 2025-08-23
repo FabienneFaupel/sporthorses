@@ -69,6 +69,32 @@ async onDelete(entry: FeedLogEntry) {
   await this.dataService.deleteFeed(entry);
 }
 
+async edit(entry: FeedLogEntry) {
+  // wähle den richtigen Dialog je nach action
+  const dialogRef = this.dialog.open(
+    entry.action === 'add' ? FeedAddDialogComponent : FeedConsumeDialogComponent,
+    {
+      width: '300px',
+      data: { ...entry } // bestehende werte rein
+    }
+  );
+
+  dialogRef.afterClosed().subscribe(async result => {
+    if (!result) return; // abgebrochen
+
+    // patch zusammenbauen
+    const patch: Partial<FeedLogEntry> = {
+      type: result.type,
+      amount: result.amount,
+      date: result.date,
+      price: result.price
+    };
+
+    await this.dataService.updateFeed(entry, patch);
+  });
+}
+
+
 
   
 // Getter für Template

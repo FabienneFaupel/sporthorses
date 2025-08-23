@@ -88,9 +88,10 @@
 
   <!-- Footer mit Buttons -->
   <div class="feed-card-actions">
-    <button mat-icon-button color="primary">
-      <mat-icon>edit</mat-icon>
-    </button>
+    <button mat-icon-button color="primary" (click)="edit(log)">
+  <mat-icon>edit</mat-icon>
+</button>
+
     <button mat-icon-button color="warn" (click)="onDelete(log)">
   <mat-icon>delete</mat-icon>
 </button>

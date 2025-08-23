@@ -310,6 +310,20 @@ async deleteFeed(entry: FeedLogEntry) {
   }
 }
 
+async updateFeed(entry: FeedLogEntry, patch: Partial<FeedLogEntry>) {
+  Object.assign(entry, patch);
+  this.recomputeStocks();
+
+  try {
+    const res = await this.feedRepo.update(entry);
+    entry._rev = res.rev; // neue revision aus couchdb übernehmen
+  } catch (e) {
+    console.error('Update failed:', e);
+    await this.loadFeedFromDb(); // fallback: neu laden
+  }
+}
+
+
 
 
 }

@@ -46,4 +46,18 @@ export class CouchDbService {
   return res.json(); // { ok: true, id, rev }
 }
 
+async putDoc(id: string, doc: any) {
+  const res = await fetch(
+    `${this.couchUrl}/${this.dbName}/${encodeURIComponent(id)}`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...this.authHeader() },
+      body: JSON.stringify(doc)
+    }
+  );
+  if (!res.ok) throw new Error(await res.text());
+  return res.json(); // { ok, id, rev }
+}
+
+
 }

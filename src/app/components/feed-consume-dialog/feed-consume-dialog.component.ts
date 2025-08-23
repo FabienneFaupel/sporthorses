@@ -41,9 +41,15 @@ export class FeedConsumeDialogComponent {
  type: 'heu' | 'stroh' = 'heu'; // Default: Heu
 
   constructor(
-    public dialogRef: MatDialogRef<FeedConsumeDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ConsumeDialogData
-  ) {}
+  public dialogRef: MatDialogRef<FeedConsumeDialogComponent>,
+  @Inject(MAT_DIALOG_DATA) public data: any
+) {
+  if (data) {
+    this.type = data.type ?? this.type;
+    this.amount = data.amount ?? this.amount;
+    this.date = data.date ? new Date(data.date) : this.date;
+  }
+}
 
   confirm() {
   this.dialogRef.close({
