@@ -51,12 +51,18 @@ export class HorseFeedPageComponent {
   selectedYear: number = new Date().getFullYear();
   availableYears: number[] = [];
 
-  ngOnInit() {
-    const currentYear = new Date().getFullYear();
-    for (let i = 0; i < 5; i++) {
-      this.availableYears.push(currentYear - i);
-    }
+   loading = true;
+
+async ngOnInit() {
+  const currentYear = new Date().getFullYear();
+  for (let i = 0; i < 5; i++) {
+    this.availableYears.push(currentYear - i);
   }
+
+  await this.dataService.loadFeedFromDb();
+  this.loading = false;
+}
+
   
 // Getter für Template
   get hayMax() { return this.dataService.getHayMax(); }

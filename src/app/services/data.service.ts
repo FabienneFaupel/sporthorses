@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { FeedRepositoryService } from './feed.repository.service';
+
 
 export interface Vaccination {
   type: string;
@@ -180,7 +182,49 @@ export class DataService {
     { date: new Date('2025-04-23'), type: 'heu', action: 'add', amount: 10, price: 75  },
   ];
 
-  constructor() {}
+  constructor(private feedRepo: FeedRepositoryService) {}
+
+  private recomputeStocks() {
+  let hay = 0, straw = 0;
+  let hayMax = 0, strawMax = 0;
+
+  // chronologisch auswerten (wichtig!)
+  const sorted = [...this.feedLog].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  for (const e of sorted) {
+    if (e.type === 'heu') {
+      if (e.action === 'add') {
+        hay += e.amount;
+        hayMax = hay;               // <- neues Maximum = aktueller Bestand
+      } else {
+        hay = Math.max(0, hay - e.amount);  // Max bleibt gleich
+      }
+    } else { // stroh
+      if (e.action === 'add') {
+        straw += e.amount;
+        strawMax = straw;           // <- neues Maximum = aktueller Bestand
+      } else {
+        straw = Math.max(0, straw - e.amount);
+      }
+    }
+  }
+
+  this.hayCurrent = hay;
+  this.strawCurrent = straw;
+  this.hayMax = hayMax;
+  this.strawMax = strawMax;
+}
+
+
+  
+  async loadFeedFromDb() {
+  this.feedLog = await this.feedRepo.loadFeed();
+  this.recomputeStocks();
+}
+
+
 
   getHorses(): Horse[] {
     return this.horses;
@@ -213,33 +257,29 @@ export class DataService {
     return this.feedLog;
   }
 
-  // Methoden zum Hinzufügen/Verbrauchen
-addFeed(type: 'heu' | 'stroh', amount: number, price?: number) {
-  this.feedLog.push({ date: new Date(), type, action: 'add', amount, price });
+  async addFeed(type: 'heu' | 'stroh', amount: number, price?: number) {
+  const entry: FeedLogEntry = { date: new Date(), type, action: 'add', amount, price };
+  this.feedLog.push(entry);
+  this.recomputeStocks();
 
-  if (type === 'heu') {
-    this.hayCurrent += amount;       // Bestand erhöhen
-    this.hayMax = this.hayCurrent;   // neues Maximum = aktueller Bestand
-  }
-
-  if (type === 'stroh'){ 
-    this.strawCurrent += amount;
-    this.strawMax = this.strawCurrent;
+  try {
+    await this.feedRepo.add(type, amount, price);
+  } catch (e) {
+    console.error('Error saving feed:', e);
   }
 }
 
-consumeFeed(type: 'heu' | 'stroh', amount: number) {
-  this.feedLog.push({ date: new Date(), type, action: 'consume', amount });
+async consumeFeed(type: 'heu' | 'stroh', amount: number) {
+  const entry: FeedLogEntry = { date: new Date(), type, action: 'consume', amount };
+  this.feedLog.push(entry);
+  this.recomputeStocks();
 
-  if (type === 'heu') {
-    this.hayCurrent = Math.max(0, this.hayCurrent - amount);
-    // hayMax bleibt gleich!
-  }
-  
-  if (type === 'stroh') {
-    this.strawCurrent = Math.max(0, this.strawCurrent - amount);
-    // strawMax bleibt gleich!
+  try {
+    await this.feedRepo.consume(type, amount);
+  } catch (e) {
+    console.error('Error consuming feed:', e);
   }
 }
+
 
 }
