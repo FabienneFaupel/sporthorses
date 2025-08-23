@@ -44,25 +44,27 @@ constructor(private db: CouchDbService) {}
 }
 
 
-  async add(type: 'heu'|'stroh', amount: number, price?: number) {
+  async add(type: 'heu'|'stroh', amount: number, price?: number, date?: Date) {
     const now = new Date();
+    const docDate = date ?? now; // <-- neu
     return this.db.postDoc({
       docType: 'feedLog',
       action: 'add',
       type, amount, price,
-      date: now.toISOString().slice(0,10),
+      date: docDate.toISOString().slice(0,10),
       createdAt: now.toISOString(),
       updatedAt: now.toISOString()
     });
   }
 
-  async consume(type: 'heu'|'stroh', amount: number) {
+  async consume(type: 'heu'|'stroh', amount: number, date?: Date) {
     const now = new Date();
+    const docDate = date ?? now;
     return this.db.postDoc({
       docType: 'feedLog',
       action: 'consume',
       type, amount,
-      date: now.toISOString().slice(0,10),
+      date: docDate.toISOString().slice(0,10),
       createdAt: now.toISOString(),
       updatedAt: now.toISOString()
     });

@@ -260,13 +260,13 @@ export class DataService {
     return this.feedLog;
   }
 
-  async addFeed(type: 'heu' | 'stroh', amount: number, price?: number) {
-  const entry: FeedLogEntry = { date: new Date(), type, action: 'add', amount, price };
+  async addFeed(type: 'heu' | 'stroh', amount: number, price?: number, date?: Date) {
+  const entry: FeedLogEntry = { date: date ?? new Date(), type, action: 'add', amount, price };
   this.feedLog.push(entry);
   this.recomputeStocks();
 
   try {
-    const res = await this.feedRepo.add(type, amount, price); // { id, rev }
+    const res = await this.feedRepo.add(type, amount, price, date); // { id, rev }
     entry._id = res.id;
     entry._rev = res.rev;
   } catch (e) {
@@ -274,13 +274,13 @@ export class DataService {
   }
 }
 
-async consumeFeed(type: 'heu' | 'stroh', amount: number) {
-  const entry: FeedLogEntry = { date: new Date(), type, action: 'consume', amount };
+async consumeFeed(type: 'heu' | 'stroh', amount: number, date?: Date) {
+  const entry: FeedLogEntry = { date: date ?? new Date(), type, action: 'consume', amount };
   this.feedLog.push(entry);
   this.recomputeStocks();
 
   try {
-    const res = await this.feedRepo.consume(type, amount); // { id, rev }
+    const res = await this.feedRepo.consume(type, amount, date); // { id, rev }
     entry._id = res.id;
     entry._rev = res.rev;
   } catch (e) {

@@ -53,6 +53,16 @@ export class HorseFeedPageComponent {
 
    loading = true;
 
+   get totalConsumedThisYear(): number {
+  return this.feedLog
+    .filter(log =>
+      log.action === 'consume' &&
+      new Date(log.date).getFullYear() === this.selectedYear
+    )
+    .reduce((sum, log) => sum + log.amount, 0);
+}
+
+
 async ngOnInit() {
   const currentYear = new Date().getFullYear();
   for (let i = 0; i < 5; i++) {
@@ -108,9 +118,6 @@ async edit(entry: FeedLogEntry) {
   }
 }
 
-
-
-  
 // Getter für Template
   get hayMax() { return this.dataService.getHayMax(); }
   get strawMax() { return this.dataService.getStrawMax(); }
@@ -134,7 +141,7 @@ async edit(entry: FeedLogEntry) {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.amount && result?.type) {
-        this.dataService.addFeed(result.type, result.amount, result.price);
+        this.dataService.addFeed(result.type, result.amount, result.price, result.date);
       }
     });
   }
@@ -155,7 +162,7 @@ async edit(entry: FeedLogEntry) {
         alert('Nicht genug Bestand für diesen Verbrauch.');
         return;
       }
-      await this.dataService.consumeFeed(result.type, result.amount);
+      await this.dataService.consumeFeed(result.type, result.amount, result.date);
     }
   });
 }

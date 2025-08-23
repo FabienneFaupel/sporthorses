@@ -61,6 +61,17 @@ min-width: 300px;
   border: solid 1px #e5e5e5;
 }
 
+
+
+.year-summary {
+    font-weight: bold;
+    color: #555;
+    width: 100%;
+    max-width: 1500px;
+    display: flex;
+    justify-content: center;
+}
+
 .year-filter {
   width: 100%;
   max-width: 1500px;
