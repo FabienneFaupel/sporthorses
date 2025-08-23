@@ -95,7 +95,14 @@ export class DataService {
             { position: 'VR', action: 'beschlagen-neu' }
           ]
         },
-      ]
+      ],
+      pedigree: {
+        father: 'Cornet Obolensky',
+        mother: 'Bella Donna',
+        motherFather: 'Contender',
+        grandfather: 'Cassini I',
+        grandmother: 'Ratina Z'
+      }
     },
     {
       name: 'Bella',

@@ -33,7 +33,7 @@
       <!-- Geschlecht -->
       <mat-form-field appearance="outline">
         <mat-label>Geschlecht</mat-label>
-        <mat-select formControlName="gender">
+        <mat-select formControlName="gender" matAutocompletePosition="below">
           <mat-option *ngFor="let g of genders" [value]="g">{{ g }}</mat-option>
         </mat-select>
         <mat-error *ngIf="f['gender'].hasError('required')">Bitte auswählen.</mat-error>
@@ -44,7 +44,7 @@
         <mat-label>Geburtsdatum (optional)</mat-label>
         <input matInput [matDatepicker]="picker" formControlName="birth" />
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker startView="multi-year"></mat-datepicker>
+        <mat-datepicker #picker [touchUi]="true" startView="multi-year"></mat-datepicker>
       </mat-form-field>
 
       <!-- Rasse -->
@@ -57,7 +57,7 @@
           placeholder="z. B. Hannoveraner"
           formControlName="breed"
         />
-        <mat-autocomplete #auto="matAutocomplete">
+        <mat-autocomplete #auto="matAutocomplete" matAutocompletePosition="below">
           <mat-option *ngFor="let b of breeds" [value]="b">{{ b }}</mat-option>
         </mat-autocomplete>
       </mat-form-field>

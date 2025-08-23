@@ -60,3 +60,9 @@ $pink: #ffc1e3;
 mat-form-field {
   width: 100%;
 }
+
+
+::ng-deep .cdk-overlay-pane.dropdown-below {
+  transform-origin: top center !important;
+}
+
