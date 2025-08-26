@@ -24,6 +24,9 @@
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
+
+   
+
     
 
      <!-- Behandlungsart -->
@@ -59,11 +62,23 @@
           name="iron-{{i}}" 
           class="iron-toggle" 
           >
-          <mat-button-toggle value="alt">Alt</mat-button-toggle>
           <mat-button-toggle value="neu">Neu</mat-button-toggle>
+          <mat-button-toggle value="alt">Alt</mat-button-toggle>
         </mat-button-toggle-group>
       </div>
     </div>
+
+     <!-- Kommentar (optional) -->
+<mat-form-field appearance="outline" class="form-field">
+  <mat-label>Kommentar (optional)</mat-label>
+  <textarea
+    matInput
+    [(ngModel)]="comment"
+    name="comment"
+    placeholder="z. B. Pferd war sehr brav"
+    rows="3">
+  </textarea>
+</mat-form-field>
 
 
   </form>

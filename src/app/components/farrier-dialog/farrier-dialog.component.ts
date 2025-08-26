@@ -46,7 +46,8 @@ export class FarrierDialogComponent {
  // --- Neue Properties für ngModel ---
   selectedHorse: string | null = null;
   treatmentType: 'beschlagen' | 'ausgeschnitten' = 'beschlagen';
-  treatmentDate: Date | null = null;
+  treatmentDate: Date | null = new Date();
+  comment: string = '';
   selectedHooves: boolean[] = [false, false, false, false];
   hoofIron: (string | null)[] = [null, null, null, null];
 
@@ -60,14 +61,7 @@ export class FarrierDialogComponent {
 
   
 
-  isSaveDisabled(): boolean {
-  // Keine Auswahl von Pferd, Typ oder Hufen
-  return (
-    !this.selectedHorse ||
-    !this.treatmentType ||
-    this.selectedHooves.every(h => !h)
-  );
-}
+ 
 
 
 
@@ -77,19 +71,42 @@ export class FarrierDialogComponent {
   ) { }
 
   toggleHoof(index: number) {
-    this.selectedHooves[index] = !this.selectedHooves[index];
+  this.selectedHooves[index] = !this.selectedHooves[index];
 
-    // Wenn Huf abgewählt -> Auswahl für Eisen löschen
-    if (!this.selectedHooves[index]) {
-      this.hoofIron[index] = null;
+  if (!this.selectedHooves[index]) {
+    this.hoofIron[index] = null;
+  } else {
+    if (this.treatmentType === 'beschlagen' && this.hoofIron[index] == null) {
+      this.hoofIron[index] = 'neu'; // 👈 Default
     }
   }
+}
+
+onTreatmentTypeChange(next: 'beschlagen' | 'ausgeschnitten') {
+  if (next === 'beschlagen') {
+    this.selectedHooves.forEach((sel, i) => {
+      if (sel && this.hoofIron[i] == null) this.hoofIron[i] = 'neu';
+    });
+  } else {
+    this.hoofIron = this.hoofIron.map(() => null);
+  }
+}
+
+ isSaveDisabled(): boolean {
+  // Keine Auswahl von Pferd, Typ oder Hufen
+  return (
+    !this.selectedHorse ||
+    !this.treatmentType ||
+    this.selectedHooves.every(h => !h)
+  );
+}
 
   save() {
     const newTreatment = {
       horse: this.selectedHorse,
       type: this.treatmentType,
       date: this.treatmentDate,
+      comment: this.comment,
       hooves: this.selectedHooves
         .map((selected, i) =>
           selected
