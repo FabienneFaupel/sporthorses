@@ -62,10 +62,20 @@ export class FarrierPageComponent {
   }
 
   openFarrierDialog(): void {
-    this.dialog.open(FarrierDialogComponent, {
-      width: '400px',
-      data: { horses: this.horses }
-    });
-  }
+  const ref = this.dialog.open(FarrierDialogComponent, {
+    width: '400px',
+    data: { horses: this.horses }
+  });
+
+  ref.afterClosed().subscribe((res?: { horseName: string; entry: FarrierEntry }) => {
+    if (!res) return;
+    const horse = this.horses.find(h => h.name === res.horseName);
+    if (!horse) return;
+
+    // vorne einfügen (neuester zuerst)
+    horse.farrierEntries = [res.entry, ...(horse.farrierEntries ?? [])];
+  });
+}
+
 
 }

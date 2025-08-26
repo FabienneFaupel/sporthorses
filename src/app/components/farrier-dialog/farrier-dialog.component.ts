@@ -60,11 +60,6 @@ export class FarrierDialogComponent {
   ];
 
   
-
- 
-
-
-
   constructor(
     public dialogRef: MatDialogRef<FarrierDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -101,26 +96,43 @@ onTreatmentTypeChange(next: 'beschlagen' | 'ausgeschnitten') {
   );
 }
 
-  save() {
-    const newTreatment = {
-      horse: this.selectedHorse,
-      type: this.treatmentType,
-      date: this.treatmentDate,
-      comment: this.comment,
-      hooves: this.selectedHooves
-        .map((selected, i) =>
-          selected
-            ? {
-                hoof: this.hooves[i].name,
-                iron: this.treatmentType === 'beschlagen' ? this.hoofIron[i] : null
-              }
-            : null
-        )
-        .filter(h => h)
-    };
+  private formatDate(d: Date | null): string {
+  const date = d ?? new Date();
+  // ISO yyyy-mm-dd
+  return new Date(date).toISOString().slice(0, 10);
+}
 
-    this.dialogRef.close(newTreatment);
-  }
+save() {
+  // Mappe ausgewählte Hufe auf deine Action-Enums
+  const hoovesMapped = this.selectedHooves
+    .map((selected, i) => {
+      if (!selected) return null;
+
+      let action: 'ausgeschnitten' | 'beschlagen-alt' | 'beschlagen-neu';
+      if (this.treatmentType === 'ausgeschnitten') {
+        action = 'ausgeschnitten';
+      } else {
+        action = this.hoofIron[i] === 'alt' ? 'beschlagen-alt' : 'beschlagen-neu';
+      }
+
+      // Position entspricht deinem Enum ('VL'|'VR'|'HL'|'HR')
+      const position = this.hooves[i].short as 'VL' | 'VR' | 'HL' | 'HR';
+      return { position, action };
+    })
+    .filter(Boolean) as { position: 'VL'|'VR'|'HL'|'HR'; action: 'ausgeschnitten'|'beschlagen-alt'|'beschlagen-neu' }[];
+
+  const entry = {
+    date: this.formatDate(this.treatmentDate),
+    type: this.treatmentType === 'beschlagen' ? 'Beschlagen' : 'Nur ausgeschnitten',
+    comment: this.comment?.trim() || undefined,
+    hooves: hoovesMapped
+  };
+
+  this.dialogRef.close({
+    horseName: this.selectedHorse, // String
+    entry                              // FarrierEntry
+  });
+}
 
   close(): void {
     this.dialogRef.close();

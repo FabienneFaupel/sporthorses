@@ -32,7 +32,8 @@
      <!-- Behandlungsart -->
    <div class="treatment-toggle">
       <mat-button-toggle-group 
-        [(ngModel)]="treatmentType" 
+        [(ngModel)]="treatmentType"
+        (ngModelChange)="onTreatmentTypeChange($event)" 
         name="treatmentType" 
         aria-label="Behandlungsart auswählen" 
         class="full-width"
