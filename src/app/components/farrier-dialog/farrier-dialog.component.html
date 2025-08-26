@@ -52,7 +52,9 @@
         <!-- Kreis als Icon -->
         <div 
           class="hoof-circle" 
-          [class.selected]="selectedHooves[i]" 
+          [class.selected]="selectedHooves[i]"
+          [class.beschlagen]="selectedHooves[i] && treatmentType === 'beschlagen'"
+          [class.ausgeschnitten]="selectedHooves[i] && treatmentType === 'ausgeschnitten'" 
           (click)="toggleHoof(i)">
         </div>
 
