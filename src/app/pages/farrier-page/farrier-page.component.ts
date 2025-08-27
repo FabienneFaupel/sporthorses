@@ -7,6 +7,9 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+
 
 
 import { FarrierDialogComponent } from '../../components/farrier-dialog/farrier-dialog.component';
@@ -27,7 +30,10 @@ import { Horse, Hoof, FarrierEntry } from '../../models/horse';
     MatIconModule,
     MatDialogModule,
     FarrierDialogComponent,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatFormFieldModule,
+    MatSelectModule,
+
 
   ],
   templateUrl: './farrier-page.component.html',
@@ -38,19 +44,39 @@ export class FarrierPageComponent {
   horses: Horse[] = [];
   hoofPositions: Hoof['position'][] = ['VL', 'VR', 'HL', 'HR'];
 
+  selectedYear: number | 'all' = new Date().getFullYear();
+  availableYears: (number | 'all')[] = [];
+
   constructor(
     private dialog: MatDialog,
     private dataService: DataService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    try {
-      await this.dataService.loadHorsesFromDb();
-      this.horses = this.dataService.getHorses();
-    } finally {
-      this.loading = false;             // Loader aus
+  try {
+    await this.dataService.loadHorsesFromDb();
+    this.horses = this.dataService.getHorses();
+
+    // Years vorbereiten (z. B. die letzten 5 Jahre + aktuelles)
+    const currentYear = new Date().getFullYear();
+    this.availableYears.push('all');        // 👈 zuerst "Alle"
+    for (let i = 0; i < 5; i++) {
+      this.availableYears.push(currentYear - i);
     }
+  } finally {
+    this.loading = false;
   }
+}
+
+// Filter-Helfer für die Einträge eines Pferdes
+filteredFarrierEntries(horse: Horse) {
+  return (horse.farrierEntries ?? [])
+    .filter(entry => {
+      if (this.selectedYear === 'all') return true;
+      return new Date(entry.date).getFullYear() === this.selectedYear;
+    })
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
 
   // optional: stabilere *ngFor
   trackHorse = (_: number, h: Horse) => h._id ?? h.name;

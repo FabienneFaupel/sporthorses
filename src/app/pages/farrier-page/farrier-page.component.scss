@@ -4,6 +4,20 @@ body {
   overflow: hidden;
 }
 
+.year-filter {
+  width: 100%;
+  max-width: 1500px;
+  display: flex;
+  justify-content: flex-end;
+  margin: 0px auto;
+  margin-top: 30px;
+
+  mat-form-field {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
 .btn-box {
   margin-bottom: 15px;
 }

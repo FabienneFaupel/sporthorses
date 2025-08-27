@@ -7,13 +7,27 @@
         </button>
     </div>
 
+    
+
+    <!-- Jahr-Auswahl oben -->
+<div class="year-filter">
+  <mat-form-field >
+    <mat-label>Jahr auswählen</mat-label>
+    <mat-select [(value)]="selectedYear" panelClass="open-down">
+      <mat-option *ngFor="let y of availableYears" [value]="y">
+        {{ y === 'all' ? 'Alle Jahre' : y }}
+    </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
 
     <mat-tab-group>
         <mat-tab *ngFor="let horse of horses; let i = index" label="{{ horse.name }}">
             <div class="horse-card">
                 <h2>🐴 {{ horse.name }} ({{ horse.age }} Jahre, {{ horse.gender }})</h2>
 
-                <div *ngFor="let entry of horse.farrierEntries" class="farrier-card">
+                <div *ngFor="let entry of filteredFarrierEntries(horse)" class="farrier-card">
                     <div class="farrier-card-header">
                         <p><strong>🔨 {{ entry.type }}</strong></p>
                         <div class="info-card-actions">
