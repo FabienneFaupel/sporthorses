@@ -11,6 +11,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { Vaccination, Horse } from '../../models/horse';
 
 
 
@@ -33,16 +34,38 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './vaccination-dialog.component.scss'
 })
 export class VaccinationDialogComponent {
- // STATE + Defaults
-  selectedHorseIds: string[] = [];
+ selectedHorseIds: string[] = [];
   vaccineType: 'Influenza' | 'Tetanus' | 'Herpes' | null = null;
-  vaccinationDate: Date | null = new Date(); // heute vorgewählt
-  status: 'geimpft' | 'überfällig' | 'geplant' = 'geimpft'; // Default
+  vaccinationDate: Date | null = new Date();
+  status: 'geimpft' | 'überfällig' | 'geplant' = 'geimpft';
 
   constructor(
-    public dialogRef: MatDialogRef<VaccinationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { horses: Array<{ _id?: string; name: string }> }
-  ) {}
+  public dialogRef: MatDialogRef<VaccinationDialogComponent>,
+  @Inject(MAT_DIALOG_DATA) public data: {
+    mode?: 'new' | 'edit';
+    horses: Horse[];
+    horseId?: string;
+    vaccination?: Vaccination | { type?: string; date?: string; status?: string }; // <- tolerant
+  }
+) {
+  if (data?.mode === 'edit' && data.vaccination) {
+    if (data.horseId) this.selectedHorseIds = [data.horseId];
+
+    // Impfungs-Typ sicher casten
+    const allowedTypes = ['Influenza', 'Tetanus', 'Herpes'] as const;
+    const inType = (data.vaccination as any).type;
+    this.vaccineType = allowedTypes.includes(inType) ? inType : 'Influenza';
+
+    // Datum
+    const inDate = (data.vaccination as any).date;
+    this.vaccinationDate = inDate ? new Date(inDate) : new Date();
+
+    // Status sicher casten
+    const allowedStatus = ['geimpft', 'überfällig', 'geplant'] as const;
+    const inStatus = (data.vaccination as any).status;
+    this.status = allowedStatus.includes(inStatus) ? inStatus : 'geimpft';
+  }
+}
 
   isDisabled(): boolean {
     return (
@@ -54,21 +77,28 @@ export class VaccinationDialogComponent {
   }
 
   private toIsoDate(d: Date | null): string {
-    const date = d ?? new Date();
-    return new Date(date).toISOString().slice(0, 10); // YYYY-MM-DD
+    return new Date(d ?? new Date()).toISOString().slice(0, 10);
   }
 
   save(): void {
-    // Noch keine DB-Schreiberei – wir geben die Werte nur sauber zurück.
-    this.dialogRef.close({
-      horseIds: this.selectedHorseIds,
-      entry: {
-        type: this.vaccineType!,
-        date: this.toIsoDate(this.vaccinationDate),
-        status: this.status
-        // "next" können wir später ergänzen, wenn du möchtest (z.B. automatisch +6 Monate bei Influenza)
-      }
-    });
+    const entry: Vaccination = {
+      type: this.vaccineType!,
+      date: this.toIsoDate(this.vaccinationDate),
+      status: this.status
+      // next: können wir später automatisch berechnen, wenn du magst
+    };
+
+    if (this.data?.mode === 'edit') {
+      this.dialogRef.close({
+        horseId: this.selectedHorseIds[0],
+        entry
+      });
+    } else {
+      this.dialogRef.close({
+        horseIds: this.selectedHorseIds,
+        entry
+      });
+    }
   }
 
   close(): void {

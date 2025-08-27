@@ -1,12 +1,15 @@
-<h2 mat-dialog-title>Neue Impfung</h2>
+<h2 mat-dialog-title>{{ data?.mode === 'edit' ? 'Impfung bearbeiten' : 'Neue Impfung' }}</h2>
 
 <mat-dialog-content>
   <form class="vaccination-form">
-
     <!-- Pferd(e) -->
     <mat-form-field appearance="outline" class="form-field">
-      <mat-label>Pferd(e)</mat-label>
-      <mat-select multiple [(ngModel)]="selectedHorseIds" name="horseIds" required>
+      <mat-label>{{ data?.mode === 'edit' ? 'Pferd' : 'Pferd(e)' }}</mat-label>
+      <mat-select
+        [multiple]="data?.mode !== 'edit'"
+        [(ngModel)]="selectedHorseIds"
+        name="horseIds"
+        required>
         <mat-option *ngFor="let horse of data.horses" [value]="horse._id || horse.name">
           {{ horse.name }}
         </mat-option>
@@ -31,7 +34,7 @@
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
-    <!-- Status (standard: geimpft) -->
+    <!-- Status (default geimpft) -->
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Status</mat-label>
       <mat-select [(ngModel)]="status" name="status" required>

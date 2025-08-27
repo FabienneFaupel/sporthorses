@@ -1,7 +1,7 @@
 export interface Vaccination {
   type: string;
   date: string;   // ISO YYYY-MM-DD
-  next: string;   // ISO YYYY-MM-DD
+  next?: string;   // ISO YYYY-MM-DD
   status: string;
 }
 

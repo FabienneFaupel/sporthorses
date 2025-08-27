@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FeedRepositoryService } from './feed.repository.service';
 import { HorseRepositoryService } from './horse.repository.service';
-import { Horse, FarrierEntry } from '../models/horse';
+import { Horse, FarrierEntry, Vaccination } from '../models/horse';
 
 
 
@@ -102,6 +102,52 @@ async deleteFarrierEntry(horseId: string, index: number) {
   this.horses = [...this.horses];
 }
 
+
+async addVaccination(horseId: string, vac: Vaccination) {
+  const i = this.horses.findIndex(h => h._id === horseId);
+  if (i < 0) throw new Error('Horse not found');
+
+  const horse = { ...this.horses[i] };
+  const list = Array.isArray(horse.vaccinations) ? [...horse.vaccinations] : [];
+  list.unshift(vac);           // neueste oben
+  horse.vaccinations = list;
+
+  const res = await this.horseRepo.update(horse);
+  horse._rev = res.rev;
+  this.horses[i] = horse;
+}
+
+async updateVaccination(horseId: string, index: number, patch: Partial<Vaccination>) {
+  const i = this.horses.findIndex(h => h._id === horseId);
+  if (i < 0) throw new Error('Horse not found');
+
+  const horse = { ...this.horses[i] };
+  const list = Array.isArray(horse.vaccinations) ? [...horse.vaccinations] : [];
+  if (index < 0 || index >= list.length) throw new Error('Vaccination index out of range');
+
+  list[index] = { ...list[index], ...patch };
+  horse.vaccinations = list;
+
+  const res = await this.horseRepo.update(horse);
+  horse._rev = res.rev;
+  this.horses[i] = horse;
+}
+
+async deleteVaccination(horseId: string, index: number) {
+  const i = this.horses.findIndex(h => h._id === horseId);
+  if (i < 0) throw new Error('Horse not found');
+
+  const horse = { ...this.horses[i] };
+  const list = Array.isArray(horse.vaccinations) ? [...horse.vaccinations] : [];
+  if (index < 0 || index >= list.length) throw new Error('Vaccination index out of range');
+
+  list.splice(index, 1);
+  horse.vaccinations = list;
+
+  const res = await this.horseRepo.update(horse);
+  horse._rev = res.rev;
+  this.horses[i] = horse;
+}
   
 // DB Feed
 

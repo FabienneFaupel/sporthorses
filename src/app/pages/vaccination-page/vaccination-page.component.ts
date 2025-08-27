@@ -19,7 +19,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { VaccinationDialogComponent } from '../../components/vaccination-dialog/vaccination-dialog.component';
 
 import { DataService} from '../../services/data.service';
-import { Horse } from '../../models/horse';
+import { Horse, Vaccination } from '../../models/horse';
 
 
 @Component({
@@ -45,31 +45,64 @@ import { Horse } from '../../models/horse';
   styleUrl: './vaccination-page.component.scss'
 })
 export class VaccinationPageComponent {
-
-  horses: Horse[] = [];
+ horses: Horse[] = [];
 
   constructor(
     private dialog: MatDialog,
     private dataService: DataService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    // Falls die Seite frisch geöffnet wird, ensure DB ist geladen:
+    await this.dataService.loadHorsesFromDb();
     this.horses = this.dataService.getHorses();
   }
 
- openVaccinationDialog(): void {
-  const ref = this.dialog.open(VaccinationDialogComponent, {
-    width: '400px',
-    data: { horses: this.horses }
-  });
+  openVaccinationDialog(): void {
+    const ref = this.dialog.open(VaccinationDialogComponent, {
+      width: '400px',
+      data: { mode: 'new', horses: this.horses }
+    });
 
-  ref.afterClosed().subscribe(res => {
-    if (!res) return;
-    console.log('Dialog-Result:', res);
-    // res.horseIds: string[]
-    // res.entry: { type, date(YYYY-MM-DD), status }
-    // -> Im nächsten Schritt speichern wir das in CouchDB und aktualisieren die View.
-  });
-}
+    ref.afterClosed().subscribe(async (res?: { horseIds: string[]; entry: Vaccination }) => {
+      if (!res) return;
+      try {
+        // Für jedes ausgewählte Pferd speichern
+        for (const id of res.horseIds) {
+          await this.dataService.addVaccination(id, res.entry);
+        }
+        // View auffrischen
+        this.horses = this.dataService.getHorses();
+      } catch (e) {
+        console.error('Save vaccination failed', e);
+      }
+    });
+  }
 
+  editVaccination(horseId: string, index: number, original: Vaccination) {
+    const ref = this.dialog.open(VaccinationDialogComponent, {
+      width: '400px',
+      data: { mode: 'edit', horses: this.horses, horseId, vaccination: original }
+    });
+
+    ref.afterClosed().subscribe(async (res?: { horseId: string; entry: Vaccination }) => {
+      if (!res) return;
+      try {
+        await this.dataService.updateVaccination(horseId, index, res.entry);
+        this.horses = this.dataService.getHorses();
+      } catch (e) {
+        console.error('Update vaccination failed', e);
+      }
+    });
+  }
+
+  async deleteVaccination(horseId: string, index: number) {
+    if (!confirm('Diesen Impfeintrag wirklich löschen?')) return;
+    try {
+      await this.dataService.deleteVaccination(horseId, index);
+      this.horses = this.dataService.getHorses();
+    } catch (e) {
+      console.error('Delete vaccination failed', e);
+    }
+  }
 }
