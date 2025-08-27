@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FeedRepositoryService } from './feed.repository.service';
 import { HorseRepositoryService } from './horse.repository.service';
-import { Horse } from '../models/horse';
+import { Horse, FarrierEntry } from '../models/horse';
 
 
 
@@ -61,6 +61,45 @@ async updateHorse(h: Horse) {
 async deleteHorse(h: Horse) {
   await this.horseRepo.remove(h);
   this.horses = this.horses.filter(x => x !== h);
+}
+
+
+// in data.service.ts
+async addFarrierEntry(horseId: string, entry: FarrierEntry) {
+  const h = this.horses.find(x => x._id === horseId);
+  if (!h) throw new Error('Horse not found');
+
+  // vorne einfügen (neuester zuerst)
+  h.farrierEntries = [entry, ...(h.farrierEntries ?? [])];
+
+  const res = await this.horseRepo.update(h);
+  h._rev = res.rev;
+  // Array „touch“ für Change Detection
+  this.horses = [...this.horses];
+}
+
+async updateFarrierEntry(horseId: string, index: number, patch: Partial<FarrierEntry>) {
+  const h = this.horses.find(x => x._id === horseId);
+  if (!h) throw new Error('Horse not found');
+  if (!h.farrierEntries || !h.farrierEntries[index]) throw new Error('Entry not found');
+
+  h.farrierEntries[index] = { ...h.farrierEntries[index], ...patch };
+
+  const res = await this.horseRepo.update(h);
+  h._rev = res.rev;
+  this.horses = [...this.horses];
+}
+
+async deleteFarrierEntry(horseId: string, index: number) {
+  const h = this.horses.find(x => x._id === horseId);
+  if (!h) throw new Error('Horse not found');
+  if (!h.farrierEntries || !h.farrierEntries[index]) throw new Error('Entry not found');
+
+  h.farrierEntries = h.farrierEntries.filter((_, i) => i !== index);
+
+  const res = await this.horseRepo.update(h);
+  h._rev = res.rev;
+  this.horses = [...this.horses];
 }
 
   

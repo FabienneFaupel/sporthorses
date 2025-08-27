@@ -7,10 +7,10 @@
    
         <mat-form-field appearance="outline" class="form-field">
             <mat-label>Pferd</mat-label>
-            <mat-select [(ngModel)]="selectedHorse" name="horse" required>
-                <mat-option *ngFor="let horse of data.horses" [value]="horse.name">
-                    {{ horse.name }}
-                </mat-option>
+            <mat-select [(ngModel)]="selectedHorseId" name="horse" required>
+              <mat-option *ngFor="let h of data.horses" [value]="h._id">
+                {{ h.name }}
+              </mat-option>
             </mat-select>
         </mat-form-field>
    
