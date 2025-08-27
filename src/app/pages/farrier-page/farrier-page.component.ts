@@ -9,7 +9,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { FarrierDialogComponent } from '../../components/farrier-dialog/farrier-dialog.component';
 
-import { DataService, Horse, FarrierEntry, Hoof } from '../../services/data.service';
+import { DataService } from '../../services/data.service';
+import { Horse, Hoof, FarrierEntry } from '../../models/horse';
 
 
 

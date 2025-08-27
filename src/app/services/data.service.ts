@@ -1,48 +1,10 @@
 import { Injectable } from '@angular/core';
 import { FeedRepositoryService } from './feed.repository.service';
+import { HorseRepositoryService } from './horse.repository.service';
+import { Horse } from '../models/horse';
 
 
-export interface Vaccination {
-  type: string;
-  date: string;
-  next: string;
-  status: string;
-}
 
-export type HoofAction = 'ausgeschnitten' | 'beschlagen-alt' | 'beschlagen-neu';
-
-export interface Hoof {
-  position: 'VL' | 'VR' | 'HL' | 'HR';
-  action: HoofAction;
-}
-
-export interface FarrierEntry {
-  date: string;
-  type: string;
-  comment?: string;
-  hooves: Hoof[];
-}
-
-export interface Pedigree {
-  father?: string;       // Vater
-  mother?: string;       // Mutter
-  motherFather?: string; // Muttervater
-  grandfather?: string;  // Opa (väterlicherseits)
-  grandmother?: string;  // Oma (mütterlicherseits)
-  // du kannst beliebig erweitern
-}
-
-
-export interface Horse {
-  name: string;
-  breed: string;
-  age: number;
-  birth: string;
-  gender: string;
-  vaccinations: Vaccination[];
-  farrierEntries: FarrierEntry[];
-  pedigree?: Pedigree;
-}
 
 export interface FeedLogEntry {
   _id?: string;   // neu
@@ -62,126 +24,41 @@ export interface FeedLogEntry {
 })
 export class DataService {
 
- private horses: Horse[] = [
-    {
-      name: 'Check Point Charly',
-      breed: 'Hannoveraner',
-      age: 7,
-      birth: '12.05.2025',
-      gender: 'Wallach',
-      vaccinations: [
-        {
-          type: 'Influenza',
-          date: '2025-04-12',
-          next: '2025-10-12',
-          status: 'geimpft'
-        },
-        {
-          type: 'Tetanus',
-          date: '2024-01-05',
-          next: '2025-01-05',
-          status: 'überfällig'
-        }
-      ],
-      farrierEntries: [
-        {
-          date: '2025-07-15',
-          type: 'Beschlagen',
-          comment: 'Sehr ruhig und brav.',
-          hooves: [
-            { position: 'VL', action: 'beschlagen-neu' },
-            { position: 'VR', action: 'beschlagen-neu' }
-          ]
-        },
-      ],
-      pedigree: {
-        father: 'Cornet Obolensky',
-        mother: 'Bella Donna',
-        motherFather: 'Contender',
-        grandfather: 'Cassini I',
-        grandmother: 'Ratina Z'
-      }
-    },
-    {
-      name: 'Bella',
-      breed: 'Friese',
-      age: 10,
-      birth: '01.04.2025',
-      gender: 'Stute',
-      vaccinations: [
-        {
-          type: 'Herpes',
-          date: '2025-02-10',
-          next: '2025-08-10',
-          status: 'geimpft'
-        }
-      ],
-      farrierEntries: [
-        {
-          date: '2025-07-15',
-          type: 'Beschlagen',
-          comment: 'Sehr ruhig und brav.',
-          hooves: [
-            { position: 'VL', action: 'beschlagen-neu' },
-            { position: 'VR', action: 'beschlagen-neu' }
-          ]
-        },
-        {
-          date: '2025-04-15',
-          type: 'Nur ausgeschnitten',
-          hooves: [
-            { position: 'HL', action: 'ausgeschnitten' },
-            { position: 'HR', action: 'ausgeschnitten' }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Holly',
-      breed: 'Oldenburger',
-      age: 7,
-      birth: '15.03.2025',
-      gender: 'Stute',
-      vaccinations: [
-        {
-          type: 'Influenza',
-          date: '2025-04-12',
-          next: '2025-10-12',
-          status: 'geimpft'
-        },
-        {
-          type: 'Tetanus',
-          date: '2024-01-05',
-          next: '2025-01-05',
-          status: 'überfällig'
-        }
-      ],
-      farrierEntries: [
-        {
-          date: '2025-07-15',
-          type: 'Beschlagen',
-          comment: 'Sehr brav, hinten alte Eisen belassen.',
-          hooves: [
-            { position: 'VL', action: 'beschlagen-neu' },
-            { position: 'VR', action: 'beschlagen-neu' },
-            { position: 'HL', action: 'beschlagen-alt' },
-            { position: 'HR', action: 'beschlagen-alt' }
-          ]
-        },
-        {
-          date: '2025-04-15',
-          type: 'Nur ausgeschnitten',
-          hooves: [
-            { position: 'HL', action: 'ausgeschnitten' },
-            { position: 'HR', action: 'ausgeschnitten' }
-          ]
-        }
-      ]
-    }
-  ];
+ 
+// --- HORSES (aus DB) ---
+
+private horses: Horse[] = [];
+
+async loadHorsesFromDb() {
+  this.horses = await this.horseRepo.loadAll();
+}
+
+getHorses(): Horse[] {
+  return this.horses;
+}
+
+async addHorse(horse: Omit<Horse, '_id' | '_rev' | 'docType' | 'createdAt' | 'updatedAt'>) {
+  // docType hier ergänzen, Repo erwartet 'horse'
+  const res = await this.horseRepo.create({
+    ...horse,
+    docType: 'horse'
+  } as Horse);
+  this.horses.push({ ...horse, docType: 'horse', _id: res.id, _rev: res.rev });
+}
+
+async updateHorse(h: Horse) {
+  const res = await this.horseRepo.update(h);
+  const i = this.horses.findIndex(x => x._id === h._id);
+  if (i >= 0) this.horses[i]._rev = res.rev;
+}
+
+async deleteHorse(h: Horse) {
+  await this.horseRepo.remove(h);
+  this.horses = this.horses.filter(x => x !== h);
+}
 
   
-
+// DB Feed
 
   // Maximalmengen
   private hayMax = 0;
@@ -201,7 +78,7 @@ export class DataService {
     { date: new Date('2025-04-23'), type: 'heu', action: 'add', amount: 10, price: 75  },
   ];
 
-  constructor(private feedRepo: FeedRepositoryService) {}
+  constructor(private feedRepo: FeedRepositoryService, private horseRepo: HorseRepositoryService) {}
 
   private recomputeStocks() {
   let hay = 0, straw = 0;
@@ -242,16 +119,6 @@ export class DataService {
   this.feedLog = await this.feedRepo.loadFeed();
   this.recomputeStocks();
 }
-
-
-
-  getHorses(): Horse[] {
-    return this.horses;
-  }
-
-  addHorse(horse: Horse) {
-    this.horses.push(horse);
-  }
 
    // Getter für Max-Werte
   getHayMax(): number {

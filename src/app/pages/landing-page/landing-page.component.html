@@ -1,5 +1,8 @@
 <div class="landing-container">
 
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+
     <div class="title">
         <h1>SportHorses</h1>
     </div>
@@ -17,6 +20,7 @@
             <mat-icon>restaurant</mat-icon>
         </button>
     </div>
+
 
     <div class="row">
         <div class="col" *ngFor="let horse of horses; let i = index">

@@ -3,7 +3,8 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { DataService, Horse } from '../../services/data.service';
+import { DataService } from '../../services/data.service';
+import { Horse } from '../../models/horse';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -78,36 +79,47 @@ form!: FormGroup;
     return `${dd}.${mm}.${yyyy}`;
   }
 
-  onSubmit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    const v = this.form.value;
-
-    const newHorse: Horse = {
-      name: v['name'].trim(),
-      age: v['age'],
-      gender: v['gender'],
-      birth: this.toDDMMYYYY(v['birth']),
-      breed: (v['breed'] ?? '').trim(),
-      vaccinations: [],
-      farrierEntries: [],
-      pedigree: {
-    father: v.father?.trim(),
-    mother: v.mother?.trim(),
-    motherFather: v.motherFather?.trim(),
-    grandfather: v.grandfather?.trim(),
-    grandmother: v.grandmother?.trim()
+  async onSubmit() {
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
-    };
 
-    this.data.addHorse(newHorse);
+  const v = this.form.value;
 
-    // nach dem Hinzufügen zurück zur Übersicht
+  // Date -> ISO "YYYY-MM-DD"
+  const birthIso: string | undefined =
+    v.birth ? new Date(v.birth).toISOString().slice(0, 10) : undefined;
+
+  // Payload im Horse-Format (ohne _id/_rev/docType – das ergänzt der Service)
+  const newHorse: Omit<Horse, '_id' | '_rev' | 'docType' | 'createdAt' | 'updatedAt'> = {
+  name: v.name as string,
+  breed: (v.breed ?? '') as string,
+  age: Number(v.age),
+  birth: birthIso ?? '',
+  gender: v.gender as 'Stute' | 'Hengst' | 'Wallach',
+  vaccinations: [],     // <-- jetzt mutable Array
+  farrierEntries: [],   // <-- jetzt mutable Array
+  pedigree: {
+    father: v.father || undefined,
+    mother: v.mother || undefined,
+    motherFather: v.motherFather || undefined,
+    grandfather: v.grandfather || undefined,
+    grandmother: v.grandmother || undefined,
+  }
+};
+
+
+  try {
+    await this.data.addHorse(newHorse);
+    // optional: Erfolgsmeldung / Snackbar
     this.router.navigate(['/horses']);
+  } catch (e) {
+    console.error('Pferd anlegen fehlgeschlagen:', e);
+    // optional: Fehlermeldung anzeigen
   }
+}
+
 
   onCancel() {
     this.router.navigate(['/horses']);

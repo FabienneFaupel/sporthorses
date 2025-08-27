@@ -5,7 +5,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
-import { DataService, Horse } from '../../services/data.service';
+import { DataService} from '../../services/data.service';
+import { Horse } from '../../models/horse';
+import { MatProgressBar } from '@angular/material/progress-bar';
 
 
 import { LandingHorseBoxComponent } from '../../components/landing-horse-box/landing-horse-box.component';
@@ -20,6 +22,7 @@ import { LandingHorseBoxComponent } from '../../components/landing-horse-box/lan
     MatIconModule,
     RouterLink,
     LandingHorseBoxComponent,
+    MatProgressBar
   ],
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.scss'
@@ -29,13 +32,28 @@ export class LandingPageComponent {
   isLoaded = false;
   isFailed = false;
 
+  loading = true;  // neu
+
+
   horses: Horse[] = [];
 
   constructor(private dataService: DataService) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+  this.loading = true;
+  this.isFailed = false;
+
+  try {
+    await this.dataService.loadHorsesFromDb();
     this.horses = this.dataService.getHorses();
-    this.isLoaded = true;
+  } catch (e) {
+    console.error('Fehler beim Laden der Pferde:', e);
+    this.isFailed = true;
+  } finally {
+    this.loading = false;
   }
+}
+
+
 
 }

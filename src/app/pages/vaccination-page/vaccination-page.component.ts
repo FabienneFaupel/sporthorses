@@ -18,8 +18,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { VaccinationDialogComponent } from '../../components/vaccination-dialog/vaccination-dialog.component';
 
-import { DataService, Horse } from '../../services/data.service';
-
+import { DataService} from '../../services/data.service';
+import { Horse } from '../../models/horse';
 
 
 @Component({

@@ -21,16 +21,34 @@ export class CouchDbService {
     return res.json();
   }
 
-  async find(selector: any, sort?: any[], limit = 10000) {
-    const body = { selector, sort, limit };
-    const res = await fetch(`${this.couchUrl}/${this.dbName}/_find`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...this.authHeader() },
-      body: JSON.stringify(body)
-    });
-    if (!res.ok) throw new Error(await res.text());
-    return res.json(); // {docs: [...]}
-  }
+  async find(selectorOrBody: any, sort?: any[], limit = 10000, useIndex?: [string, string]) {
+  // Unterstützt:
+  // A) NEUER Stil: find({ selector:{...}, sort:[...], limit:..., use_index:[...] })
+  // B) ALTER Stil: find({docType:'horse'}, [{name:'asc'}], 1000, ['ddoc','view'])
+
+  // Wenn bereits ein kompletter Mango-Body übergeben wurde (mit "selector"), übernehme ihn.
+  // Sonst baue den Body aus den alten Parametern zusammen.
+  const body: any =
+    selectorOrBody && selectorOrBody.selector
+      ? { ...selectorOrBody }
+      : {
+          selector: selectorOrBody || {}
+        };
+
+  if (!body.sort && sort) body.sort = sort;
+  if (!body.limit && typeof limit === 'number') body.limit = limit;
+  if (!body.use_index && useIndex) body.use_index = useIndex;
+
+  const res = await fetch(`${this.couchUrl}/${this.dbName}/_find`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...this.authHeader() },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) throw new Error(await res.text());
+  return res.json(); // -> { docs: [...] }
+}
+
 
   async deleteDoc(id: string, rev: string) {
   const res = await fetch(
