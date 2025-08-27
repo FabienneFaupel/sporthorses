@@ -24,7 +24,7 @@
 
     <div class="row">
         <div class="col" *ngFor="let horse of horses; let i = index">
-            <a [routerLink]="['/horses', i]" class="box-link">
+            <a [routerLink]="['/horses', horse._id]" class="box-link">
             <app-landing-horse-box 
                 [horseName]="horse.name" 
                 [horseAge]="horse.age" 

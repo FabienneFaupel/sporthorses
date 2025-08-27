@@ -39,15 +39,14 @@
 
    <!-- Footer mit Buttons -->
   <div class="info-card-actions">
-    <button mat-icon-button color="primary">
-  <mat-icon>edit</mat-icon>
-</button>
+  <button mat-icon-button color="primary" (click)="editHorse()">
+    <mat-icon>edit</mat-icon>
+  </button>
+  <button mat-icon-button color="warn" (click)="deleteHorse()">
+    <mat-icon>delete</mat-icon>
+  </button>
+</div>
 
-    <button mat-icon-button color="warn">
-  <mat-icon>delete</mat-icon>
-</button>
-
-  </div>
 </mat-card>
 
 

@@ -20,22 +20,52 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './horse-detail-page.component.scss'
 })
 export class HorseDetailPageComponent {
- horse: Horse | null = null;
-  id = -1;
+  horse: Horse | null = null;
 
-  constructor(private route: ActivatedRoute, private router: Router, private data: DataService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private data: DataService
+  ) {}
 
-  ngOnInit(): void {
-    const param = this.route.snapshot.paramMap.get('id');
-    this.id = param ? Number(param) : -1;
-
-    const list = this.data.getHorses();
-    if (Number.isInteger(this.id) && this.id >= 0 && this.id < list.length) {
-      this.horse = list[this.id];
-    } else {
+  async ngOnInit(): Promise<void> {
+    const id = this.route.snapshot.paramMap.get('id'); // _id aus der URL
+    if (!id) {
       this.router.navigate(['/horses']);
+      return;
     }
+
+    // 1) Erst lokal versuchen (falls wir von der Liste kommen)
+    this.horse = this.data.getHorses().find(h => h._id === id) ?? null;
+    if (this.horse) return;
+
+    // 2) Fallback: aus DB laden, dann erneut suchen
+    await this.data.loadHorsesFromDb();
+    this.horse = this.data.getHorses().find(h => h._id === id) ?? null;
+    if (!this.horse) this.router.navigate(['/horses']);
   }
 
   back() { this.router.navigate(['/horses']); }
+
+  // Optional: Edit/Delete Buttons anschließen (wenn du sie in der HTML schon hast)
+  editHorse() {
+    if (!this.horse) return;
+    this.router.navigate(['/addHorse'], {
+      state: { editMode: true, horse: this.horse }
+    });
+  }
+
+  async deleteHorse() {
+    if (!this.horse) return;
+    const ok = confirm(`„${this.horse.name}“ wirklich löschen?`);
+    if (!ok) return;
+
+    try {
+      await this.data.deleteHorse(this.horse);
+      this.router.navigate(['/horses']);
+    } catch (e) {
+      console.error('Löschen fehlgeschlagen', e);
+      alert('Konnte nicht löschen.');
+    }
+  }
 }

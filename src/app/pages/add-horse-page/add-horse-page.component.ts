@@ -40,6 +40,15 @@ type Gender = 'Stute' | 'Hengst' | 'Wallach';
 export class AddHorsePageComponent {
 form!: FormGroup;
 
+horse: Horse | null = null;
+editMode = false;
+
+get f() {
+  return this.form.controls;
+}
+
+
+
   genders: Gender[] = ['Stute', 'Hengst', 'Wallach'];
 
   breeds = [
@@ -50,23 +59,38 @@ form!: FormGroup;
   constructor(private fb: FormBuilder, private data: DataService, private router: Router) {}
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      name: ['', [Validators.required, Validators.maxLength(60)]],
-      age: [null, [Validators.required, Validators.min(0), Validators.max(50)]],
-      gender: [null, Validators.required],
-      birth: [''], // optional
-      breed: [''],
-      father: [''],
+  this.form = this.fb.group({
+    name: ['', [Validators.required, Validators.maxLength(60)]],
+    age: [null, [Validators.required, Validators.min(0), Validators.max(50)]],
+    gender: [null, Validators.required],
+    birth: [''],
+    breed: [''],
+    father: [''],
     mother: [''],
     motherFather: [''],
     grandfather: [''],
-    grandmother: ['']  // optional
+    grandmother: ['']
+  });
+
+  const nav = history.state;
+  if (nav && nav.editMode && nav.horse) {
+    this.editMode = true;
+    this.horse = nav.horse as Horse;
+    this.form.patchValue({
+      name: this.horse.name,
+      age: this.horse.age,
+      gender: this.horse.gender,
+      birth: this.horse.birth ? new Date(this.horse.birth) : '',
+      breed: this.horse.breed,
+      father: this.horse.pedigree?.father,
+      mother: this.horse.pedigree?.mother,
+      motherFather: this.horse.pedigree?.motherFather,
+      grandfather: this.horse.pedigree?.grandfather,
+      grandmother: this.horse.pedigree?.grandmother,
     });
   }
+}
 
-  get f() {
-    return this.form.controls;
-  }
 
   private toDDMMYYYY(v: any): string {
     if (!v) return '';
@@ -86,39 +110,62 @@ form!: FormGroup;
   }
 
   const v = this.form.value;
+  const birthIso = v.birth ? new Date(v.birth).toISOString().slice(0, 10) : '';
 
-  // Date -> ISO "YYYY-MM-DD"
-  const birthIso: string | undefined =
-    v.birth ? new Date(v.birth).toISOString().slice(0, 10) : undefined;
+  if (this.editMode && this.horse) {
+    // Update
+    const updated: Horse = {
+      ...this.horse,
+      name: v.name,
+      breed: v.breed,
+      age: Number(v.age),
+      birth: birthIso,
+      gender: v.gender,
+      pedigree: {
+        father: v.father,
+        mother: v.mother,
+        motherFather: v.motherFather,
+        grandfather: v.grandfather,
+        grandmother: v.grandmother,
+      }
+    };
 
-  // Payload im Horse-Format (ohne _id/_rev/docType – das ergänzt der Service)
-  const newHorse: Omit<Horse, '_id' | '_rev' | 'docType' | 'createdAt' | 'updatedAt'> = {
-  name: v.name as string,
-  breed: (v.breed ?? '') as string,
-  age: Number(v.age),
-  birth: birthIso ?? '',
-  gender: v.gender as 'Stute' | 'Hengst' | 'Wallach',
-  vaccinations: [],     // <-- jetzt mutable Array
-  farrierEntries: [],   // <-- jetzt mutable Array
-  pedigree: {
-    father: v.father || undefined,
-    mother: v.mother || undefined,
-    motherFather: v.motherFather || undefined,
-    grandfather: v.grandfather || undefined,
-    grandmother: v.grandmother || undefined,
-  }
-};
+    try {
+      await this.data.updateHorse(updated);
+      this.router.navigate(['/horses', updated._id]);
+    } catch (e) {
+      console.error('Update fehlgeschlagen:', e);
+      alert('Konnte nicht speichern.');
+    }
+  } else {
+    // Neu anlegen
+    const newHorse: Omit<Horse, '_id'|'_rev'|'docType'|'createdAt'|'updatedAt'> = {
+      name: v.name,
+      breed: v.breed,
+      age: Number(v.age),
+      birth: birthIso,
+      gender: v.gender,
+      vaccinations: [],
+      farrierEntries: [],
+      pedigree: {
+        father: v.father,
+        mother: v.mother,
+        motherFather: v.motherFather,
+        grandfather: v.grandfather,
+        grandmother: v.grandmother,
+      }
+    };
 
-
-  try {
-    await this.data.addHorse(newHorse);
-    // optional: Erfolgsmeldung / Snackbar
-    this.router.navigate(['/horses']);
-  } catch (e) {
-    console.error('Pferd anlegen fehlgeschlagen:', e);
-    // optional: Fehlermeldung anzeigen
+    try {
+      await this.data.addHorse(newHorse);
+      this.router.navigate(['/horses']);
+    } catch (e) {
+      console.error('Pferd anlegen fehlgeschlagen:', e);
+      alert('Konnte nicht speichern.');
+    }
   }
 }
+
 
 
   onCancel() {

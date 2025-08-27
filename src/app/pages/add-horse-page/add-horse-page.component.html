@@ -3,7 +3,7 @@
     <button mat-icon-button aria-label="Zurück" routerLink="/horses">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <h1>Neues Pferd hinzufügen</h1>
+    <h1>{{ editMode ? 'Pferd bearbeiten' : 'Neues Pferd hinzufügen' }}</h1>
   </header>
 
   <mat-card class="horse-card">
@@ -92,7 +92,9 @@
 
       <div class="actions">
         <button mat-stroked-button type="button" (click)="onCancel()">Abbrechen</button>
-        <button color="primary" mat-flat-button type="submit">Speichern</button>
+        <button color="primary" mat-flat-button type="submit">
+  {{ editMode ? 'Änderungen speichern' : 'Speichern' }}
+</button>
       </div>
     </form>
   </mat-card>
