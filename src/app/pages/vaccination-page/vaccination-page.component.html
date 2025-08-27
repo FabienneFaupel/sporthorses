@@ -11,7 +11,17 @@
       <h2>🐴 {{ horse.name }} ({{ horse.age }} Jahre, {{ horse.gender }})</h2>
 
       <div *ngFor="let vac of horse.vaccinations" class="vaccination-card" [ngClass]="vac.status">
-        <p><strong>💉 {{ vac.type }}</strong></p>
+        <div class="vac-card-header">
+          <p><strong>💉 {{ vac.type }}</strong></p>
+          <div class="info-card-actions">
+              <button mat-icon-button color="primary" >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" >
+               <mat-icon>delete</mat-icon>
+              </button>
+          </div>
+        </div>
         <hr>
         <p>📅 Datum: {{ vac.date }}</p>
         <p>🔁 Nächste: {{ vac.next }}</p>

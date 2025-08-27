@@ -29,8 +29,16 @@ hr {
   border: solid 1px #e5e5e5;
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
 
-  p {
+  .vac-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-top: 0px;
+    padding: 0%;
+  }
+
+  p {
+    margin: 0px;
   }
 }
 

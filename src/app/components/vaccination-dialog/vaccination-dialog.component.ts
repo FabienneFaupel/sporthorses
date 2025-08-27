@@ -12,6 +12,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 
+
+
 @Component({
   selector: 'app-vaccination-dialog',
   imports: [
@@ -31,11 +33,43 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './vaccination-dialog.component.scss'
 })
 export class VaccinationDialogComponent {
+ // STATE + Defaults
+  selectedHorseIds: string[] = [];
+  vaccineType: 'Influenza' | 'Tetanus' | 'Herpes' | null = null;
+  vaccinationDate: Date | null = new Date(); // heute vorgewählt
+  status: 'geimpft' | 'überfällig' | 'geplant' = 'geimpft'; // Default
 
   constructor(
     public dialogRef: MatDialogRef<VaccinationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+    @Inject(MAT_DIALOG_DATA) public data: { horses: Array<{ _id?: string; name: string }> }
+  ) {}
+
+  isDisabled(): boolean {
+    return (
+      !this.selectedHorseIds.length ||
+      !this.vaccineType ||
+      !this.vaccinationDate ||
+      !this.status
+    );
+  }
+
+  private toIsoDate(d: Date | null): string {
+    const date = d ?? new Date();
+    return new Date(date).toISOString().slice(0, 10); // YYYY-MM-DD
+  }
+
+  save(): void {
+    // Noch keine DB-Schreiberei – wir geben die Werte nur sauber zurück.
+    this.dialogRef.close({
+      horseIds: this.selectedHorseIds,
+      entry: {
+        type: this.vaccineType!,
+        date: this.toIsoDate(this.vaccinationDate),
+        status: this.status
+        // "next" können wir später ergänzen, wenn du möchtest (z.B. automatisch +6 Monate bei Influenza)
+      }
+    });
+  }
 
   close(): void {
     this.dialogRef.close();

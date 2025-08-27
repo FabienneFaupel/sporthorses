@@ -57,10 +57,19 @@ export class VaccinationPageComponent {
     this.horses = this.dataService.getHorses();
   }
 
-  openVaccinationDialog(): void {
-    this.dialog.open(VaccinationDialogComponent, {
-      width: '400px',
-      data: { horses: this.horses }
-    });
-  }
+ openVaccinationDialog(): void {
+  const ref = this.dialog.open(VaccinationDialogComponent, {
+    width: '400px',
+    data: { horses: this.horses }
+  });
+
+  ref.afterClosed().subscribe(res => {
+    if (!res) return;
+    console.log('Dialog-Result:', res);
+    // res.horseIds: string[]
+    // res.entry: { type, date(YYYY-MM-DD), status }
+    // -> Im nächsten Schritt speichern wir das in CouchDB und aktualisieren die View.
+  });
+}
+
 }
