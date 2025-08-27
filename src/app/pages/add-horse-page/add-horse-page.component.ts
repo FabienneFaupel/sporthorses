@@ -3,6 +3,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { DataService } from '../../services/data.service';
 import { Horse } from '../../models/horse';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -32,7 +33,8 @@ type Gender = 'Stute' | 'Hengst' | 'Wallach';
     MatButtonModule,
     MatIconModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    RouterLink
   ],
   templateUrl: './add-horse-page.component.html',
   styleUrl: './add-horse-page.component.scss'
