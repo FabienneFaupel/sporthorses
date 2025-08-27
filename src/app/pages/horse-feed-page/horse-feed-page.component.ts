@@ -48,8 +48,8 @@ export class HorseFeedPageComponent {
   
 
   // Jahr-Filter
-  selectedYear: number = new Date().getFullYear();
-  availableYears: number[] = [];
+ selectedYear: number | 'all' = new Date().getFullYear();
+  availableYears: (number | 'all')[] = [];
 
    loading = true;
 
@@ -65,6 +65,7 @@ export class HorseFeedPageComponent {
 
 async ngOnInit() {
   const currentYear = new Date().getFullYear();
+  this.availableYears = ['all']; // "Alle Jahre" immer ganz vorne
   for (let i = 0; i < 5; i++) {
     this.availableYears.push(currentYear - i);
   }
@@ -131,7 +132,10 @@ async edit(entry: FeedLogEntry) {
 
   filteredFeedLog() {
   return this.feedLog
-    .filter(log => new Date(log.date).getFullYear() === this.selectedYear)
+    .filter(log => {
+      if (this.selectedYear === 'all') return true;
+      return new Date(log.date).getFullYear() === this.selectedYear;
+    })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 

@@ -45,7 +45,7 @@
     <mat-label>Jahr auswählen</mat-label>
     <mat-select [(value)]="selectedYear" panelClass="open-down">
       <mat-option *ngFor="let year of availableYears" [value]="year">
-        {{ year }}
+        {{ year === 'all' ? 'Alle Jahre' : year }}
       </mat-option>
     </mat-select>
   </mat-form-field>
