@@ -41,4 +41,5 @@ export interface Horse {
   pedigree?: Pedigree;
   createdAt?: string;
   updatedAt?: string;
+  fnProfileUrl?: string;
 }
