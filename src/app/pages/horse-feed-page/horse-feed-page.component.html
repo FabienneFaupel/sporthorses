@@ -2,6 +2,9 @@
 
   <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
 
+  <mat-tab-group class="feed-tabs" animationDuration="0ms">
+  <!-- TAB 1: Heu & Stroh (dein bestehendes UI) -->
+  <mat-tab label="Heu & Stroh">
 
 <div class="feed-container">
 
@@ -107,6 +110,163 @@
   </div>
 </div>
 </div>
+ </mat-tab>
+ 
+ 
+<!-- TAB 2: Hafer (BigBags) – statisches Design -->
+<mat-tab label="Kraftfutter">
+  <div class="hafer-container">
+
+    <mat-card class="hafer-hero">
+
+      <mat-tab-group headerPosition="below">
+        <mat-tab label="Hafer">
+      <div class="hafer-hero-header">
+        <div>
+          <h2>Hafer</h2>
+          <div class="hafer-subtitle">Lieferübersicht & Notizen</div>
+        </div>
+      </div>
+
+      <div class="hafer-stat-row">
+        <div class="stat">
+          <div class="stat-label">Letzte Lieferung</div>
+          <div class="stat-value">12.02.2025</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Anzahl Lieferungen (Jahr)</div>
+          <div class="stat-value">2</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Gesamt bezahlt (Jahr)</div>
+          <div class="stat-value">€&nbsp;945,–</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-chip ok">ausreichend</div>
+        </div>
+      </div>
+      </mat-tab>
+        <mat-tab label="Müsli"> 
+          <div class="hafer-hero-header">
+        <div>
+          <h2>Müsli</h2>
+          <div class="hafer-subtitle">Lieferübersicht & Notizen</div>
+        </div>
+      </div>
+          <div class="hafer-stat-row">
+        <div class="stat">
+          <div class="stat-label">Letzte Lieferung</div>
+          <div class="stat-value">12.02.2025</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Anzahl Lieferungen (Jahr)</div>
+          <div class="stat-value">2</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Gesamt bezahlt (Jahr)</div>
+          <div class="stat-value">€&nbsp;945,–</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-chip ok">ausreichend</div>
+        </div>
+      </div>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card>
+
+    <button mat-raised-button color="primary" (click)="openKraftfutterDialog()">
+  <mat-icon>add</mat-icon>
+  Lieferung erfassen
+</button>
+
+
+    <!-- Jahr-Auswahl wie bei Heu/Stroh: getrennt & rechtsbündig -->
+    <div class="hafer-year-filter">
+      <mat-form-field>
+        <mat-label>Jahr auswählen</mat-label>
+        <mat-select>
+          <mat-option value="2025">2025</mat-option>
+          <mat-option value="2024">2024</mat-option>
+          <mat-option value="2023">2023</mat-option>
+          <mat-option value="all">Alle Jahre</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Lieferliste -->
+    <div class="hafer-list">
+      <mat-card class="delivery-card">
+        <div class="delivery-header">
+          <div class="left">
+            <img src="/images/hafer.svg" alt="Hafer" class="feed-icon">
+            <h3>Lieferung • 12.02.2025</h3>
+          </div>
+          <span class="badge">BigBag</span>
+        </div>
+
+        <hr>
+
+        <div class="delivery-grid">
+          <div><span>Menge</span><strong>1.000&nbsp;kg</strong></div>
+          <div><span>Preis</span><strong>€&nbsp;480,–</strong></div>
+          <div><span>Lieferant</span><strong>Muster Mühle GmbH</strong></div>
+        </div>
+
+        <div class="delivery-footer">
+  <p class="note">Notiz: sehr staubarm, bitte wieder bestellen.</p>
+
+  <div class="delivery-card-actions">
+    <button mat-icon-button color="primary" aria-label="Lieferung bearbeiten">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-icon-button color="warn" aria-label="Lieferung löschen">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</div>
+
+      </mat-card>
+
+      <mat-card class="delivery-card">
+        <div class="delivery-header">
+          <div class="left">
+            <img src="/images/hafer.svg" alt="Hafer" class="feed-icon">
+            <h3>Lieferung • 03.01.2025</h3>
+          </div>
+          <span class="badge">Sack</span>
+        </div>
+
+        <hr>
+
+        <div class="delivery-grid">
+          <div><span>Menge</span><strong>20&nbsp;kg</strong></div>
+          <div><span>Preis</span><strong>€&nbsp;465,–</strong></div>
+          <div><span>Lieferant</span><strong>Landhandel Beispiel</strong></div>
+          <div><span>Anzahl</span><strong>2</strong></div>
+        </div>
+
+        <div class="delivery-footer">
+  <p class="note">Notiz: sehr staubarm, bitte wieder bestellen.</p>
+
+  <div class="delivery-card-actions">
+    <button mat-icon-button color="primary" aria-label="Lieferung bearbeiten">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-icon-button color="warn" aria-label="Lieferung löschen">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</div>
+
+      </mat-card>
+    </div>
+  </div>
+</mat-tab>
+
+
+</mat-tab-group>
 
 </body>
 
