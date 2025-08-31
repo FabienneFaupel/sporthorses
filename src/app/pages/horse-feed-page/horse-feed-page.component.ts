@@ -20,7 +20,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { FeedAddDialogComponent } from '../../components/feed-add-dialog/feed-add-dialog.component';
 import { FeedConsumeDialogComponent } from '../../components/feed-consume-dialog/feed-consume-dialog.component';
 import { DataService, FeedLogEntry } from '../../services/data.service';
-import { KraftfutterAddDialogComponent } from '../../components/kraftfutter-add-dialog/kraftfutter-add-dialog.component';
+import { KraftfutterPageComponent } from '../../pages/kraftfutter-page/kraftfutter-page.component';
 
 
 @Component({
@@ -40,7 +40,7 @@ import { KraftfutterAddDialogComponent } from '../../components/kraftfutter-add-
     FeedAddDialogComponent,
     FeedConsumeDialogComponent,
     MatTabsModule,
-    KraftfutterAddDialogComponent
+    KraftfutterPageComponent
   ],
   templateUrl: './horse-feed-page.component.html',
   styleUrl: './horse-feed-page.component.scss'
@@ -175,15 +175,7 @@ async edit(entry: FeedLogEntry) {
   });
 }
 
-//ab hier kraftfutterteil
 
- openKraftfutterDialog() {
-    const dialogRef = this.dialog.open(KraftfutterAddDialogComponent, {
-      width: '420px',
-    });
-
-    
-  }
 
 
 }
