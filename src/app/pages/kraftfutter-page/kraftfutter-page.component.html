@@ -60,9 +60,11 @@
     </mat-tab-group>
   </mat-card>
 
-  <button mat-stroked-button color="primary" (click)="openKraftfutterDialog()">
+  <div class="liefer-add-btn-box">
+  <button mat-raised-button color="primary" (click)="openKraftfutterDialog()" class="liefer-add-btn">
             <mat-icon>add</mat-icon> Lieferung erfassen
-          </button>
+    </button>
+</div>
 
   <!-- Jahr-Auswahl wie bei Heu/Stroh: getrennt & rechtsbündig -->
   <div class="hafer-year-filter">

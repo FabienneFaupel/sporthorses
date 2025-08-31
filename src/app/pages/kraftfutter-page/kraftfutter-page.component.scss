@@ -113,6 +113,18 @@
   }
 }
 
+.liefer-add-btn-box {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.liefer-add-btn {
+    max-width: 500px;
+    width: 100%;
+    border: solid 1px #e5e5e5;
+}
+
 .badge {
   border: 1px solid #e5e5e5;
   padding: 4px 10px;
