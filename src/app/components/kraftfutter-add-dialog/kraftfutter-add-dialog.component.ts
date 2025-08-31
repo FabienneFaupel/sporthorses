@@ -10,6 +10,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDividerModule } from '@angular/material/divider';
+
 
 type KraftfutterType = 'hafer' | 'muesli' | 'zusatz';
 type PackageType = 'bigbag' | 'sack';
@@ -30,6 +33,8 @@ type PackageType = 'bigbag' | 'sack';
     MatNativeDateModule,
     MatButtonModule,
     MatIconModule,
+    MatChipsModule,
+    MatDividerModule
   ],
   templateUrl: './kraftfutter-add-dialog.component.html',
   styleUrl: './kraftfutter-add-dialog.component.scss'

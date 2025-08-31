@@ -1,52 +1,53 @@
-@import '../../styles/colors.scss';
+$accent: #e86daf;
+$surface: #eef1f7;  // helles Grau/Lavendel wie im Shot
+$border: #d9dbe3;
 
-.title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  mat-icon {
-    opacity: .6;
-  }
+:host { display:block; }
+.dialog-title{
+  display:flex; align-items:center; justify-content:space-between; margin-top: 20px; margin-bottom: 10px;
+  .title-wrap{display:flex; align-items:center; gap:12px;}
+  .avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
+    background:rgba($accent,.12);color:$accent;}
+  
 }
 
-.kf-form {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(180px, 1fr));
-  gap: 14px;
-  padding-top: 4px;
+/* Einspaltig + max Breite */
+.kf-form.one-col{
+  display:grid; grid-template-columns:1fr; gap:0px;
+  max-width:400px; /* Dialogbreite */
+}
+.full{ grid-column:1 / -1; }
+
+/* Dropdown im Header-Stil (nur hier!) */
+.header-select .mat-mdc-text-field-wrapper{
+  background:$surface !important;
+  border-radius:16px !important;
+  /* Outline/Unterstreichung bei "fill" ausblenden */
+  &::after{ display:none; }
+}
+.header-select .mat-mdc-form-field-infix{ padding-top:18px; }
+
+
+
+/* Normale (weiße) Outlines */
+mat-form-field[appearance="outline"] .mat-mdc-text-field-wrapper{
+  border-radius:12px;
+}
+mat-form-field[appearance="outline"] .mdc-notched-outline__leading,
+mat-form-field[appearance="outline"] .mdc-notched-outline__notch,
+mat-form-field[appearance="outline"] .mdc-notched-outline__trailing{
+  border-color:$border;
 }
 
-.full {
-  grid-column: 1 / -1;
-}
+/* Radio untereinander */
+.field-group{ display:grid; gap:6px; margin-bottom: 10px; }
+.group-label{  color:#555; }
+.radio-col{ display:grid; gap:6px; }
 
-.fieldset {
-  grid-column: 1 / -1;
-  padding: 10px 12px;
-  border: 1px solid #e5e5e5;
-  border-radius: 10px;
-  background: #fafafa;
-}
 
-.legend {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #555;
-  margin-bottom: 6px;
-}
+.unit{ opacity:.75;
+margin-right: 20px; }
 
-.radio-row {
-  display: flex;
-  gap: 18px;
-}
-
-mat-form-field {
-  width: 100%;
-}
-
-@media (max-width: 540px) {
-  .kf-form {
-    grid-template-columns: 1fr;
-  }
-}
+/* Buttons */
+.dialog-actions{ gap:8px; }
+.dialog-actions button mat-icon{ margin-right:6px; }

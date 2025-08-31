@@ -1,14 +1,17 @@
-<h2 mat-dialog-title>
-  <div class="title-row">
-    <span>Kraftfutter erfassen</span>
-    <mat-icon aria-hidden="true">inventory_2</mat-icon>
+<h2 mat-dialog-title class="dialog-title">
+  <div class="title-wrap">
+    <div class="avatar"><mat-icon>shopping_bag</mat-icon></div>
+    <div class="title">Kraftfutter erfassen</div>
   </div>
+  <button mat-icon-button mat-dialog-close aria-label="Schließen">
+    <mat-icon>close</mat-icon>
+  </button>
 </h2>
 
-<form [formGroup]="form" mat-dialog-content class="kf-form">
-  <!-- Produkt -->
-  <mat-form-field appearance="outline">
-    <mat-label>Produkt</mat-label>
+<form [formGroup]="form" mat-dialog-content class="kf-form one-col">
+  <!-- Dropdown im Header-Stil -->
+  <mat-form-field appearance="fill" class="header-select full">
+    <mat-label>Futterart</mat-label>
     <mat-select formControlName="product">
       <mat-option value="hafer">Hafer</mat-option>
       <mat-option value="muesli">Müsli</mat-option>
@@ -16,64 +19,67 @@
     </mat-select>
   </mat-form-field>
 
-  <!-- Datum -->
-  <mat-form-field appearance="outline">
+  <!-- Normale Felder -->
+  <mat-form-field appearance="outline" class="full">
     <mat-label>Datum</mat-label>
     <input matInput [matDatepicker]="picker" formControlName="date">
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
 
-  <!-- Verpackung -->
-  <div class="fieldset full">
-    <div class="legend">Verpackung</div>
+  <div class="field-group full">
+    <label class="group-label">Verpackung</label>
     <mat-radio-group class="radio-row" formControlName="packageType">
       <mat-radio-button value="bigbag">BigBag</mat-radio-button>
       <mat-radio-button value="sack">Sack</mat-radio-button>
     </mat-radio-group>
   </div>
 
-  <!-- BigBag Felder -->
+ 
+
+
   <ng-container *ngIf="isBigbag">
-    <mat-form-field appearance="outline">
-      <mat-label>Menge (kg)</mat-label>
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Menge</mat-label>
       <input matInput type="number" min="1" step="1" formControlName="weightKg" placeholder="z. B. 1000">
+      <span matSuffix class="unit">kg</span>
     </mat-form-field>
   </ng-container>
 
-  <!-- Sack Felder -->
   <ng-container *ngIf="isSack">
-    <mat-form-field appearance="outline">
-      <mat-label>Menge pro Sack (kg)</mat-label>
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Menge pro Sack</mat-label>
       <input matInput type="number" min="1" step="1" formControlName="sackWeightKg" placeholder="z. B. 20">
+      <span matSuffix class="unit">kg</span>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" class="full">
       <mat-label>Anzahl Säcke</mat-label>
       <input matInput type="number" min="1" step="1" formControlName="count" placeholder="z. B. 2">
+      <span matSuffix class="unit">Stk</span>
     </mat-form-field>
   </ng-container>
 
-  <!-- Allgemeine Felder -->
-  <mat-form-field appearance="outline">
-    <mat-label>Preis (€)</mat-label>
-    <input matInput type="number" min="0" step="0.01" formControlName="priceEuro" placeholder="z. B. 480">
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>Preis</mat-label>
+    <input matInput type="number" min="0" step="0.01" formControlName="priceEuro" placeholder="0">
+    <span matSuffix class="unit">€</span>
   </mat-form-field>
 
-  <mat-form-field appearance="outline">
+  <mat-form-field appearance="outline" class="full">
     <mat-label>Lieferant</mat-label>
     <input matInput formControlName="supplier" placeholder="z. B. Muster Mühle GmbH">
   </mat-form-field>
 
-  <mat-form-field class="full" appearance="outline">
+  <mat-form-field appearance="outline" class="full">
     <mat-label>Kommentar</mat-label>
-    <textarea matInput rows="3" formControlName="note" placeholder="Optional: Qualität, Besonderheiten, etc."></textarea>
+    <textarea matInput rows="3" formControlName="note" placeholder="Optional: Qualität, Besonderheiten …"></textarea>
   </mat-form-field>
 </form>
 
-<div mat-dialog-actions align="end">
-  <button mat-button>Abbrechen</button>
-  <button mat-raised-button color="primary">
+<div mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button mat-dialog-close>Abbrechen</button>
+  <button mat-flat-button color="primary">
     <mat-icon>check</mat-icon>
     Speichern
   </button>
