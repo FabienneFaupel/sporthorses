@@ -1,3 +1,4 @@
+<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
 <div class="hafer-container">
 
   <mat-card class="hafer-hero">
@@ -80,58 +81,39 @@
   </div>
 
   <!-- Lieferliste -->
-  <div class="hafer-list">
-    <mat-card class="delivery-card">
-      <div class="delivery-header">
-        <div class="left">
-          <img src="/images/hafer.svg" alt="Hafer" class="feed-icon">
-          <h3>Lieferung • 12.02.2025</h3>
-        </div>
-        <span class="badge">BigBag</span>
+  <!-- Lieferliste dynamisch -->
+<div class="hafer-list" *ngIf="!loading">
+  <mat-card class="delivery-card" *ngFor="let d of deliveries">
+    <div class="delivery-header">
+      <div class="left">
+        <img [src]="d.product === 'hafer' ? '/images/hafer.svg' : '/images/hafer.svg'"
+             alt="{{ d.product }}" class="feed-icon">
+        <h3>Lieferung • {{ d.date }}</h3>
+      </div>
+      <span class="badge">{{ d.packageType === 'bigbag' ? 'BigBag' : 'Sack' }}</span>
+    </div>
+
+    <hr>
+
+    <div class="delivery-grid">
+      <div *ngIf="d.packageType === 'bigbag'">
+        <span>Menge</span><strong>{{ d.weightKg }}&nbsp;kg</strong>
       </div>
 
-      <hr>
+      <ng-container *ngIf="d.packageType === 'sack'">
+        <div><span>Menge pro Sack</span><strong>{{ d.sackWeightKg }}&nbsp;kg</strong></div>
+        <div><span>Anzahl</span><strong>{{ d.count }}</strong></div>
+      </ng-container>
 
-      <div class="delivery-grid">
-        <div><span>Menge</span><strong>1.000&nbsp;kg</strong></div>
-        <div><span>Preis</span><strong>€&nbsp;480,–</strong></div>
-        <div><span>Lieferant</span><strong>Muster Mühle GmbH</strong></div>
-      </div>
+      <div *ngIf="d.priceEuro != null"><span>Preis</span><strong>€&nbsp;{{ d.priceEuro }}</strong></div>
+      <div *ngIf="d.supplier"><span>Lieferant</span><strong>{{ d.supplier }}</strong></div>
+    </div>
 
-      <div class="delivery-footer">
-        <p class="note">Notiz: sehr staubarm, bitte wieder bestellen.</p>
-        <div class="delivery-card-actions">
-          <button mat-icon-button color="primary" aria-label="Lieferung bearbeiten"><mat-icon>edit</mat-icon></button>
-          <button mat-icon-button color="warn" aria-label="Lieferung löschen"><mat-icon>delete</mat-icon></button>
-        </div>
-      </div>
-    </mat-card>
+    <div class="delivery-footer" *ngIf="d.note">
+      <p class="note">Notiz: {{ d.note }}</p>
+      <!-- Buttons für Edit/Delete kommen später -->
+    </div>
+  </mat-card>
 
-    <mat-card class="delivery-card">
-      <div class="delivery-header">
-        <div class="left">
-          <img src="/images/hafer.svg" alt="Hafer" class="feed-icon">
-          <h3>Lieferung • 03.01.2025</h3>
-        </div>
-        <span class="badge">Sack</span>
-      </div>
-
-      <hr>
-
-      <div class="delivery-grid">
-        <div><span>Menge</span><strong>20&nbsp;kg</strong></div>
-        <div><span>Preis</span><strong>€&nbsp;465,–</strong></div>
-        <div><span>Lieferant</span><strong>Landhandel Beispiel</strong></div>
-        <div><span>Anzahl</span><strong>2</strong></div>
-      </div>
-
-      <div class="delivery-footer">
-        <p class="note">Notiz: leicht staubig, nächstes Mal anderes Los.</p>
-        <div class="delivery-card-actions">
-          <button mat-icon-button color="primary" aria-label="Lieferung bearbeiten"><mat-icon>edit</mat-icon></button>
-          <button mat-icon-button color="warn" aria-label="Lieferung löschen"><mat-icon>delete</mat-icon></button>
-        </div>
-      </div>
-    </mat-card>
-  </div>
+  <p *ngIf="deliveries.length === 0" class="muted">Noch keine Lieferungen erfasst.</p>
 </div>

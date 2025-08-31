@@ -107,7 +107,7 @@
 
 <div mat-dialog-actions align="end" class="dialog-actions">
   <button mat-button mat-dialog-close>Abbrechen</button>
-  <button mat-flat-button color="primary" [disabled]="form.invalid">
+  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="save()">
     <mat-icon>check</mat-icon>
     Speichern
   </button>

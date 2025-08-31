@@ -13,9 +13,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 
+import { KraftfutterDelivery, PackageType, KraftfutterType } from '../../models/kraftfutter';
 
-type KraftfutterType = 'hafer' | 'muesli' | 'zusatz';
-type PackageType = 'bigbag' | 'sack';
+
 
 
 
@@ -42,7 +42,7 @@ type PackageType = 'bigbag' | 'sack';
 export class KraftfutterAddDialogComponent {
 form: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<KraftfutterAddDialogComponent>) {
     this.form = this.fb.group({
       product: ['hafer' as KraftfutterType, Validators.required],
       date: [new Date(), Validators.required],
@@ -93,4 +93,29 @@ form: FormGroup;
 
   get isBigbag() { return this.form.value.packageType === 'bigbag'; }
   get isSack()   { return this.form.value.packageType === 'sack'; }
+
+  save() {
+    if (this.form.invalid) return;
+
+    const v = this.form.value;
+    // Datum normieren (YYYY-MM-DD)
+    const dateStr: string = new Date(v.date).toISOString().slice(0, 10);
+
+
+const payload: Omit<KraftfutterDelivery, '_id'|'_rev'|'createdAt'|'updatedAt'> = {
+  docType: 'kraftfutter',
+  product: v.product,
+  date: new Date(v.date).toISOString().slice(0, 10),
+  packageType: v.packageType,
+  // nur setzen, wenn Werte vorhanden sind
+  weightKg: this.isBigbag ? Number(v.weightKg) : undefined,
+  sackWeightKg: this.isSack ? Number(v.sackWeightKg) : undefined,
+  count: this.isSack ? Number(v.count) : undefined,
+  priceEuro: v.priceEuro != null && v.priceEuro !== '' ? Number(v.priceEuro) : undefined,
+  supplier: v.supplier?.trim() ? v.supplier.trim() : undefined,
+  note: v.note?.trim() ? v.note.trim() : undefined,
+};
+
+    this.dialogRef.close(payload);
+  }
 }

@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { FeedRepositoryService } from './feed.repository.service';
 import { HorseRepositoryService } from './horse.repository.service';
 import { Horse, FarrierEntry, Vaccination } from '../models/horse';
+import { KraftfutterRepositoryService } from './kraftfutter.repository.service';
+import { KraftfutterDelivery } from '../models/kraftfutter';
 
 
 
@@ -24,8 +26,9 @@ export interface FeedLogEntry {
 })
 export class DataService {
 
- 
-// --- HORSES (aus DB) ---
+ constructor(private feedRepo: FeedRepositoryService, private horseRepo: HorseRepositoryService, private kraftRepo: KraftfutterRepositoryService,) {}
+
+ // --- HORSES (aus DB) ---
 
 private horses: Horse[] = [];
 
@@ -169,7 +172,7 @@ async deleteVaccination(horseId: string, index: number) {
     { date: new Date('2025-04-23'), type: 'heu', action: 'add', amount: 10, price: 75  },
   ];
 
-  constructor(private feedRepo: FeedRepositoryService, private horseRepo: HorseRepositoryService) {}
+  
 
   private recomputeStocks() {
   let hay = 0, straw = 0;
@@ -303,7 +306,30 @@ async updateFeed(entry: FeedLogEntry, patch: Partial<FeedLogEntry>) {
   }
 }
 
+// --- KRAFTFUTTER ---
+  private kraftfutter: KraftfutterDelivery[] = [];
 
+  getKraftfutter(): KraftfutterDelivery[] {
+    return this.kraftfutter;
+  }
 
+  async loadKraftfutterFromDb() {
+    this.kraftfutter = await this.kraftRepo.loadAll();
+  }
 
+  async addKraftfutter(delivery: Omit<KraftfutterDelivery, '_id'|'_rev'|'createdAt'|'updatedAt'|'docType'>) {
+    // Optimistic UI
+    const tmp: KraftfutterDelivery = { ...delivery, docType: 'kraftfutter' } as KraftfutterDelivery;
+    this.kraftfutter = [tmp, ...this.kraftfutter];
+
+    try {
+      const res = await this.kraftRepo.create(tmp);
+      tmp._id = res.id;
+      tmp._rev = res.rev;
+    } catch (e) {
+      console.error('addKraftfutter failed:', e);
+      // Rollback: neu laden
+      await this.loadKraftfutterFromDb();
+    }
+  }
 }

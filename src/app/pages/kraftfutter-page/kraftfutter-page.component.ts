@@ -7,8 +7,11 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { KraftfutterAddDialogComponent } from '../../components/kraftfutter-add-dialog/kraftfutter-add-dialog.component';
+import { DataService } from '../../services/data.service';
+import { KraftfutterDelivery } from '../../models/kraftfutter';
 
 @Component({
   selector: 'app-kraftfutter-page',
@@ -21,16 +24,30 @@ import { KraftfutterAddDialogComponent } from '../../components/kraftfutter-add-
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
-    KraftfutterAddDialogComponent
+    KraftfutterAddDialogComponent,
+    MatProgressBarModule
   ],
   templateUrl: './kraftfutter-page.component.html',
   styleUrl: './kraftfutter-page.component.scss'
 })
 export class KraftfutterPageComponent {
-constructor(private dialog: MatDialog) {}
+ deliveries: KraftfutterDelivery[] = [];
+  loading = true;
 
-  // nur zeigen – keine Logik
+  constructor(private dialog: MatDialog, private data: DataService) {}
+
+  async ngOnInit() {
+    await this.data.loadKraftfutterFromDb();
+    this.deliveries = this.data.getKraftfutter();
+    this.loading = false;
+  }
+
   openKraftfutterDialog() {
-    this.dialog.open(KraftfutterAddDialogComponent, { width: '420px' });
+    const ref = this.dialog.open(KraftfutterAddDialogComponent, { width: '420px' });
+    ref.afterClosed().subscribe(async (payload?: Omit<KraftfutterDelivery, '_id'|'_rev'|'createdAt'|'updatedAt'>) => {
+      if (!payload) return;
+      await this.data.addKraftfutter(payload);
+      this.deliveries = this.data.getKraftfutter(); // Ansicht aktualisieren
+    });
   }
 }
