@@ -1,7 +1,7 @@
-<h2 mat-dialog-title class="dialog-title">
+<h2 mat-dialog-title class="dialog-title"> 
   <div class="title-wrap">
     <div class="avatar"><mat-icon>shopping_bag</mat-icon></div>
-    <div class="title">Kraftfutter erfassen</div>
+    <div class="title">Kraftfutter lieferung</div>
   </div>
   <button mat-icon-button mat-dialog-close aria-label="Schließen">
     <mat-icon>close</mat-icon>
@@ -9,57 +9,85 @@
 </h2>
 
 <form [formGroup]="form" mat-dialog-content class="kf-form one-col">
-  <!-- Dropdown im Header-Stil -->
+  <!-- Futterart (Pflicht) -->
   <mat-form-field appearance="fill" class="header-select full">
     <mat-label>Futterart</mat-label>
-    <mat-select formControlName="product">
+    <mat-select formControlName="product" required>
       <mat-option value="hafer">Hafer</mat-option>
       <mat-option value="muesli">Müsli</mat-option>
       <mat-option value="zusatz">Zusatzfutter</mat-option>
     </mat-select>
+    <mat-error *ngIf="form.get('product')?.hasError('required')">
+      Bitte eine Futterart wählen.
+    </mat-error>
   </mat-form-field>
 
-  <!-- Normale Felder -->
+  <!-- Datum (Pflicht) -->
   <mat-form-field appearance="outline" class="full">
     <mat-label>Datum</mat-label>
-    <input matInput [matDatepicker]="picker" formControlName="date">
+    <input matInput [matDatepicker]="picker" formControlName="date" required>
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
+    <mat-error *ngIf="form.get('date')?.hasError('required')">
+      Bitte ein Datum auswählen.
+    </mat-error>
   </mat-form-field>
 
+  <!-- Verpackung (Pflicht) -->
   <div class="field-group full">
     <label class="group-label">Verpackung</label>
-    <mat-radio-group class="radio-row" formControlName="packageType">
+    <mat-radio-group class="radio-row" formControlName="packageType" required>
       <mat-radio-button value="bigbag">BigBag</mat-radio-button>
       <mat-radio-button value="sack">Sack</mat-radio-button>
     </mat-radio-group>
+    <div class="field-hint error" *ngIf="form.get('packageType')?.invalid && (form.get('packageType')?.touched || form.touched)">
+      Bitte eine Verpackung wählen.
+    </div>
   </div>
 
- 
-
-
+  <!-- BigBag (Pflicht: Menge) -->
   <ng-container *ngIf="isBigbag">
     <mat-form-field appearance="outline" class="full">
       <mat-label>Menge</mat-label>
-      <input matInput type="number" min="1" step="1" formControlName="weightKg" placeholder="z. B. 1000">
+      <input matInput type="number" min="1" step="1" formControlName="weightKg" placeholder="z. B. 1000" [required]="isBigbag">
       <span matSuffix class="unit">kg</span>
+      <mat-error *ngIf="form.get('weightKg')?.hasError('required')">
+        Bitte die Menge in kg angeben.
+      </mat-error>
+      <mat-error *ngIf="form.get('weightKg')?.hasError('min')">
+        Mindestmenge ist 1&nbsp;kg.
+      </mat-error>
     </mat-form-field>
   </ng-container>
 
+  <!-- Sack (Pflicht: Menge pro Sack & Anzahl) -->
   <ng-container *ngIf="isSack">
     <mat-form-field appearance="outline" class="full">
       <mat-label>Menge pro Sack</mat-label>
-      <input matInput type="number" min="1" step="1" formControlName="sackWeightKg" placeholder="z. B. 20">
+      <input matInput type="number" min="1" step="1" formControlName="sackWeightKg" placeholder="z. B. 20" [required]="isSack">
       <span matSuffix class="unit">kg</span>
+      <mat-error *ngIf="form.get('sackWeightKg')?.hasError('required')">
+        Bitte die Menge pro Sack angeben.
+      </mat-error>
+      <mat-error *ngIf="form.get('sackWeightKg')?.hasError('min')">
+        Mindestmenge ist 1&nbsp;kg.
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full">
       <mat-label>Anzahl Säcke</mat-label>
-      <input matInput type="number" min="1" step="1" formControlName="count" placeholder="z. B. 2">
+      <input matInput type="number" min="1" step="1" formControlName="count" placeholder="z. B. 2" [required]="isSack">
       <span matSuffix class="unit">Stk</span>
+      <mat-error *ngIf="form.get('count')?.hasError('required')">
+        Bitte die Anzahl der Säcke angeben.
+      </mat-error>
+      <mat-error *ngIf="form.get('count')?.hasError('min')">
+        Mindestanzahl ist 1.
+      </mat-error>
     </mat-form-field>
   </ng-container>
 
+  <!-- Optional -->
   <mat-form-field appearance="outline" class="full">
     <mat-label>Preis</mat-label>
     <input matInput type="number" min="0" step="0.01" formControlName="priceEuro" placeholder="0">
@@ -79,8 +107,9 @@
 
 <div mat-dialog-actions align="end" class="dialog-actions">
   <button mat-button mat-dialog-close>Abbrechen</button>
-  <button mat-flat-button color="primary">
+  <button mat-flat-button color="primary" [disabled]="form.invalid">
     <mat-icon>check</mat-icon>
     Speichern
   </button>
 </div>
+
