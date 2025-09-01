@@ -86,9 +86,8 @@
   <mat-card class="delivery-card" *ngFor="let d of deliveries">
     <div class="delivery-header">
       <div class="left">
-        <img [src]="d.product === 'hafer' ? '/images/hafer.svg' : '/images/hafer.svg'"
-             alt="{{ d.product }}" class="feed-icon">
-        <h3>Lieferung • {{ d.date }}</h3>
+        <img class="feed-icon" [src]="'/images/' + iconFor(d.product)" [alt]="labelFor(d.product)">
+        <h3>{{ labelFor(d.product) }} • {{ d.date }}</h3>
       </div>
       <span class="badge">{{ d.packageType === 'bigbag' ? 'BigBag' : 'Sack' }}</span>
     </div>
@@ -105,7 +104,7 @@
         <div><span>Anzahl</span><strong>{{ d.count }}</strong></div>
       </ng-container>
 
-      <div *ngIf="d.priceEuro != null"><span>Preis</span><strong>€&nbsp;{{ d.priceEuro }}</strong></div>
+      <div *ngIf="d.priceEuro != null"><span>Preis</span><strong>{{ d.priceEuro }}&nbsp;€</strong></div>
       <div *ngIf="d.supplier"><span>Lieferant</span><strong>{{ d.supplier }}</strong></div>
     </div>
 

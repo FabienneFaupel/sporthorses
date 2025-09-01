@@ -15,7 +15,6 @@
     <mat-select formControlName="product" required>
       <mat-option value="hafer">Hafer</mat-option>
       <mat-option value="muesli">Müsli</mat-option>
-      <mat-option value="zusatz">Zusatzfutter</mat-option>
     </mat-select>
     <mat-error *ngIf="form.get('product')?.hasError('required')">
       Bitte eine Futterart wählen.

@@ -11,7 +11,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { KraftfutterAddDialogComponent } from '../../components/kraftfutter-add-dialog/kraftfutter-add-dialog.component';
 import { DataService } from '../../services/data.service';
-import { KraftfutterDelivery } from '../../models/kraftfutter';
+import { KraftfutterDelivery, KraftfutterType } from '../../models/kraftfutter';
 
 @Component({
   selector: 'app-kraftfutter-page',
@@ -33,6 +33,34 @@ import { KraftfutterDelivery } from '../../models/kraftfutter';
 export class KraftfutterPageComponent {
  deliveries: KraftfutterDelivery[] = [];
   loading = true;
+
+  iconFor(p: KraftfutterType): string {
+  switch (p) {
+    case 'hafer':
+      return 'hafer.svg';
+    case 'muesli':
+      return 'muesli1.png';
+    case 'zusatz':
+      return 'zusatzfutter.svg';   // 👈 genau so benannt
+    default:
+      return 'default.svg';        // fallback falls mal was anderes drinsteht
+  }
+}
+
+labelFor(p: KraftfutterType): string {
+  switch (p) {
+    case 'hafer':
+      return 'Hafer';
+    case 'muesli':
+      return 'Müsli';
+    case 'zusatz':
+      return 'Zusatzfutter';
+    default:
+      return p;
+  }
+}
+
+
 
   constructor(private dialog: MatDialog, private data: DataService) {}
 
