@@ -7,56 +7,56 @@
         <div class="hafer-hero-header">
           <div>
             <h2>Hafer</h2>
-            <div class="hafer-subtitle">Lieferübersicht & Notizen</div>
+            <div class="hafer-subtitle">Lieferübersicht</div>
           </div>
         </div>
 
         <div class="hafer-stat-row">
-          <div class="stat">
-            <div class="stat-label">Letzte Lieferung</div>
-            <div class="stat-value">12.02.2025</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Anzahl Lieferungen (Jahr)</div>
-            <div class="stat-value">2</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Gesamt bezahlt (Jahr)</div>
-            <div class="stat-value">€&nbsp;945,–</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Status</div>
-            <div class="stat-chip ok">ausreichend</div>
-          </div>
-        </div>
+    <div class="stat">
+      <div class="stat-label">Letzte Lieferung</div>
+      <div class="stat-value">{{ statsByProduct.hafer.last ?? '–' }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Anzahl Lieferungen (Jahr)</div>
+      <div class="stat-value">{{ statsByProduct.hafer.count }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Gesamt bezahlt (Jahr)</div>
+      <div class="stat-value">{{ statsByProduct.hafer.totalFormatted }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Status</div>
+      <div class="stat-chip ok">ausreichend</div>
+    </div>
+  </div>
       </mat-tab>
 
       <mat-tab label="Müsli">
         <div class="hafer-hero-header">
           <div>
             <h2>Müsli</h2>
-            <div class="hafer-subtitle">Lieferübersicht & Notizen</div>
+            <div class="hafer-subtitle">Lieferübersicht</div>
           </div>
         </div>
 
         <div class="hafer-stat-row">
-          <div class="stat">
-            <div class="stat-label">Letzte Lieferung</div>
-            <div class="stat-value">12.02.2025</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Anzahl Lieferungen (Jahr)</div>
-            <div class="stat-value">2</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Gesamt bezahlt (Jahr)</div>
-            <div class="stat-value">€&nbsp;945,–</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Status</div>
-            <div class="stat-chip ok">ausreichend</div>
-          </div>
-        </div>
+    <div class="stat">
+      <div class="stat-label">Letzte Lieferung</div>
+      <div class="stat-value">{{ statsByProduct.muesli.last ?? '–' }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Anzahl Lieferungen (Jahr)</div>
+      <div class="stat-value">{{ statsByProduct.muesli.count }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Gesamt bezahlt (Jahr)</div>
+      <div class="stat-value">{{ statsByProduct.muesli.totalFormatted }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Status</div>
+      <div class="stat-chip ok">ausreichend</div>
+    </div>
+  </div>
       </mat-tab>
     </mat-tab-group>
   </mat-card>
@@ -67,27 +67,26 @@
     </button>
 </div>
 
-  <!-- Jahr-Auswahl wie bei Heu/Stroh: getrennt & rechtsbündig -->
-  <div class="hafer-year-filter">
-    <mat-form-field>
-      <mat-label>Jahr auswählen</mat-label>
-      <mat-select>
-        <mat-option value="2025">2025</mat-option>
-        <mat-option value="2024">2024</mat-option>
-        <mat-option value="2023">2023</mat-option>
-        <mat-option value="all">Alle Jahre</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
+  <!-- Jahr-Auswahl -->
+<div class="hafer-year-filter">
+  <mat-form-field>
+    <mat-label>Jahr auswählen</mat-label>
+    <mat-select [(value)]="selectedYear" (selectionChange)="applyFilters()">
+      <mat-option *ngFor="let y of years" [value]="y">
+        {{ y === 'all' ? 'Alle Jahre' : y }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
 
   <!-- Lieferliste -->
   <!-- Lieferliste dynamisch -->
 <div class="hafer-list" *ngIf="!loading">
-  <mat-card class="delivery-card" *ngFor="let d of deliveries">
+  <mat-card class="delivery-card" *ngFor="let d of filteredDeliveries">
     <div class="delivery-header">
       <div class="left">
         <img class="feed-icon" [src]="'/images/' + iconFor(d.product)" [alt]="labelFor(d.product)">
-        <h3>{{ labelFor(d.product) }} • {{ d.date }}</h3>
+        <h3>{{ labelFor(d.product) }} • {{ formatDateGermanFromIso(d.date) }}</h3>
       </div>
       <span class="badge">{{ d.packageType === 'bigbag' ? 'BigBag' : 'Sack' }}</span>
     </div>

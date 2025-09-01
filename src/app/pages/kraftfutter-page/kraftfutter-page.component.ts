@@ -13,6 +13,15 @@ import { KraftfutterAddDialogComponent } from '../../components/kraftfutter-add-
 import { DataService } from '../../services/data.service';
 import { KraftfutterDelivery, KraftfutterType } from '../../models/kraftfutter';
 
+type ProductKey = 'hafer' | 'muesli' | 'zusatz';
+
+interface ProductStats {
+  count: number;
+  total: number;            // €
+  totalFormatted: string;
+  last: string | null;      // dd.MM.yyyy
+}
+
 @Component({
   selector: 'app-kraftfutter-page',
   imports: [
@@ -32,7 +41,129 @@ import { KraftfutterDelivery, KraftfutterType } from '../../models/kraftfutter';
 })
 export class KraftfutterPageComponent {
  deliveries: KraftfutterDelivery[] = [];
+ filteredDeliveries: KraftfutterDelivery[] = [];
   loading = true;
+
+  // Jahr-Filter
+  currentYear = new Date().getFullYear();
+  years: (number | 'all')[] = [];                  // 👈 Optionen im Dropdown
+  selectedYear: number | 'all' = this.currentYear;
+
+  statsByProduct: Record<ProductKey, ProductStats> = {
+    hafer: { count: 0, total: 0, totalFormatted: '€ 0,–', last: null },
+    muesli: { count: 0, total: 0, totalFormatted: '€ 0,–', last: null },
+    zusatz: { count: 0, total: 0, totalFormatted: '€ 0,–', last: null },
+  };
+
+
+  constructor(private dialog: MatDialog, private data: DataService) {}
+
+   async ngOnInit() {
+    await this.data.loadKraftfutterFromDb();
+    this.deliveries = this.data.getKraftfutter();
+    this.setupYears();
+    this.applyFilters();        // 👈 initial filtern + sortieren
+    this.loading = false;
+  }
+
+  // Optionen: aktuelles Jahr, 3 weitere zurück (insgesamt 4), plus "Alle Jahre"
+  private setupYears() {
+    this.years = [
+      this.currentYear,
+      this.currentYear - 1,
+      this.currentYear - 2,
+      this.currentYear - 3,
+      this.currentYear - 4,
+      'all'
+    ];
+  }
+
+   /** ISO 'yyyy-MM-dd' -> Date (mittags, um TZ-Effekte zu vermeiden) */
+  private parseIsoDate(iso: string): Date {
+    if (!iso) return new Date(0);
+    const [y, m, d] = iso.split('-').map(n => parseInt(n, 10));
+    return new Date(y, (m || 1) - 1, d || 1, 12, 0, 0);
+  }
+
+  /** ISO -> 'dd.MM.yyyy' */
+  formatDateGermanFromIso = (iso: string | null | undefined): string | null => {
+    if (!iso) return null;
+    const dt = this.parseIsoDate(iso);
+    const dd = String(dt.getDate()).padStart(2, '0');
+    const mm = String(dt.getMonth() + 1).padStart(2, '0');
+    const yyyy = dt.getFullYear();
+    return `${dd}.${mm}.${yyyy}`;
+  };
+
+  /** neu -> alt */
+  private sortDescByDate(list: KraftfutterDelivery[]): KraftfutterDelivery[] {
+    return [...list].sort((a, b) => {
+      // ISO ist lexikographisch sortierbar, aber wir gehen über Date für Sicherheit
+      const da = this.parseIsoDate(a.date).getTime();
+      const db = this.parseIsoDate(b.date).getTime();
+      return db - da;
+    });
+  }
+
+  private formatEuroShort(amount: number): string {
+    return `€ ${Math.round(amount).toLocaleString('de-DE')},–`;
+  }
+
+  applyFilters() {
+    let list = [...this.deliveries];
+
+    if (this.selectedYear !== 'all') {
+      list = list.filter(d => this.parseIsoDate(d.date).getFullYear() === this.selectedYear);
+    }
+
+    this.filteredDeliveries = this.sortDescByDate(list);
+    this.recomputeStats();
+  }
+
+  private recomputeStats() {
+    const base: Record<ProductKey, ProductStats> = {
+      hafer: { count: 0, total: 0, totalFormatted: '€ 0,–', last: null },
+      muesli: { count: 0, total: 0, totalFormatted: '€ 0,–', last: null },
+      zusatz: { count: 0, total: 0, totalFormatted: '€ 0,–', last: null },
+    };
+
+    const byProduct: Record<ProductKey, KraftfutterDelivery[]> = {
+      hafer: [], muesli: [], zusatz: [],
+    };
+
+    for (const d of this.filteredDeliveries) {
+      const key = (d.product as ProductKey) ?? 'zusatz';
+      byProduct[key].push(d);
+    }
+
+    (Object.keys(byProduct) as ProductKey[]).forEach(p => {
+      const arr = byProduct[p];
+      const count = arr.length;
+      const total = arr.reduce((sum, x) => sum + (x.priceEuro ?? 0), 0);
+      const lastIso = arr.length ? this.sortDescByDate(arr)[0].date : null;
+
+      base[p] = {
+        count,
+        total,
+        totalFormatted: this.formatEuroShort(total),
+        last: this.formatDateGermanFromIso(lastIso),
+      };
+    });
+
+    this.statsByProduct = base;
+  }
+
+  openKraftfutterDialog() {
+    const ref = this.dialog.open(KraftfutterAddDialogComponent, { width: '420px' });
+    ref.afterClosed().subscribe(async (payload?: Omit<KraftfutterDelivery, '_id'|'_rev'|'createdAt'|'updatedAt'>) => {
+      if (!payload) return;
+      await this.data.addKraftfutter(payload);
+      this.deliveries = this.data.getKraftfutter();
+      this.applyFilters(); // -> Liste + Stats aktualisieren
+    });
+  }
+
+
 
   iconFor(p: KraftfutterType): string {
   switch (p) {
@@ -60,22 +191,4 @@ labelFor(p: KraftfutterType): string {
   }
 }
 
-
-
-  constructor(private dialog: MatDialog, private data: DataService) {}
-
-  async ngOnInit() {
-    await this.data.loadKraftfutterFromDb();
-    this.deliveries = this.data.getKraftfutter();
-    this.loading = false;
-  }
-
-  openKraftfutterDialog() {
-    const ref = this.dialog.open(KraftfutterAddDialogComponent, { width: '420px' });
-    ref.afterClosed().subscribe(async (payload?: Omit<KraftfutterDelivery, '_id'|'_rev'|'createdAt'|'updatedAt'>) => {
-      if (!payload) return;
-      await this.data.addKraftfutter(payload);
-      this.deliveries = this.data.getKraftfutter(); // Ansicht aktualisieren
-    });
-  }
 }
