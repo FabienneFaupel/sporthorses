@@ -17,15 +17,19 @@ constructor(private db: CouchDbService) {}
     return docs;
   }
 
-  async create(delivery: Omit<KraftfutterDelivery, '_id'|'_rev'|'createdAt'|'updatedAt'>) {
-    const now = new Date().toISOString();
-    return this.db.postDoc({
-      ...delivery,
-      docType: 'kraftfutter',
-      createdAt: now,
-      updatedAt: now
-    });
-  }
+  // kraftfutter.repository.service.ts
+async create(
+  delivery: Omit<KraftfutterDelivery, '_id'|'_rev'|'docType'|'createdAt'|'updatedAt'>
+) {
+  const now = new Date().toISOString();
+  return this.db.postDoc({
+    ...delivery,
+    docType: 'kraftfutter',
+    createdAt: now,
+    updatedAt: now
+  });
+}
+
 
   async update(delivery: KraftfutterDelivery) {
     if (!delivery._id || !delivery._rev) throw new Error('id/rev fehlt');

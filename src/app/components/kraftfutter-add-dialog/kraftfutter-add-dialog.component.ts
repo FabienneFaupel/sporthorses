@@ -41,27 +41,32 @@ import { KraftfutterDelivery, PackageType, KraftfutterType } from '../../models/
 })
 export class KraftfutterAddDialogComponent {
 form: FormGroup;
+ isEdit = false;
+original?: KraftfutterDelivery;
 
-  constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<KraftfutterAddDialogComponent>) {
+  constructor(
+    private fb: FormBuilder,
+    private dialogRef: MatDialogRef<KraftfutterAddDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { delivery?: KraftfutterDelivery } | null
+  ) {
+    this.isEdit = !!data?.delivery;
+    this.original = data?.delivery;
+
     this.form = this.fb.group({
-      product: ['hafer' as KraftfutterType, Validators.required],
-      date: [new Date(), Validators.required],
-      packageType: ['bigbag' as PackageType, Validators.required],
-
+      product: [ (this.original?.product ?? 'hafer') as KraftfutterType, Validators.required ],
+      date:    [ this.original ? new Date(this.original.date) : new Date(), Validators.required ],
+      packageType: [ (this.original?.packageType ?? 'bigbag') as PackageType, Validators.required ],
       // BigBag
-      weightKg: [1000],                 // required, wenn packageType = bigbag
-
+      weightKg:     [ this.original?.weightKg ?? 1000 ],
       // Sack
-      sackWeightKg: [20],               // required, wenn packageType = sack
-      count: [1],                    // required, wenn packageType = sack
-
+      sackWeightKg: [ this.original?.sackWeightKg ?? 20 ],
+      count:        [ this.original?.count ?? 1 ],
       // Optional
-      priceEuro: [null],
-      supplier: [''],
-      note: [''],
+      priceEuro: [ this.original?.priceEuro ?? undefined ],
+      supplier:  [ this.original?.supplier ?? '' ],
+      note:      [ this.original?.note ?? '' ],
     });
 
-    // initial & dynamische Pflichtfelder je nach Verpackung
     this.configurePackageValidators(this.form.value.packageType as PackageType);
     this.form.get('packageType')!.valueChanges.subscribe((val: PackageType) => {
       this.configurePackageValidators(val);
@@ -77,7 +82,7 @@ form: FormGroup;
       weight.setValidators([Validators.required, Validators.min(1)]);
       sackW.clearValidators();
       count.clearValidators();
-      sackW.setValue(sackW.value); // trigger UI refresh
+      sackW.setValue(sackW.value);
       count.setValue(count.value);
     } else {
       weight.clearValidators();
@@ -85,7 +90,6 @@ form: FormGroup;
       count.setValidators([Validators.required, Validators.min(1)]);
       weight.setValue(weight.value);
     }
-
     weight.updateValueAndValidity({ emitEvent: false });
     sackW.updateValueAndValidity({ emitEvent: false });
     count.updateValueAndValidity({ emitEvent: false });
@@ -96,26 +100,26 @@ form: FormGroup;
 
   save() {
     if (this.form.invalid) return;
-
     const v = this.form.value;
-    // Datum normieren (YYYY-MM-DD)
-    const dateStr: string = new Date(v.date).toISOString().slice(0, 10);
 
+    // gemeinsame Payload – OHNE docType
+    const base = {
+      product: v.product as KraftfutterType,
+      date: new Date(v.date).toISOString().slice(0, 10),
+      packageType: v.packageType as PackageType,
+      weightKg: this.isBigbag ? Number(v.weightKg) : undefined,
+      sackWeightKg: this.isSack ? Number(v.sackWeightKg) : undefined,
+      count: this.isSack ? Number(v.count) : undefined,
+      priceEuro: v.priceEuro != null && v.priceEuro !== '' ? Number(v.priceEuro) : undefined,
+      supplier: v.supplier?.trim() || undefined,
+      note: v.note?.trim() || undefined,
+    } satisfies Omit<KraftfutterDelivery,'_id'|'_rev'|'createdAt'|'updatedAt'|'docType'>;
 
-const payload: Omit<KraftfutterDelivery, '_id'|'_rev'|'createdAt'|'updatedAt'> = {
-  docType: 'kraftfutter',
-  product: v.product,
-  date: new Date(v.date).toISOString().slice(0, 10),
-  packageType: v.packageType,
-  // nur setzen, wenn Werte vorhanden sind
-  weightKg: this.isBigbag ? Number(v.weightKg) : undefined,
-  sackWeightKg: this.isSack ? Number(v.sackWeightKg) : undefined,
-  count: this.isSack ? Number(v.count) : undefined,
-  priceEuro: v.priceEuro != null && v.priceEuro !== '' ? Number(v.priceEuro) : undefined,
-  supplier: v.supplier?.trim() ? v.supplier.trim() : undefined,
-  note: v.note?.trim() ? v.note.trim() : undefined,
-};
-
-    this.dialogRef.close(payload);
+    if (this.isEdit && this.original?._id && this.original?._rev) {
+      const updated: KraftfutterDelivery = { ...this.original, ...base };
+      this.dialogRef.close({ mode: 'edit', delivery: updated });
+    } else {
+      this.dialogRef.close({ mode: 'add', delivery: base });
+    }
   }
 }

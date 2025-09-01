@@ -153,16 +153,6 @@ export class KraftfutterPageComponent {
     this.statsByProduct = base;
   }
 
-  openKraftfutterDialog() {
-    const ref = this.dialog.open(KraftfutterAddDialogComponent, { width: '420px' });
-    ref.afterClosed().subscribe(async (payload?: Omit<KraftfutterDelivery, '_id'|'_rev'|'createdAt'|'updatedAt'>) => {
-      if (!payload) return;
-      await this.data.addKraftfutter(payload);
-      this.deliveries = this.data.getKraftfutter();
-      this.applyFilters(); // -> Liste + Stats aktualisieren
-    });
-  }
-
 
 
   iconFor(p: KraftfutterType): string {
@@ -190,5 +180,49 @@ labelFor(p: KraftfutterType): string {
       return p;
   }
 }
+
+openKraftfutterDialog() {
+  const ref = this.dialog.open(KraftfutterAddDialogComponent, { width: '420px' });
+
+  ref.afterClosed().subscribe(async (res?: {
+    mode: 'add';
+    delivery: Omit<KraftfutterDelivery,'_id'|'_rev'|'createdAt'|'updatedAt'|'docType'>;
+  }) => {
+    if (!res) return;
+    if (res.mode !== 'add') return;
+
+    await this.data.addKraftfutter(res.delivery);
+    this.deliveries = this.data.getKraftfutter();
+    this.applyFilters();
+  });
+}
+
+edit(delivery: KraftfutterDelivery) {
+  const ref = this.dialog.open(KraftfutterAddDialogComponent, {
+    width: '420px',
+    data: { delivery }
+  });
+
+  ref.afterClosed().subscribe(async (res?: {
+    mode: 'edit';
+    delivery: KraftfutterDelivery;
+  }) => {
+    if (!res) return;
+    if (res.mode !== 'edit') return;
+
+    await this.data.updateKraftfutter(res.delivery);
+    this.deliveries = this.data.getKraftfutter();
+    this.applyFilters();
+  });
+}
+
+async remove(delivery: KraftfutterDelivery) {
+  if (!confirm('Diese Lieferung wirklich löschen?')) return;
+  await this.data.deleteKraftfutter(delivery);
+  this.deliveries = this.data.getKraftfutter();
+  this.applyFilters();
+}
+
+
 
 }

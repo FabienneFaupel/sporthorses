@@ -317,19 +317,48 @@ async updateFeed(entry: FeedLogEntry, patch: Partial<FeedLogEntry>) {
     this.kraftfutter = await this.kraftRepo.loadAll();
   }
 
-  async addKraftfutter(delivery: Omit<KraftfutterDelivery, '_id'|'_rev'|'createdAt'|'updatedAt'|'docType'>) {
-    // Optimistic UI
-    const tmp: KraftfutterDelivery = { ...delivery, docType: 'kraftfutter' } as KraftfutterDelivery;
-    this.kraftfutter = [tmp, ...this.kraftfutter];
+  async addKraftfutter(delivery: Omit<KraftfutterDelivery,'_id'|'_rev'|'createdAt'|'updatedAt'|'docType'>) {
+  // Optimistic UI – wir zeigen sofort
+  const tmp: KraftfutterDelivery = { ...delivery } as KraftfutterDelivery;
+  this.kraftfutter = [tmp, ...this.kraftfutter];
 
-    try {
-      const res = await this.kraftRepo.create(tmp);
-      tmp._id = res.id;
-      tmp._rev = res.rev;
-    } catch (e) {
-      console.error('addKraftfutter failed:', e);
-      // Rollback: neu laden
-      await this.loadKraftfutterFromDb();
-    }
+  try {
+    const res = await this.kraftRepo.create(delivery); // Repo fügt docType & timestamps hinzu
+    // in der Liste das temp-Doc durch das „echte“ mit _id/_rev ersetzen
+    this.kraftfutter = this.kraftfutter.map(d => d === tmp ? { ...tmp, _id: res.id, _rev: res.rev, docType: 'kraftfutter' } : d);
+  } catch (e) {
+    console.error('addKraftfutter failed:', e);
+    await this.loadKraftfutterFromDb(); // rollback
   }
+}
+
+// data.service.ts
+async updateKraftfutter(updated: KraftfutterDelivery) {
+  // optimistic: lokal ersetzen
+  this.kraftfutter = this.kraftfutter.map(d =>
+    d._id === updated._id ? { ...updated } : d
+  );
+
+  // DB
+  const res = await this.kraftRepo.update(updated);
+  // _rev aktualisieren + Array „ticken“, damit Angular updated
+  this.kraftfutter = this.kraftfutter.map(d =>
+    d._id === updated._id ? { ...d, _rev: res.rev } : d
+  );
+}
+
+async deleteKraftfutter(delivery: KraftfutterDelivery) {
+  if (!delivery._id || !delivery._rev) throw new Error('id/rev fehlt');
+  // optimistic remove
+  this.kraftfutter = this.kraftfutter.filter(d => d._id !== delivery._id);
+  try {
+    await this.kraftRepo.remove(delivery);
+  } catch (e) {
+    console.error('deleteKraftfutter failed:', e);
+    // Rollback
+    await this.loadKraftfutterFromDb();
+  }
+}
+
+
 }

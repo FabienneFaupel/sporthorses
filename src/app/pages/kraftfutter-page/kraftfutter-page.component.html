@@ -107,10 +107,17 @@
       <div *ngIf="d.supplier"><span>Lieferant</span><strong>{{ d.supplier }}</strong></div>
     </div>
 
-    <div class="delivery-footer" *ngIf="d.note">
-      <p class="note">Notiz: {{ d.note }}</p>
-      <!-- Buttons für Edit/Delete kommen später -->
-    </div>
+    <div class="delivery-footer">
+  <p class="note" *ngIf="d.note">Notiz: {{ d.note }}</p>
+  <div class="delivery-card-actions">
+    <button mat-icon-button color="primary" (click)="edit(d)" aria-label="Lieferung bearbeiten">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-icon-button color="warn" (click)="remove(d)" aria-label="Lieferung löschen">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</div>
   </mat-card>
 
   <p *ngIf="deliveries.length === 0" class="muted">Noch keine Lieferungen erfasst.</p>
