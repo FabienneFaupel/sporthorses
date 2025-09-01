@@ -4,6 +4,15 @@ body {
   overflow: hidden;
 }
 
+.horse-title-box {
+  display: flex;
+ 
+}
+
+.horse-img {
+  width: 40px;
+}
+
 .year-filter {
   width: 100%;
   max-width: 1500px;
@@ -43,7 +52,8 @@ body {
   }
 
   p {
-    margin: 0px;
+    margin-top: 0px;
+    margin-bottom: 5px;
   }
 }
 
@@ -86,4 +96,10 @@ hr {
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   font-size: 0.9rem;
+}
+
+.note {
+  margin: 0;
+  color: #444;
+  font-size: 0.95rem;
 }

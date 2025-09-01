@@ -2,10 +2,10 @@
     <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
     
     <div class="btn-box">
-        <button mat-raised-button color="primary" (click)="openFarrierDialog()">
-            ➕ Beschlag hinzufügen
-        </button>
+        <button mat-raised-button color="primary" (click)="openFarrierDialog()"><mat-icon>add2</mat-icon>Beschlag hinzufügen</button>
     </div>
+
+    
 
     
 
@@ -25,7 +25,10 @@
     <mat-tab-group>
         <mat-tab *ngFor="let horse of horses; let i = index" label="{{ horse.name }}">
             <div class="horse-card">
-                <h2>🐴 {{ horse.name }} ({{ horse.age }} Jahre, {{ horse.gender }})</h2>
+                <div class="horse-title-box">
+                    <img src="/images/horse.svg" alt="{{ horse.name }}" class="horse-img">
+                <h3>{{ horse.name }}</h3>
+                </div>
 
                 <div *ngFor="let entry of filteredFarrierEntries(horse)" class="farrier-card">
                     <div class="farrier-card-header">
@@ -40,8 +43,8 @@
                         </div>
                     </div>
                     <hr>
-                    <p>📅 Datum: {{ entry.date }}</p>
-                    <p *ngIf="entry.comment">📝 Kommentar: {{ entry.comment }}</p>
+                    <p>Datum: {{ entry.date }}</p>
+                    <p *ngIf="entry.comment" class="note">Notiz: {{ entry.comment }}</p>
 
                     <!-- Hufeisen-Icons -->
                     <div class="hoof-icons">

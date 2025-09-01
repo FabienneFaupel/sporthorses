@@ -149,7 +149,7 @@ selectedHorseId: string | null = null;
 
     const entry: FarrierEntry = {
       date: this.formatDate(this.treatmentDate),
-      type: this.treatmentType === 'beschlagen' ? 'Beschlagen' : 'Nur ausgeschnitten',
+      type: this.treatmentType === 'beschlagen' ? 'Beschlagen' : 'Ausgeschnitten',
       comment: this.comment?.trim() || undefined,
       hooves: hoovesMapped
     };
