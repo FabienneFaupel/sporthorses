@@ -21,6 +21,7 @@ import { FeedAddDialogComponent } from '../../components/feed-add-dialog/feed-ad
 import { FeedConsumeDialogComponent } from '../../components/feed-consume-dialog/feed-consume-dialog.component';
 import { DataService, FeedLogEntry } from '../../services/data.service';
 import { KraftfutterPageComponent } from '../../pages/kraftfutter-page/kraftfutter-page.component';
+import { FutterplanPageComponent } from '../futterplan-page/futterplan-page.component';
 
 
 @Component({
@@ -40,7 +41,8 @@ import { KraftfutterPageComponent } from '../../pages/kraftfutter-page/kraftfutt
     FeedAddDialogComponent,
     FeedConsumeDialogComponent,
     MatTabsModule,
-    KraftfutterPageComponent
+    KraftfutterPageComponent,
+    FutterplanPageComponent
   ],
   templateUrl: './horse-feed-page.component.html',
   styleUrl: './horse-feed-page.component.scss'

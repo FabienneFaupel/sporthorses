@@ -1,0 +1,83 @@
+<!-- Wochenübersicht (mobilfreundlich, horizontal scrollbar) -->
+<mat-card class="fp-week">
+  <div class="fp-week-head">
+    <h2>Wochenübersicht</h2>
+    <span class="muted">Max. 3 Fütterungen/Tag inkl. Uhrzeit & Mengen</span>
+  </div>
+
+  <div class="fp-week-table-wrapper">
+    <table mat-table [dataSource]="weekPlans" class="fp-week-table">
+
+      <!-- Pferd (sticky) -->
+      <ng-container matColumnDef="horse">
+        <!-- vorher: {{ dayLabel[d] }} -->
+<th mat-header-cell *matHeaderCellDef>test</th>
+
+        <td mat-cell *matCellDef="let row" class="sticky-col horse-cell">
+          <mat-icon class="horse-icon">pets</mat-icon>
+          {{ row.horse }}
+        </td>
+      </ng-container>
+
+      <!-- Dynamische Tages-Spalten -->
+      <!-- Dynamische Tages-Spalten -->
+<ng-container *ngFor="let d of dayOrder" [matColumnDef]="d">
+  <!-- jetzt ist d im Scope -->
+  <th mat-header-cell *matHeaderCellDef>{{ label(d) }}</th>
+  <td mat-cell *matCellDef="let row">
+    <div class="day-cell">
+      <ng-container *ngFor="let s of row.week[d].slots; let i = index">
+        <div class="slot">
+          <div class="slot-time">
+            <mat-icon>schedule</mat-icon>
+            {{ s.time }}
+          </div>
+          <div class="slot-chips">
+            <!-- Heu -->
+            <span *ngIf="s.hay" class="chip hay">
+              <mat-icon class="i">grass</mat-icon>
+              Heu <b>{{ s.hay?.portion | titlecase }}</b>
+            </span>
+
+            <!-- Hafer -->
+            <span *ngIf="s.oats" class="chip oats">
+              <mat-icon class="i">agriculture</mat-icon>
+              Hafer <b>{{ s.oats?.scoop }}</b> Schippe<span *ngIf="s.oats?.count>1"> × {{ s.oats?.count }}</span>
+            </span>
+
+            <!-- Zusätze -->
+            <ng-container *ngFor="let z of s.supplements">
+              <span class="chip sup">
+                <mat-icon class="i">{{ z.name.toLowerCase().includes('medizin') ? 'medication' : 'restaurant' }}</mat-icon>
+                {{ z.name }} <b>{{ z.qty }}</b><span *ngIf="z.unit">&nbsp;{{ z.unit }}</span>
+                <i class="note" *ngIf="z.note">&nbsp;• {{ z.note }}</i>
+              </span>
+            </ng-container>
+          </div>
+        </div>
+
+        <mat-divider *ngIf="i < row.week[d].slots.length - 1"></mat-divider>
+      </ng-container>
+
+      <div class="slot empty" *ngIf="!row.week[d].slots?.length">
+        <span class="muted">—</span>
+      </div>
+    </div>
+  </td>
+</ng-container>
+
+
+      <!-- Rows -->
+      <tr mat-header-row *matHeaderRowDef="columns" class="sticky-header"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns" class="data-row"></tr>
+    </table>
+  </div>
+
+  <!-- Legende -->
+  <div class="legend">
+    <span class="chip hay"><mat-icon class="i">grass</mat-icon>Heu <b>K/M/G</b></span>
+    <span class="chip oats"><mat-icon class="i">agriculture</mat-icon>Hafer <b>¼/½/1</b> Schippe × Anzahl</span>
+    <span class="chip sup"><mat-icon class="i">restaurant</mat-icon>Zusatz</span>
+    <span class="chip sup"><mat-icon class="i">medication</mat-icon>Medizin</span>
+  </div>
+</mat-card>
