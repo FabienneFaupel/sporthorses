@@ -51,12 +51,12 @@ img {
 /* ===== Chips: gleiche Größe/Farbe/Form, nur vertikal ===== */
 .chipstack { display: grid; gap: 8px; } /* <— vertikal untereinander */
 .chip {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: flex; align-items: center; gap: 6px; justify-content: center;
   padding: 6px 10px; border-radius: 999px; font-size: 12px;
   background: var(--chip-bg); border: 1px solid var(--chip-border);
   width: fit-content;
 }
-.chip .i { font-size: 16px; opacity: .85; }
+.chip .i { font-size: 20px; opacity: .85; align-content: center; justify-content: center; }
 .chip b { font-weight: 800; letter-spacing: .1px; }
 
 /* Tonale Varianten wie zuvor */
