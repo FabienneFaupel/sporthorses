@@ -10,33 +10,29 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTableModule } from '@angular/material/table';
 
-
-type DayKey = 'mon'|'tue'|'wed'|'thu'|'fri'|'sat'|'sun';
-
-type HayPortion = 'klein'|'mittel'|'groß';
-type ScoopSize = '¼'|'½'|'1';
+type Daypart = 'Früh' | 'Mittag' | 'Abend';
+type HayPortion = 'klein' | 'mittel' | 'groß';
+type ScoopSize = '¼' | '½' | '1';
 
 type Supplement = {
-  name: string;         // z.B. Pellets / Elektrolyte / Medizin
-  qty: number | string; // z.B. 1, 10, "gemäß Etikett"
-  unit?: string;        // z.B. "Schippe", "g", "ml", "Tbl"
-  note?: string;        // kurzer Hinweis zur Gabe
+  name: string;           // Pellets / Mineral / Medizin / ...
+  qty: number | string;   // 1, 10, "gemäß Etikett"
+  unit?: string;          // "Schippe", "g", "ml", "Tbl"
+  note?: string;          // z.B. "mit Apfel geben"
 };
 
-type FeedingSlot = {
-  time: string;            // "07:00"
+type FeedSpec = {
   hay?: { portion: HayPortion };
-  oats?: { scoop: ScoopSize; count: 1|2|3 }; // Schippe-Größe × Anzahl
-  supplements?: Supplement[];                // optional
+  oats?: { scoop: ScoopSize; count: 1 | 2 | 3 };
+  supplements?: Supplement[];
 };
 
-type DayPlan = { slots: FeedingSlot[] };     // max. 3 Slots
-type Week = Record<DayKey, DayPlan>;
-
-type HorseWeekPlan = {
+type HorsePlan = {
   horse: string;
-  week: Week;
+  feed: Record<Daypart, FeedSpec>;
 };
+
+
 
 @Component({
   selector: 'app-futterplan-page',
@@ -50,93 +46,51 @@ type HorseWeekPlan = {
     MatChipsModule,
     MatDividerModule,
     MatTableModule,
-    CommonModule
+    CommonModule,
   ],
   templateUrl: './futterplan-page.component.html',
   styleUrl: './futterplan-page.component.scss'
 })
 export class FutterplanPageComponent {
- 
-  dayOrder: DayKey[] = ['mon','tue','wed','thu','fri','sat','sun'];
-  dayLabel: Record<DayKey,string> = { mon:'Mo', tue:'Di', wed:'Mi', thu:'Do', fri:'Fr', sat:'Sa', sun:'So' };
+  // Bereiche & fixe Zeiten (einheitlich für alle Pferde)
+  dayparts: Daypart[] = ['Früh', 'Mittag', 'Abend'];
+  private partTimes: Record<Daypart, string> = { Früh: '07:00', Mittag: '12:30', Abend: '18:30' };
+  partTime(p: Daypart): string { return this.partTimes[p]; }
 
-  columns = ['horse', ...this.dayOrder];
-    // Neu: Helper gegen den Index-Fehler im Template
-  label(d: DayKey): string {
-    return this.dayLabel[d];
-  }
+  // Heu-Label (statt |titlecase)
+  private hayText: Record<HayPortion, string> = { klein: 'Klein', mittel: 'Mittel', groß: 'Groß' };
+  hayLabel(portion?: HayPortion): string { return portion ? this.hayText[portion] : ''; }
 
-  weekPlans: HorseWeekPlan[] = [
+  // Daten – täglich identisch
+  horsePlans: HorsePlan[] = [
     {
       horse: 'Somersby',
-      week: {
-        mon: { slots: [
-          { time: '07:00', hay: { portion: 'groß' }, oats: { scoop: '1', count: 1 }, supplements: [{ name:'Mineral', qty:'gemäß Etikett' }] },
-          { time: '12:30', hay: { portion: 'mittel' }, oats: { scoop: '½', count: 1 } },
-          { time: '18:30', hay: { portion: 'groß' }, oats: { scoop:'1', count: 1 }, supplements: [{ name:'Elektrolyte', qty:10, unit:'g' }] }
-        ]},
-        tue: { slots: [
-          { time: '07:00', hay: { portion: 'groß' }, oats: { scoop: '½', count: 2 } },
-          { time: '12:30', hay: { portion: 'klein' }, supplements: [{ name:'Pellets', qty:1, unit:'Schippe' }] },
-          { time: '18:30', hay: { portion: 'groß' } }
-        ]},
-        wed: { slots: [
-          { time: '07:00', hay: { portion: 'groß' }, oats: { scoop:'1', count: 1 } },
-          { time: '12:30', hay: { portion: 'mittel' } },
-          { time: '18:30', hay: { portion: 'groß' }, oats: { scoop:'½', count: 1 } }
-        ]},
-        thu: { slots: [ { time: '07:00', hay:{ portion:'groß' }, oats:{ scoop:'1', count: 1 } },
-                        { time: '18:30', hay:{ portion:'groß' } } ]},
-        fri: { slots: [ { time: '07:00', hay:{ portion:'groß' }, oats:{ scoop:'½', count: 2 } },
-                        { time: '18:30', hay:{ portion:'groß' } } ]},
-        sat: { slots: [ { time: '09:00', hay:{ portion:'mittel' } }, { time: '18:00', hay:{ portion:'groß' } } ]},
-        sun: { slots: [ { time: '09:00', hay:{ portion:'mittel' } }, { time: '18:00', hay:{ portion:'groß' } } ]},
+      feed: {
+        Früh:   { hay: { portion: 'groß' },  oats: { scoop: '1', count: 1 }, supplements: [{ name: 'Mineral', qty: 'gemäß Etikett' }] },
+        Mittag: { hay: { portion: 'mittel' }, oats: { scoop: '½', count: 1 } },
+        Abend:  { hay: { portion: 'groß' },  oats: { scoop: '1', count: 1 }, supplements: [{ name: 'Elektrolyte', qty: 10, unit: 'g' }] },
       }
     },
     {
       horse: 'test2',
-      week: {
-        mon: { slots: [
-          { time: '07:30', hay:{ portion:'mittel' }, oats:{ scoop:'½', count:1 } },
-          { time: '18:30', hay:{ portion:'groß' } }
-        ]},
-        tue: { slots: [
-          { time: '07:30', hay:{ portion:'mittel' }, supplements:[{ name:'Pellets', qty:1, unit:'Schippe' }] },
-          { time: '18:30', hay:{ portion:'groß' } }
-        ]},
-        wed: { slots: [
-          { time: '07:30', hay:{ portion:'mittel' }, oats:{ scoop:'¼', count:2 } },
-          { time: '12:30', hay:{ portion:'klein' } },
-          { time: '18:30', hay:{ portion:'groß' } }
-        ]},
-        thu: { slots: [ { time:'07:30', hay:{portion:'mittel'} }, { time:'18:30', hay:{portion:'groß'} } ]},
-        fri: { slots: [ { time:'07:30', hay:{portion:'mittel'} }, { time:'18:30', hay:{portion:'groß'} } ]},
-        sat: { slots: [ { time:'09:30', hay:{portion:'mittel'} } ]},
-        sun: { slots: [ { time:'09:30', hay:{portion:'mittel'} } ]},
+      feed: {
+        Früh:   { hay: { portion: 'mittel' }, oats: { scoop: '½', count: 1 } },
+        Mittag: { hay: { portion: 'klein' },  supplements: [{ name: 'Pellets', qty: 1, unit: 'Schippe' }] },
+        Abend:  { hay: { portion: 'groß' } },
       }
     },
     {
       horse: 'Check Point Charly',
-      week: {
-        mon: { slots: [
-          { time:'06:45', hay:{portion:'groß'}, oats:{scoop:'1',count:1} },
-          { time:'12:15', hay:{portion:'mittel'} },
-          { time:'18:45', hay:{portion:'groß'}, supplements:[{ name:'Medizin', qty:2, unit:'Tbl', note:'mit Apfel geben' }] }
-        ]},
-        tue: { slots: [
-          { time:'06:45', hay:{portion:'groß'}, oats:{scoop:'½',count:2} },
-          { time:'18:45', hay:{portion:'groß'} }
-        ]},
-        wed: { slots: [
-          { time:'06:45', hay:{portion:'groß'} },
-          { time:'12:15', hay:{portion:'klein'}, supplements:[{ name:'Elektrolyte', qty:20, unit:'ml' }] },
-          { time:'18:45', hay:{portion:'groß'} }
-        ]},
-        thu: { slots: [ { time:'06:45', hay:{portion:'groß'} }, { time:'18:45', hay:{portion:'groß'} } ]},
-        fri: { slots: [ { time:'06:45', hay:{portion:'groß'}, oats:{scoop:'1',count:1} }, { time:'18:45', hay:{portion:'groß'} } ]},
-        sat: { slots: [ { time:'08:00', hay:{portion:'mittel'} }, { time:'18:00', hay:{portion:'groß'} } ]},
-        sun: { slots: [ { time:'08:00', hay:{portion:'mittel'} }, { time:'18:00', hay:{portion:'groß'} } ]},
+      feed: {
+        Früh:   { hay: { portion: 'groß' },  oats: { scoop: '1', count: 1 } },
+        Mittag: { hay: { portion: 'mittel' } },
+        Abend:  { hay: { portion: 'groß' },  supplements: [{ name: 'Medizin', qty: 2, unit: 'Tbl', note: 'mit Apfel geben' }] },
       }
-    }
+    },
   ];
+
+  // Helpers
+  feedFor(p: HorsePlan, part: Daypart): FeedSpec | undefined { return p.feed[part]; }
+  hasMultipleOats(o?: { scoop: ScoopSize; count: number }): boolean { return !!o && o.count > 1; }
+  isMedicine(z: Supplement): boolean { return z.name.toLowerCase().includes('medizin'); }
 }

@@ -1,53 +1,79 @@
-.fp-week { padding: 12px; }
-.fp-week-head { display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:8px; }
-.muted { color:#6b7280; }
-
-/* Scrollbarer Bereich für Handy */
-.fp-week-table-wrapper {
-  overflow:auto;
-  border-radius:12px;
-  border:1px solid #e5e7eb;
+@import '../../styles/colors.scss';
+:host {
+  --brand: #fa66ff;      /* Violett */
+  --brand-ink: #a821a1;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --card: #ffffff;
+  --chip-border: #e5e7eb;
+  --chip-bg: #f8fafc;
+  --shadow-sm: 0 2px 8px rgba(2, 6, 23, .06);
+  --shadow-md: 0 6px 24px rgba(2, 6, 23, .08);
 }
 
-/* Tabelle */
-.fp-week-table { width:max(920px,100%); border-collapse:separate; border-spacing:0; }
-.sticky-header th.mat-header-cell { position:sticky; top:0; background:white; z-index:2; box-shadow:0 1px 0 0 #e5e7eb; }
-.sticky-col { position:sticky; left:0; z-index:3; background:white; box-shadow:1px 0 0 0 #e5e7eb; }
-.mat-header-cell, .mat-cell { padding:10px 12px; vertical-align:top; }
-.horse-cell { font-weight:600; white-space:nowrap; min-width:180px; display:flex; align-items:center; gap:8px; }
-.horse-icon { opacity:.6; }
+/* ===== Page Header ===== */
+.fp { padding: 12px; display: grid; gap: 16px; }
+.fp-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 6px 2px 2px;
+}
+.title h1 { margin: 0; font-size: 28px; font-weight: 800; color: var(--ink); }
+.subtitle { color: var(--muted); font-size: 14px; }
+.brand-dot { width: 12px; height: 12px; border-radius: 999px; background: var(--brand);
+  box-shadow: 0 0 0 6px rgba(168,85,247,.12); }
 
-/* Tageszelle */
-.day-cell { display:grid; gap:8px; }
-.slot { display:grid; gap:6px; }
-.slot.empty { padding:4px 0; }
-.slot-time { display:inline-flex; align-items:center; gap:6px; font-weight:600; font-size:13px; }
-.slot-chips { display:flex; flex-wrap:wrap; gap:6px; }
+/* ===== Sections (Früh/Mittag/Abend) ===== */
+.parts { display: grid; gap: 16px; }
+.part { border-radius: 18px; background: var(--card); box-shadow: var(--shadow-md); padding: 12px; }
 
-/* Chips (an dein Lila angelehnt) */
+.part-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-bottom: 6px;
+}
+.part-title { margin: 0; font-size: 20px; font-weight: 800; color: $secondarycolor; }
+
+/* Uhrzeit als weiße Bubble */
+.time-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 12px;
+  background: #ffffff; border: 1px solid var(--chip-border); 
+}
+
+/* ===== Horse rows ===== */
+.list { display: grid; gap: 10px; margin-top: 10px; }
+.row { border-radius: 14px; background: var(--card); box-shadow: var(--shadow-sm); padding: 10px; }
+.row-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.horse { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; color: var(--ink);
+img {
+    width: 40px;
+} }
+
+/* ===== Chips: gleiche Größe/Farbe/Form, nur vertikal ===== */
+.chipstack { display: grid; gap: 8px; } /* <— vertikal untereinander */
 .chip {
-  display:inline-flex; align-items:center; gap:6px;
-  padding:4px 10px; border-radius:999px; font-size:12px;
-  background:#f8fafc; border:1px solid #e5e7eb;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px; border-radius: 999px; font-size: 12px;
+  background: var(--chip-bg); border: 1px solid var(--chip-border);
+  width: fit-content;
 }
-.chip .i { font-size:16px; opacity:.8; }
-.chip b { font-weight:700; }
+.chip .i { font-size: 16px; opacity: .85; }
+.chip b { font-weight: 800; letter-spacing: .1px; }
 
-.chip.hay   { background:#faf5ff; border-color:#eadcff; }
-.chip.oats  { background:#eff6ff; border-color:#dbeafe; }
-.chip.sup   { background:#f1f5f9; border-color:#e2e8f0; }
-.note { opacity:.8; font-style:italic; }
-.tag { margin-left:6px; font-weight:700; font-size:11px; background:#ede9fe; color:#6d28d9; padding:0 6px; border-radius:999px; }
+/* Tonale Varianten wie zuvor */
+.chip-hay  { background: #faf5ff; border-color: #ede9fe; }
+.chip-oats { background: #eff6ff; border-color: #dbeafe; }
+.chip-sup  { background: #f1f5f9; border-color: #e2e8f0; }
+.chip-med  { background: #fef3c7; border-color: #fde68a; color: #92400e; }
 
-/* Zeilentrenner */
-.data-row .mat-cell { border-top:1px solid #f1f5f9; }
+.tag {
+  margin-left: 6px; width: 18px; height: 18px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #ede9fe; color: var(--brand-ink); font-size: 11px; font-weight: 800;
+}
+.note { opacity: .85; font-style: italic; color: var(--muted); }
 
-/* Legende */
-.legend { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
-
-/* Mobile Tweaks */
-@media (max-width: 720px) {
-  .horse-cell { min-width:150px; }
-  .chip { font-size:11px; padding:3px 8px; }
-  .slot-time { font-size:12px; }
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .title h1 { font-size: 24px; }
+  .chip { font-size: 11px; padding: 4px 8px; }
 }
