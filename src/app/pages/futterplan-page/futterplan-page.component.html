@@ -1,14 +1,27 @@
-<div class="fp">
+<div class="fp" [class.compact]="compact">
   <!-- Page Header -->
   <header class="fp-header">
     <div class="title">
       <h1>Futterplan</h1>
-      <span class="subtitle">Frühs, Mittags und Abends</span>
+      <span class="subtitle">Früh · Mittag · Abend</span>
     </div>
   </header>
 
+  <!-- kleine Legende -->
+  <mat-card class="legend">
+    <div class="legend-row">
+      <span class="chip chip-hay"><mat-icon class="i">grass</mat-icon>Heu</span>
+      <span class="chip chip-oats"><mat-icon class="i">agriculture</mat-icon>Hafer</span>
+      <span class="chip chip-sup"><mat-icon class="i">restaurant</mat-icon>Zusatz</span>
+      <span class="chip chip-med">
+        <mat-icon class="i">medication</mat-icon>Medizin
+        <mat-icon class="i info">info</mat-icon>
+      </span>
+    </div>
+  </mat-card>
+
+  <!-- Früh / Mittag / Abend -->
   <section class="parts">
-    <!-- Früh / Mittag / Abend -->
     <mat-card class="part" *ngFor="let part of dayparts">
       <div class="part-head">
         <h2 class="part-title">{{ part }}</h2>
@@ -19,56 +32,58 @@
           {{ partTime(part) }}
         </span>
       </div>
+
       <mat-divider></mat-divider>
 
       <div class="list">
+        <!-- Pferd-Reihe -->
         <mat-card class="row" *ngFor="let h of horsePlans">
           <div class="row-head">
             <div class="horse">
-              <img src="/images/horse.svg">
+              <img src="/images/horse.svg" alt="" />
               <b>{{ h.horse }}</b>
             </div>
           </div>
 
-          <!-- Futter-Bubbles: gleiche Größe/Farbe/Form wie vorher – jetzt untereinander -->
+          <!-- Futter-Bubbles (vertikal) -->
           <div class="chipstack" *ngIf="feedFor(h, part) as f">
             <!-- Heu -->
             <span *ngIf="f.hay" class="chip chip-hay">
               <mat-icon class="i">grass</mat-icon>
               Heu <b>{{ hayLabel(f.hay?.portion) }}</b>
-              <span class="tag">
-                {{ f.hay?.portion === 'klein' ? 'K' : f.hay?.portion === 'mittel' ? 'M' : 'G' }}
-              </span>
+              <span class="tag">{{ hayShort(f.hay?.portion) }}</span>
             </span>
 
             <!-- Hafer -->
             <span *ngIf="f.oats" class="chip chip-oats">
               <mat-icon class="i">agriculture</mat-icon>
               Hafer <b>{{ f.oats?.scoop }} Schippe</b>
-              <span *ngIf="hasMultipleOats(f.oats)"> × {{ f.oats?.count }}</span>
-            <span class="tag">
-                {{ f.oats?.scoop }}
-              </span>
+              <span *ngIf="hasMultipleOats(f.oats)">× {{ f.oats?.count }}</span>
+              <span class="tag">{{ f.oats?.scoop }}</span>
             </span>
-            
 
             <!-- Zusätze / Medizin -->
             <ng-container *ngFor="let z of f.supplements || []">
-              <span class="chip" [class.chip-med]="isMedicine(z)" [class.chip-sup]="!isMedicine(z)">
-                <mat-icon class="i">{{ isMedicine(z) ? 'medication' : 'restaurant' }}</mat-icon>
+              <!-- Standard-Zusatz -->
+              <span *ngIf="z.kind === 'supplement'" class="chip chip-sup">
+                <mat-icon class="i">restaurant</mat-icon>
                 {{ z.name }} <b>{{ z.qty }}</b><span *ngIf="z.unit">&nbsp;{{ z.unit }}</span>
                 <i class="note" *ngIf="z.note">&nbsp;• {{ z.note }}</i>
               </span>
 
-            <!-- so würde mir die medzin bubble besser gefallen -->
-
-              <span class="chip chip-med">
-                <mat-icon> medication</mat-icon>
-                Medizin <b>2 Tabletten</b> 
-                <mat-icon class="i">info</mat-icon>
-                <i class="note">mit apfel füttern</i>
+              <!-- Medizin – deine gewünschte Bubble mit Info-Icon + Hinweis -->
+              <span *ngIf="z.kind === 'medicine'" class="chip chip-med">
+                <mat-icon class="i">medication</mat-icon>
+                Medizin <b>{{ z.qty }}</b><span *ngIf="z.unit">&nbsp;{{ z.unit }}</span>
+                <mat-icon
+                  class="i info"
+                  *ngIf="z.note"
+                  matTooltip="{{ z.note }}"
+                  aria-label="Hinweis zur Medizin"
+                  >info</mat-icon
+                >
+                <i class="note" *ngIf="z.note">{{ z.note }}</i>
               </span>
-
             </ng-container>
           </div>
         </mat-card>

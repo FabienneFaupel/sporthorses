@@ -9,16 +9,18 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 type Daypart = 'Früh' | 'Mittag' | 'Abend';
 type HayPortion = 'klein' | 'mittel' | 'groß';
 type ScoopSize = '¼' | '½' | '1';
 
 type Supplement = {
-  name: string;           // Pellets / Mineral / Medizin / ...
-  qty: number | string;   // 1, 10, "gemäß Etikett"
-  unit?: string;          // "Schippe", "g", "ml", "Tbl"
-  note?: string;          // z.B. "mit Apfel geben"
+  kind: 'supplement' | 'medicine'; // robust statt Name-Check
+  name: string;
+  qty: number | string;
+  unit?: string;   // "Schippe", "g", "ml", "Tbl"
+  note?: string;   // z.B. "mit Apfel geben"
 };
 
 type FeedSpec = {
@@ -33,11 +35,10 @@ type HorsePlan = {
 };
 
 
-
 @Component({
   selector: 'app-futterplan-page',
   imports: [
-    MatCardModule,
+     MatCardModule,
     MatIconModule,
     MatButtonModule,
     MatButtonToggleModule,
@@ -46,36 +47,41 @@ type HorsePlan = {
     MatChipsModule,
     MatDividerModule,
     MatTableModule,
+    MatTooltipModule,
     CommonModule,
   ],
   templateUrl: './futterplan-page.component.html',
   styleUrl: './futterplan-page.component.scss'
 })
 export class FutterplanPageComponent {
+  compact = false;
+
   // Bereiche & fixe Zeiten (einheitlich für alle Pferde)
   dayparts: Daypart[] = ['Früh', 'Mittag', 'Abend'];
   private partTimes: Record<Daypart, string> = { Früh: '07:00', Mittag: '12:30', Abend: '18:30' };
   partTime(p: Daypart): string { return this.partTimes[p]; }
 
-  // Heu-Label (statt |titlecase)
+  // Heu-Label & Kurzform
   private hayText: Record<HayPortion, string> = { klein: 'Klein', mittel: 'Mittel', groß: 'Groß' };
+  private hayShortText: Record<HayPortion, string> = { klein: 'K', mittel: 'M', groß: 'G' };
   hayLabel(portion?: HayPortion): string { return portion ? this.hayText[portion] : ''; }
+  hayShort(portion?: HayPortion): string { return portion ? this.hayShortText[portion] : ''; }
 
-  // Daten – täglich identisch
+  // Statische Beispiel-Daten
   horsePlans: HorsePlan[] = [
     {
       horse: 'Somersby',
       feed: {
-        Früh:   { hay: { portion: 'groß' },  oats: { scoop: '1', count: 1 }, supplements: [{ name: 'Mineral', qty: 'gemäß Etikett' }] },
+        Früh:   { hay: { portion: 'groß' },  oats: { scoop: '1', count: 1 }, supplements: [{ kind: 'supplement', name: 'Mineral', qty: 'gemäß Etikett' }] },
         Mittag: { hay: { portion: 'mittel' }, oats: { scoop: '½', count: 1 } },
-        Abend:  { hay: { portion: 'groß' },  oats: { scoop: '1', count: 1 }, supplements: [{ name: 'Elektrolyte', qty: 10, unit: 'g' }] },
+        Abend:  { hay: { portion: 'groß' },  oats: { scoop: '1', count: 1 }, supplements: [{ kind: 'supplement', name: 'Elektrolyte', qty: 10, unit: 'g' }] },
       }
     },
     {
       horse: 'test2',
       feed: {
         Früh:   { hay: { portion: 'mittel' }, oats: { scoop: '½', count: 1 } },
-        Mittag: { hay: { portion: 'klein' },  supplements: [{ name: 'Pellets', qty: 1, unit: 'Schippe' }] },
+        Mittag: { hay: { portion: 'klein' },  supplements: [{ kind: 'supplement', name: 'Pellets', qty: 1, unit: 'Schippe' }] },
         Abend:  { hay: { portion: 'groß' } },
       }
     },
@@ -84,7 +90,7 @@ export class FutterplanPageComponent {
       feed: {
         Früh:   { hay: { portion: 'groß' },  oats: { scoop: '1', count: 1 } },
         Mittag: { hay: { portion: 'mittel' } },
-        Abend:  { hay: { portion: 'groß' },  supplements: [{ name: 'Medizin', qty: 2, unit: 'Tbl', note: 'mit Apfel geben' }] },
+        Abend:  { hay: { portion: 'groß' },  supplements: [{ kind: 'medicine', name: 'Medizin', qty: 2, unit: 'Tbl', note: 'mit Apfel füttern' }] },
       }
     },
   ];
@@ -92,5 +98,6 @@ export class FutterplanPageComponent {
   // Helpers
   feedFor(p: HorsePlan, part: Daypart): FeedSpec | undefined { return p.feed[part]; }
   hasMultipleOats(o?: { scoop: ScoopSize; count: number }): boolean { return !!o && o.count > 1; }
-  isMedicine(z: Supplement): boolean { return z.name.toLowerCase().includes('medizin'); }
+
+  print(): void { window.print(); }
 }

@@ -1,4 +1,5 @@
 @import '../../styles/colors.scss';
+
 :host {
   --brand: #fa66ff;      /* Violett */
   --brand-ink: #a821a1;
@@ -11,20 +12,41 @@
   --shadow-md: 0 6px 24px rgba(2, 6, 23, .08);
 }
 
-/* ===== Page Header ===== */
-.fp { padding: 12px; display: grid; gap: 16px; }
+.fp {
+  padding: 12px;
+  display: grid;
+  gap: 16px;
+}
+
+/* ===== Header ===== */
 .fp-header {
-  display: flex; align-items: flex-end; justify-content: space-between;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
   padding: 6px 2px 2px;
 }
-.title h1 { margin: 0; font-size: 28px; font-weight: 800; color: var(--ink); }
+.title h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: .2px;
+}
 .subtitle { color: var(--muted); font-size: 14px; }
-.brand-dot { width: 12px; height: 12px; border-radius: 999px; background: var(--brand);
-  box-shadow: 0 0 0 6px rgba(168,85,247,.12); }
+.header-actions { display: inline-flex; gap: 4px; }
+
+/* Legende */
+.legend {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+.legend-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 
 /* ===== Sections (Früh/Mittag/Abend) ===== */
 .parts { display: grid; gap: 16px; }
-.part { border-radius: 18px; background: var(--card); box-shadow: var(--shadow-md); padding: 12px; }
+.part  { border-radius: 18px; background: var(--card); box-shadow: var(--shadow-md); padding: 12px; }
 
 .part-head {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -36,30 +58,31 @@
 .time-pill {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 12px;
-  background: #ffffff; border: 1px solid var(--chip-border); 
+  background: #ffffff; border: 1px solid var(--chip-border);
 }
 
 /* ===== Horse rows ===== */
 .list { display: grid; gap: 10px; margin-top: 10px; }
-.row { border-radius: 14px; background: var(--card); box-shadow: var(--shadow-sm); padding: 10px; }
+.row  { border-radius: 14px; background: var(--card); box-shadow: var(--shadow-sm); padding: 10px; }
 .row-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.horse { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; color: var(--ink);
-img {
-    width: 40px;
-} }
-
-/* ===== Chips: gleiche Größe/Farbe/Form, nur vertikal ===== */
-.chipstack { display: grid; gap: 8px; } /* <— vertikal untereinander */
-.chip {
-  display: flex; align-items: center; gap: 6px; justify-content: center;
-  padding: 6px 10px; border-radius: 999px; font-size: 12px;
-  background: var(--chip-bg); border: 1px solid var(--chip-border);
-  width: fit-content;
+.horse {
+  display: inline-flex; align-items: center; gap: 8px; font-weight: 800; color: var(--ink);
+  img { width: 40px; }
 }
-.chip .i { font-size: 20px; opacity: .85; align-content: center; justify-content: center; }
+
+/* ===== Chips: gleich groß, vertikal ===== */
+.chipstack { display: grid; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; justify-content: center;
+  padding: 6px 10px; border-radius: 999px; font-size: 12px; line-height: 1.1;
+  background: var(--chip-bg); border: 1px solid var(--chip-border);
+  width: fit-content; user-select: none;
+}
+.chip .i { font-size: 20px; opacity: .9; display: inline-flex; align-items: center; }
+.chip .i.info { font-size: 18px; opacity: .8; margin-left: 2px; }
 .chip b { font-weight: 800; letter-spacing: .1px; }
 
-/* Tonale Varianten wie zuvor */
+/* Tonale Varianten */
 .chip-hay  { background: #faf5ff; border-color: #ede9fe; }
 .chip-oats { background: #eff6ff; border-color: #dbeafe; }
 .chip-sup  { background: #f1f5f9; border-color: #e2e8f0; }
@@ -70,7 +93,14 @@ img {
   display: inline-flex; align-items: center; justify-content: center;
   background: #ede9fe; color: var(--brand-ink); font-size: 11px; font-weight: 800;
 }
-.note { opacity: .85; font-style: italic; color: var(--muted); }
+.note { opacity: .85; font-style: italic; color: var(--muted); margin-left: 4px; }
+
+/* dichteres Layout (per Button) */
+.fp.compact {
+  .chip { padding: 4px 8px; font-size: 11px; }
+  .row  { padding: 8px; }
+  .title h1 { font-size: 24px; }
+}
 
 /* ===== Responsive ===== */
 @media (max-width: 640px) {
