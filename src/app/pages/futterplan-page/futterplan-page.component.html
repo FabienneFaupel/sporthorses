@@ -1,93 +1,36 @@
-<div class="fp" [class.compact]="compact">
-  <!-- Page Header -->
-  <header class="fp-header">
-    <div class="title">
-      <h1>Futterplan</h1>
-      <span class="subtitle">Früh · Mittag · Abend</span>
-    </div>
-  </header>
+<mat-card class="card">
+<mat-tab-group class="tabs">
+  <mat-tab *ngFor="let s of slots" [label]="s">
+    <div class="content">
+      <ng-container *ngFor="let h of horses">
+        <div class="horse-block">
+          <!-- Pferdename + Plus-Button -->
+          <div class="horse-header">
+            <span class="horse">{{ h.name }}</span>
+            <button mat-icon-button class="add-btn" aria-label="Hinzufügen">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
 
-  <!-- kleine Legende -->
-  <mat-card class="legend">
-    <div class="legend-row">
-      <span class="chip chip-hay"><mat-icon class="i">grass</mat-icon>Heu</span>
-      <span class="chip chip-oats"><mat-icon class="i">agriculture</mat-icon>Hafer</span>
-      <span class="chip chip-sup"><mat-icon class="i">restaurant</mat-icon>Zusatz</span>
-      <span class="chip chip-med">
-        <mat-icon class="i">medication</mat-icon>Medizin
-        <mat-icon class="i info">info</mat-icon>
-      </span>
-    </div>
-  </mat-card>
-
-  <!-- Früh / Mittag / Abend -->
-  <section class="parts">
-    <mat-card class="part" *ngFor="let part of dayparts">
-      <div class="part-head">
-        <h2 class="part-title">{{ part }}</h2>
-
-        <!-- Uhrzeit als weiße Bubble -->
-        <span class="time-pill">
-          <mat-icon>schedule</mat-icon>
-          {{ partTime(part) }}
-        </span>
-      </div>
-
-      <mat-divider></mat-divider>
-
-      <div class="list">
-        <!-- Pferd-Reihe -->
-        <mat-card class="row" *ngFor="let h of horsePlans">
-          <div class="row-head">
-            <div class="horse">
-              <img src="/images/horse.svg" alt="" />
-              <b>{{ h.horse }}</b>
+          <!-- Einträge mit Abstand -->
+          <ng-container *ngIf="h.feeds.length > 0; else noFeeds">
+            <div *ngFor="let i of h.feeds" class="feed-card">
+              <div class="feed-item">
+                <div class="left">
+                  <mat-icon class="feed-icon" [ngClass]="i.iconColor">{{ i.icon }}</mat-icon>
+                  <span class="product">{{ i.product }}</span>
+                </div>
+                <span class="amount">{{ i.amount }}</span>
+              </div>
             </div>
-          </div>
+          </ng-container>
 
-          <!-- Futter-Bubbles (vertikal) -->
-          <div class="chipstack" *ngIf="feedFor(h, part) as f">
-            <!-- Heu -->
-            <span *ngIf="f.hay" class="chip chip-hay">
-              <mat-icon class="i">grass</mat-icon>
-              Heu <b>{{ hayLabel(f.hay?.portion) }}</b>
-              <span class="tag">{{ hayShort(f.hay?.portion) }}</span>
-            </span>
-
-            <!-- Hafer -->
-            <span *ngIf="f.oats" class="chip chip-oats">
-              <mat-icon class="i">agriculture</mat-icon>
-              Hafer <b>{{ f.oats?.scoop }} Schippe</b>
-              <span *ngIf="hasMultipleOats(f.oats)">× {{ f.oats?.count }}</span>
-              <span class="tag">{{ f.oats?.scoop }}</span>
-            </span>
-
-            <!-- Zusätze / Medizin -->
-            <ng-container *ngFor="let z of f.supplements || []">
-              <!-- Standard-Zusatz -->
-              <span *ngIf="z.kind === 'supplement'" class="chip chip-sup">
-                <mat-icon class="i">restaurant</mat-icon>
-                {{ z.name }} <b>{{ z.qty }}</b><span *ngIf="z.unit">&nbsp;{{ z.unit }}</span>
-                <i class="note" *ngIf="z.note">&nbsp;• {{ z.note }}</i>
-              </span>
-
-              <!-- Medizin – deine gewünschte Bubble mit Info-Icon + Hinweis -->
-              <span *ngIf="z.kind === 'medicine'" class="chip chip-med">
-                <mat-icon class="i">medication</mat-icon>
-                Medizin <b>{{ z.qty }}</b><span *ngIf="z.unit">&nbsp;{{ z.unit }}</span>
-                <mat-icon
-                  class="i info"
-                  *ngIf="z.note"
-                  matTooltip="{{ z.note }}"
-                  aria-label="Hinweis zur Medizin"
-                  >info</mat-icon
-                >
-                <i class="note" *ngIf="z.note">{{ z.note }}</i>
-              </span>
-            </ng-container>
-          </div>
-        </mat-card>
-      </div>
-    </mat-card>
-  </section>
-</div>
+          <ng-template #noFeeds>
+            <div class="empty">Keine Einträge</div>
+          </ng-template>
+        </div>
+      </ng-container>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+</mat-card>
