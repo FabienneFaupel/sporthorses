@@ -42,9 +42,10 @@
     <a [routerLink]="['/feed']"  routerLinkActive="active">
       <mat-icon>warehouse</mat-icon><span>Futterbestand</span>
     </a>
-    <a routerLink="/more" routerLinkActive="active">
-    <mat-icon>more_horiz</mat-icon><span>Mehr</span>
-  </a>
+    <button type="button" class="nav-btn" (click)="openMore()" aria-label="Mehr">
+  <mat-icon>more_horiz</mat-icon><span>Mehr</span>
+</button>
+
 
   </nav>
 

@@ -1,0 +1,15 @@
+<!-- kleiner "Grabber" oben -->
+<div class="sheet-grabber" aria-hidden="true"></div>
+
+<!-- Liste mit Zielen -->
+<mat-nav-list>
+  <a
+    mat-list-item
+    *ngFor="let i of items"
+    (click)="go(i.link)"
+    [attr.aria-label]="i.label"
+  >
+    <mat-icon matListIcon>{{ i.icon }}</mat-icon>
+    <span matLine>{{ i.label }}</span>
+  </a>
+</mat-nav-list>

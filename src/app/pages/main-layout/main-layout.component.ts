@@ -11,6 +11,8 @@ import { MatListItem } from '@angular/material/list';
 import { MatNavList } from '@angular/material/list';
 
 import { LandingPageComponent } from '../landing-page/landing-page.component';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { BottomSheetComponent } from '../../components/bottom-sheet/bottom-sheet.component';
 
 @Component({
   selector: 'app-main-layout',
@@ -33,5 +35,13 @@ import { LandingPageComponent } from '../landing-page/landing-page.component';
   styleUrl: './main-layout.component.scss'
 })
 export class MainLayoutComponent {
+constructor(private bottomSheet: MatBottomSheet) {}
 
+  openMore() {
+    this.bottomSheet.open(BottomSheetComponent, {
+      panelClass: 'more-sheet',   // optional: fürs Styling
+      autoFocus: false,
+      restoreFocus: false
+    });
+  }
 }
