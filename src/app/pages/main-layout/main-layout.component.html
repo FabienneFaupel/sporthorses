@@ -21,10 +21,12 @@
     </div>
   </mat-toolbar>
 
+
   <!-- Scroll-Container: nur hier wird gescrollt -->
   <main class="app-content" >
     <router-outlet></router-outlet>
   </main>
+
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav" role="navigation" aria-label="Hauptnavigation">
@@ -38,11 +40,12 @@
       <mat-icon>vacciness</mat-icon><span>Gesundheit</span>
     </a>
     <a [routerLink]="['/feed']"  routerLinkActive="active">
-      <mat-icon>restaurant</mat-icon><span>Futterplan</span>
+      <mat-icon>warehouse</mat-icon><span>Futterbestand</span>
     </a>
     <a routerLink="/more" routerLinkActive="active">
     <mat-icon>more_horiz</mat-icon><span>Mehr</span>
   </a>
 
   </nav>
+
 </body>
