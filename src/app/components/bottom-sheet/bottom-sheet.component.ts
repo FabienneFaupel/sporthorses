@@ -18,7 +18,7 @@ constructor(
   ) {}
 
   items = [
-    { label: 'Futterplan',    icon: 'restaurant',   link: '/more/futterplan' },
+    { label: 'Futterplan',    icon: 'restaurant',   link: '/futterplan' },
     { label: 'Statistiken',   icon: 'insights',     link: '/more/statistiken' },
     { label: 'Turnierbericht',icon: 'emoji_events', link: '/more/turnierbericht' },
   ];

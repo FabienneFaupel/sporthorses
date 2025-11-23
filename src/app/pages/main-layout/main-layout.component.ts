@@ -9,6 +9,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatListItem } from '@angular/material/list';
 import { MatNavList } from '@angular/material/list';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 import { LandingPageComponent } from '../landing-page/landing-page.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
@@ -35,7 +37,26 @@ import { BottomSheetComponent } from '../../components/bottom-sheet/bottom-sheet
   styleUrl: './main-layout.component.scss'
 })
 export class MainLayoutComponent {
-constructor(private bottomSheet: MatBottomSheet) {}
+isMoreActive = false;
+
+  constructor(private bottomSheet: MatBottomSheet, private router: Router) {
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.isMoreActive = this.checkMoreRoutes();
+      });
+  }
+
+  checkMoreRoutes(): boolean {
+    const url = this.router.url;
+
+    // alle Seiten, die zu "Mehr" gehören
+    return url.startsWith('/futterplan') ||
+           url.startsWith('/profile') ||
+           url.startsWith('/support');
+  }
+
+
 
   openMore() {
     this.bottomSheet.open(BottomSheetComponent, {

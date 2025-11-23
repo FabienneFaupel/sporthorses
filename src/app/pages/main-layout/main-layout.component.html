@@ -30,7 +30,7 @@
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav" role="navigation" aria-label="Hauptnavigation">
-    <a [routerLink]="['/start']" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
+    <a [routerLink]="['']" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
       <mat-icon>home</mat-icon><span>Start</span>
     </a>
     <a [routerLink]="['/farrier']"  routerLinkActive="active">
@@ -42,7 +42,7 @@
     <a [routerLink]="['/feed']"  routerLinkActive="active">
       <mat-icon>warehouse</mat-icon><span>Futterbestand</span>
     </a>
-    <button type="button" class="nav-btn" (click)="openMore()" aria-label="Mehr">
+    <button type="button" class="nav-btn" (click)="openMore()" aria-label="Mehr" [class.active]="isMoreActive">
   <mat-icon>more_horiz</mat-icon><span>Mehr</span>
 </button>
 
