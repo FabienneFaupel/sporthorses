@@ -2,3 +2,24 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+:root {
+  --header-h: 100px;
+  --bottom-h: 64px;
+  --nav-active: #e91e63;
+  --nav-inactive: #9e9e9e;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;          /* kein Body-Scroll */
+  overscroll-behavior: none; /* verhindert Bounce des Viewports (da wo unterstützt) */
+  background: #fff;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+

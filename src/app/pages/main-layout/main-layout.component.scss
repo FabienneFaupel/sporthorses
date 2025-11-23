@@ -1,23 +1,6 @@
 @import '../../styles/colors.scss';
 
-:root {
-  --header-h: 100px;  /* deine Toolbar-Höhe */
-  --bottom-h: 64px; 
-    /* bequeme Touch-Ziele */
-}
 
-html, body {
-  height: 100%;
-  margin: 0;
-  overflow: hidden;          /* verhindert Body-Scroll */
-  overscroll-behavior: none; /* kein Pull-to-Refresh/Bounce der Seite */
-  background: #fff;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-}
 
 /* Header */
 .app-toolbar {
