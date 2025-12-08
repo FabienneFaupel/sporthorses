@@ -15,4 +15,7 @@ export interface KraftfutterDelivery {
   priceEuro?: number;
   supplier?: string;
   note?: string;
+
+  createdAt?: string;
+  updatedAt?: string;
 }

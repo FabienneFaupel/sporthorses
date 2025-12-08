@@ -16,6 +16,9 @@ export interface FeedLogEntry {
   action: 'add' | 'consume';
   amount: number;
   price?: number;
+
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 

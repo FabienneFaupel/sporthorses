@@ -1,7 +1,10 @@
+@import '../../styles/colors.scss';
 
 .card {
     margin-top: 20px;
     padding-top: 10px;
+    background-color: #f8f9fa;
+    border: solid 1px #e5e5e5;
 }
 
 
@@ -21,23 +24,32 @@
   margin: 6px 4px 12px;
 }
 
+.horse-name-box {
+  display: flex;
+  align-items: center;
+}
+
+.horse-img {
+  width: 35px;
+}
+
 .horse {
   font-weight: 700;
-  color: #374151;
   text-transform: lowercase;
 }
 
 .add-btn {
-  color: #6b7280;
+  color: $secondarycolor;
 }
 
 /* Einzelne Feed-Karten */
 .feed-card {
-  background: #fff;
+  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   margin-bottom: 12px; /* Abstand zwischen Einträgen */
   padding: 12px 16px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.18);
 }
 
 /* Inhalt im Feed */
@@ -59,12 +71,12 @@
 
 .product {
   font-size: 1rem;
-  color: #111827;
+  color: #3c3c3c;
 }
 
 .amount {
   font-weight: 600;
-  color: #111827;
+  color: #3c3c3c;
 }
 
 .empty {

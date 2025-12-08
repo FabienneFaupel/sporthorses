@@ -29,7 +29,7 @@ export class FutterplanPageComponent {
 
   horses = [
     {
-      name: 'somersby',
+      name: 'Somersby',
       feeds: [
         { product: 'Hafer', amount: '1 Schippe', icon: 'spa', iconColor: 'icon-grain' },
         { product: 'Cavalor Calm', amount: '5 g', icon: 'science', iconColor: 'icon-supplement' }

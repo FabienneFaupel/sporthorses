@@ -60,6 +60,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      color: #3c3c3c;
       
 
       mat-icon {
@@ -100,7 +101,7 @@
 
   h2 {
     display: flex; align-items: center; gap: 8px;
-    font-size: 18px; font-weight: 700; margin: 0 0 8px 0; padding: 8px 12px;
+    font-size: 18px; font-weight: 700; margin: 0 0 8px 0; padding: 8px 12px; 
   }
 
   .muted { opacity: .7; padding: 12px; margin: 0; }
@@ -113,6 +114,10 @@
 .row {
   display: grid;
   gap: 12px;
+}
+
+.name {
+  color: #3c3c3c;
 }
 
 .parents {
