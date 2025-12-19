@@ -10,7 +10,7 @@ constructor(private db: CouchDbService) {}
 
   async loadAll(): Promise<KraftfutterDelivery[]> {
     // ohne Mango-Sort (Index) – wir sortieren später im Client
-    const res = await this.db.find({ docType: 'kraftfutter' });
+    const res = await this.db.find({ selector: { docType: 'kraftfutter' } });
     const docs = (res.docs || []) as KraftfutterDelivery[];
     // neueste oben
     docs.sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));

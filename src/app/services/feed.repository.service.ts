@@ -35,9 +35,9 @@ constructor(private db: CouchDbService) {}
   const now = new Date();
   const docDate = date ?? now;
 
-  const id = `feed:${crypto.randomUUID()}`;
+  const id = `feed:add:${crypto.randomUUID()}`;
 
-  const payload = {
+  const doc = {
     _id: id,
     docType: 'feedLog',
     action: 'add',
@@ -49,16 +49,17 @@ constructor(private db: CouchDbService) {}
     updatedAt: now.toISOString()
   };
 
-  return this.db.putDoc(id, payload);
+  // PUT statt POST -> du bestimmst die ID
+  return this.db.putDoc(id, doc);
 }
 
 async consume(type: 'heu'|'stroh', amount: number, date?: Date) {
   const now = new Date();
   const docDate = date ?? now;
 
-  const id = `feed:${crypto.randomUUID()}`;
+  const id = `feed:consume:${crypto.randomUUID()}`;
 
-  const payload = {
+  const doc = {
     _id: id,
     docType: 'feedLog',
     action: 'consume',
@@ -69,8 +70,9 @@ async consume(type: 'heu'|'stroh', amount: number, date?: Date) {
     updatedAt: now.toISOString()
   };
 
-  return this.db.putDoc(id, payload);
+  return this.db.putDoc(id, doc);
 }
+
 
 
   async remove(entry: FeedLogEntry) {

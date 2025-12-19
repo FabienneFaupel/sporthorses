@@ -76,7 +76,4 @@ async putDoc(id: string, doc: any) {
   if (!res.ok) throw new Error(await res.text());
   return res.json(); // { ok, id, rev }
 }
-
-
-
 }
