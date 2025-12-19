@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -30,6 +31,7 @@ export interface ConsumeDialogData {
     MatNativeDateModule,
     MatSelectModule,
     MatCardModule,
+    CommonModule,
 
   ],
   templateUrl: './feed-consume-dialog.component.html',
