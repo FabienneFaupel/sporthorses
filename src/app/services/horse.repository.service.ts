@@ -21,10 +21,21 @@ export class HorseRepositoryService {
   }
 
   async create(horse: Omit<Horse, '_id'|'_rev'>) {
-    const now = new Date().toISOString();
-    const payload = { ...horse, createdAt: now, updatedAt: now };
-    return this.db.postDoc(payload); // -> { ok, id, rev }
-  }
+  const now = new Date().toISOString();
+
+  const id = `horse:${crypto.randomUUID()}`;
+
+  const payload: Horse = {
+    ...horse,
+    _id: id,
+    docType: 'horse',
+    createdAt: now,
+    updatedAt: now
+  } as Horse;
+
+  return this.db.putDoc(id, payload); // -> { ok, id, rev }
+}
+
 
   async update(horse: Horse) {
     if (!horse._id || !horse._rev) throw new Error('id/rev fehlt');

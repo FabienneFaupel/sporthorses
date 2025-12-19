@@ -22,13 +22,20 @@ async create(
   delivery: Omit<KraftfutterDelivery, '_id'|'_rev'|'docType'|'createdAt'|'updatedAt'>
 ) {
   const now = new Date().toISOString();
-  return this.db.postDoc({
+
+  const id = `kraftfutter:${crypto.randomUUID()}`;
+
+  const payload = {
     ...delivery,
+    _id: id,
     docType: 'kraftfutter',
     createdAt: now,
     updatedAt: now
-  });
+  };
+
+  return this.db.putDoc(id, payload);
 }
+
 
 
   async update(delivery: KraftfutterDelivery) {

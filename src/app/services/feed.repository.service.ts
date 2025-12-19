@@ -32,30 +32,46 @@ constructor(private db: CouchDbService) {}
 
 
   async add(type: 'heu'|'stroh', amount: number, price?: number, date?: Date) {
-    const now = new Date();
-    const docDate = date ?? now; // <-- neu
-    return this.db.postDoc({
-      docType: 'feedLog',
-      action: 'add',
-      type, amount, price,
-      date: docDate.toISOString().slice(0,10),
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
-    });
-  }
+  const now = new Date();
+  const docDate = date ?? now;
 
-  async consume(type: 'heu'|'stroh', amount: number, date?: Date) {
-    const now = new Date();
-    const docDate = date ?? now;
-    return this.db.postDoc({
-      docType: 'feedLog',
-      action: 'consume',
-      type, amount,
-      date: docDate.toISOString().slice(0,10),
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
-    });
-  }
+  const id = `feed:${crypto.randomUUID()}`;
+
+  const payload = {
+    _id: id,
+    docType: 'feedLog',
+    action: 'add',
+    type,
+    amount,
+    price,
+    date: docDate.toISOString().slice(0,10),
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString()
+  };
+
+  return this.db.putDoc(id, payload);
+}
+
+async consume(type: 'heu'|'stroh', amount: number, date?: Date) {
+  const now = new Date();
+  const docDate = date ?? now;
+
+  const id = `feed:${crypto.randomUUID()}`;
+
+  const payload = {
+    _id: id,
+    docType: 'feedLog',
+    action: 'consume',
+    type,
+    amount,
+    date: docDate.toISOString().slice(0,10),
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString()
+  };
+
+  return this.db.putDoc(id, payload);
+}
+
 
   async remove(entry: FeedLogEntry) {
   if (!entry._id || !entry._rev) throw new Error('id/rev fehlt');
