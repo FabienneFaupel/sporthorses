@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class CouchDbService {
   private couchUrl = 'http://127.0.0.1:5984';
-  private dbName = 'family';
+  private dbName = 'sporthorses';
   private user = 'family_user';
   private pass = 'MaNaFaJa2005';
 

@@ -4,23 +4,7 @@ import { HorseRepositoryService } from './horse.repository.service';
 import { Horse, FarrierEntry, Vaccination } from '../models/horse';
 import { KraftfutterRepositoryService } from './kraftfutter.repository.service';
 import { KraftfutterDelivery } from '../models/kraftfutter';
-
-
-
-
-export interface FeedLogEntry {
-  _id?: string;   // neu
-  _rev?: string;  // neu
-  date: Date;
-  type: 'heu' | 'stroh';
-  action: 'add' | 'consume';
-  amount: number;
-  price?: number;
-
-  createdAt?: string;
-  updatedAt?: string;
-}
-
+import { FeedLogEntry } from '../models/feed';
 
 
 
@@ -165,17 +149,9 @@ async deleteVaccination(horseId: string, index: number) {
   private hayCurrent = 0;
   private strawCurrent = 0;
 
-  // Feed-Historie
-  private feedLog: FeedLogEntry[] = [
-    { date: new Date('2025-01-01'), type: 'heu', action: 'consume', amount: 1 },
-    { date: new Date('2025-02-12'), type: 'stroh', action: 'add', amount: 5, price: 75  },
-    { date: new Date('2024-06-23'), type: 'heu', action: 'add', amount: 10, price: 75  },
-    { date: new Date('2025-01-01'), type: 'heu', action: 'consume', amount: 1 },
-    { date: new Date('2025-03-12'), type: 'stroh', action: 'add', amount: 5, price: 75  },
-    { date: new Date('2025-04-23'), type: 'heu', action: 'add', amount: 10, price: 75  },
-  ];
-
   
+  private feedLog: FeedLogEntry[] = [];
+
 
   private recomputeStocks() {
   let hay = 0, straw = 0;
@@ -183,8 +159,9 @@ async deleteVaccination(horseId: string, index: number) {
 
   // chronologisch auswerten (wichtig!)
   const sorted = [...this.feedLog].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+  (a, b) => a.date.getTime() - b.date.getTime()
+);
+
 
   for (const e of sorted) {
     if (e.type === 'heu') {
@@ -241,12 +218,19 @@ async deleteVaccination(horseId: string, index: number) {
   }
 
   async addFeed(type: 'heu' | 'stroh', amount: number, price?: number, date?: Date) {
-  const entry: FeedLogEntry = { date: date ?? new Date(), type, action: 'add', amount, price };
+  const entry: FeedLogEntry = {
+    date: date ?? new Date(),
+    type,
+    action: 'add',
+    amount: Number(amount),
+    price: price != null ? Number(price) : undefined
+  };
+
   this.feedLog.push(entry);
   this.recomputeStocks();
 
   try {
-    const res = await this.feedRepo.add(type, amount, price, date); // { id, rev }
+    const res = await this.feedRepo.add(type, entry.amount, entry.price, entry.date);
     entry._id = res.id;
     entry._rev = res.rev;
   } catch (e) {
@@ -255,18 +239,25 @@ async deleteVaccination(horseId: string, index: number) {
 }
 
 async consumeFeed(type: 'heu' | 'stroh', amount: number, date?: Date) {
-  const entry: FeedLogEntry = { date: date ?? new Date(), type, action: 'consume', amount };
+  const entry: FeedLogEntry = {
+    date: date ?? new Date(),
+    type,
+    action: 'consume',
+    amount: Number(amount)
+  };
+
   this.feedLog.push(entry);
   this.recomputeStocks();
 
   try {
-    const res = await this.feedRepo.consume(type, amount, date); // { id, rev }
+    const res = await this.feedRepo.consume(type, entry.amount, entry.date);
     entry._id = res.id;
     entry._rev = res.rev;
   } catch (e) {
     console.error('Error consuming feed:', e);
   }
 }
+
 
 canConsume(type: 'heu' | 'stroh', amount: number): boolean {
   const stock = type === 'heu' ? this.hayCurrent : this.strawCurrent;
@@ -298,16 +289,23 @@ async deleteFeed(entry: FeedLogEntry) {
 
 async updateFeed(entry: FeedLogEntry, patch: Partial<FeedLogEntry>) {
   Object.assign(entry, patch);
+
+  // wichtig: falls date als String reinkommt
+  if (typeof (entry.date as any) === 'string') {
+    entry.date = new Date(entry.date as any);
+  }
+
   this.recomputeStocks();
 
   try {
     const res = await this.feedRepo.update(entry);
-    entry._rev = res.rev; // neue revision aus couchdb übernehmen
+    entry._rev = res.rev;
   } catch (e) {
     console.error('Update failed:', e);
-    await this.loadFeedFromDb(); // fallback: neu laden
+    await this.loadFeedFromDb();
   }
 }
+
 
 // --- KRAFTFUTTER ---
   private kraftfutter: KraftfutterDelivery[] = [];

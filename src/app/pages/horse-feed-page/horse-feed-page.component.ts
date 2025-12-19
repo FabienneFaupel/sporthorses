@@ -19,7 +19,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 
 import { FeedAddDialogComponent } from '../../components/feed-add-dialog/feed-add-dialog.component';
 import { FeedConsumeDialogComponent } from '../../components/feed-consume-dialog/feed-consume-dialog.component';
-import { DataService, FeedLogEntry } from '../../services/data.service';
+import { DataService } from '../../services/data.service';
+import { FeedLogEntry } from '../../models/feed';
 import { KraftfutterPageComponent } from '../../pages/kraftfutter-page/kraftfutter-page.component';
 import { FutterplanPageComponent } from '../futterplan-page/futterplan-page.component';
 

@@ -16,6 +16,7 @@ export interface KraftfutterDelivery {
   supplier?: string;
   note?: string;
 
+  // das speicherst du sowieso schon:
   createdAt?: string;
   updatedAt?: string;
 }

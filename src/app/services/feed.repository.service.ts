@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CouchDbService } from './couchdb.service';
-import { FeedLogEntry } from './data.service'; // ggf. Pfad anpassen
+import { FeedLogEntry } from '../models/feed'; // ggf. Pfad anpassen
 
 @Injectable({
   providedIn: 'root'
@@ -9,39 +9,26 @@ export class FeedRepositoryService {
 constructor(private db: CouchDbService) {}
 
   async loadFeed(): Promise<FeedLogEntry[]> {
-  // holt sowohl neue als auch alte Dokus
   const res = await this.db.find({
-    docType: { $in: ['feedLog', 'lieferung', 'verbrauch'] }
+    selector: { docType: 'feedLog' },
+    sort: [{ date: 'desc' }]
   });
 
-  const entries: FeedLogEntry[] = (res.docs || []).map((d: any) => {
-    // action ableiten, falls altes Schema
-    const action: 'add' | 'consume' =
-      d.action ??
-      (d.docType === 'lieferung' ? 'add' :
-       d.docType === 'verbrauch' ? 'consume' : 'add');
+  const entries: FeedLogEntry[] = (res.docs || []).map((d: any) => ({
+    _id: d._id,
+    _rev: d._rev,
+    date: new Date(d.date),      // String -> Date
+    type: d.type,
+    action: d.action,
+    amount: d.amount,
+    price: d.price,
+    createdAt: d.createdAt,
+    updatedAt: d.updatedAt
+  }));
 
-    // Felder robust lesen (falls alte Namen benutzt wurden)
-    const dateStr = d.date ?? d.datum ?? d.createdAt ?? new Date().toISOString();
-    const type: 'heu' | 'stroh' = d.type ?? d.futter ?? d.kind ?? 'heu';
-    const amount = Number(d.amount ?? d.menge ?? 0);
-    const price = d.price ?? d.preis;
-
-    return {
-      _id: d._id,         
-      _rev: d._rev,
-      date: new Date(dateStr),
-      type,
-      action,
-      amount,
-      price
-    } as FeedLogEntry;
-  });
-
-  // für die Anzeige neueste zuerst
-  entries.sort((a, b) => b.date.getTime() - a.date.getTime());
   return entries;
 }
+
 
 
   async add(type: 'heu'|'stroh', amount: number, price?: number, date?: Date) {
