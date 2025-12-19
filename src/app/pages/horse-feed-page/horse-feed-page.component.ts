@@ -60,14 +60,17 @@ export class HorseFeedPageComponent {
 
    loading = true;
 
-   get totalConsumedThisYear(): number {
+  get totalConsumedThisYear(): number {
   return this.feedLog
-    .filter(log =>
-      log.action === 'consume' &&
-      new Date(log.date).getFullYear() === this.selectedYear
-    )
-    .reduce((sum, log) => sum + log.amount, 0);
+    .filter(log => {
+      if (log.action !== 'consume') return false;
+      if (this.selectedYear === 'all') return true;
+      return log.date.getFullYear() === this.selectedYear;
+    })
+    .reduce((sum, log) => sum + (log.amount ?? 0), 0);
 }
+
+
 
 
 async ngOnInit() {
