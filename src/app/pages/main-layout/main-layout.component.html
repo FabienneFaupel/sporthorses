@@ -12,13 +12,18 @@
       <button mat-icon-button [routerLink]="['/start']" aria-label="Start">
         <mat-icon>home</mat-icon>
       </button>
-      <button mat-icon-button aria-label="Profil">
+      <button mat-icon-button aria-label="Profil" >
         <mat-icon>event</mat-icon>
       </button>
-      <button mat-icon-button aria-label="Einstellungen">
+      <button mat-icon-button aria-label="Einstellungen" [matMenuTriggerFor]="userMenu">
         <mat-icon>person</mat-icon>
       </button>
     </div>
+    
+    <mat-menu #userMenu="matMenu" xPosition="before" yPosition="below">
+  <app-user-menu></app-user-menu>
+</mat-menu>
+
   </mat-toolbar>
 
 

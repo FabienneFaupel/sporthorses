@@ -1,1 +1,13 @@
-<p>user-menu works!</p>
+<div class="user-box">
+  <div class="name">{{ auth.user?.displayName || auth.user?.username }}</div>
+  <div class="meta">
+    Rolle: {{ auth.user?.role }} · Stall: {{ auth.user?.stallId }}
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<button mat-menu-item (click)="logout()">
+  <mat-icon>logout</mat-icon>
+  <span>Logout</span>
+</button>

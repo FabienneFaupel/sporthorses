@@ -11,10 +11,14 @@ import { MatListItem } from '@angular/material/list';
 import { MatNavList } from '@angular/material/list';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { MatMenuModule } from '@angular/material/menu';
+
+
 
 import { LandingPageComponent } from '../landing-page/landing-page.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { BottomSheetComponent } from '../../components/bottom-sheet/bottom-sheet.component';
+import { UserMenuComponent } from '../../components/user-menu/user-menu.component';
 
 @Component({
   selector: 'app-main-layout',
@@ -30,6 +34,8 @@ import { BottomSheetComponent } from '../../components/bottom-sheet/bottom-sheet
     MatListItem,
     MatNavList,
     LandingPageComponent,
+    UserMenuComponent,
+    MatMenuModule
 
     
   ],
