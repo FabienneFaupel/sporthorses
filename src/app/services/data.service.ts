@@ -158,9 +158,14 @@ async deleteVaccination(horseId: string, index: number) {
   let hayMax = 0, strawMax = 0;
 
   // chronologisch auswerten (wichtig!)
-  const sorted = [...this.feedLog].sort(
-  (a, b) => a.date.getTime() - b.date.getTime()
-);
+  const sorted = [...this.feedLog].sort((a, b) => {
+  const d = a.date.getTime() - b.date.getTime();
+  if (d !== 0) return d;
+
+  // gleicher Tag → nach Erstellung sortieren
+  return new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime();
+});
+
 
 
   for (const e of sorted) {

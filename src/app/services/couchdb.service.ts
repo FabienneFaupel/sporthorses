@@ -76,4 +76,19 @@ async putDoc(id: string, doc: any) {
   if (!res.ok) throw new Error(await res.text());
   return res.json(); // { ok, id, rev }
 }
+
+async findViaBackend(body: any) {
+  const res = await fetch(`http://localhost:3001/api/find`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+      // stallId kommt später automatisch aus Login / Header
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) throw new Error(await res.text());
+  return res.json(); // { docs: [...] }
+}
+
 }

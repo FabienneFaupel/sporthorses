@@ -8,7 +8,14 @@ import { AddHorsePageComponent } from './pages/add-horse-page/add-horse-page.com
 import { HorseDetailPageComponent } from './pages/horse-detail-page/horse-detail-page.component';
 import { FutterplanPageComponent } from './pages/futterplan-page/futterplan-page.component';
 
+import { LoginPageComponent } from './pages/login-page/login-page.component';
+import { authGuard } from './guards/auth.guard';
+
+
 export const routes: Routes = [
+
+    { path: 'login', component: LoginPageComponent },
+
     { 
         path: '', 
         component: MainLayoutComponent, 

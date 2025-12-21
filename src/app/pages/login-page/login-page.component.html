@@ -1,0 +1,40 @@
+<div class="login-wrapper">
+  <mat-card class="login-card">
+    <h2 class="title">Sporthorses</h2>
+    <p class="subtitle">Bitte einloggen</p>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Benutzername</mat-label>
+      <input matInput [(ngModel)]="username" autocomplete="username" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Passwort</mat-label>
+      <input
+        matInput
+        [(ngModel)]="password"
+        [type]="hidePw ? 'password' : 'text'"
+        autocomplete="current-password"
+      />
+      <button mat-icon-button matSuffix type="button" (click)="hidePw = !hidePw">
+        <mat-icon>{{ hidePw ? 'visibility' : 'visibility_off' }}</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <div class="error" *ngIf="error">{{ error }}</div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="full"
+      [disabled]="loading || !username || !password"
+      (click)="login()"
+    >
+      {{ loading ? 'Einloggen...' : 'Login' }}
+    </button>
+
+    <div class="hint">
+      Du bleibst eingeloggt (Token wird gespeichert).
+    </div>
+  </mat-card>
+</div>

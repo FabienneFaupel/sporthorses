@@ -1,0 +1,31 @@
+.login-wrapper {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 360px;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.full { width: 100%; }
+
+.title { margin: 0 0 6px 0; }
+.subtitle { margin: 0 0 18px 0; opacity: 0.75; }
+
+.error {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255, 0, 0, 0.08);
+}
+
+.hint {
+  margin-top: 12px;
+  font-size: 12px;
+  opacity: 0.7;
+}

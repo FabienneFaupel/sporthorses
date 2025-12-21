@@ -146,8 +146,15 @@ async edit(entry: FeedLogEntry) {
       if (this.selectedYear === 'all') return true;
       return new Date(log.date).getFullYear() === this.selectedYear;
     })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => {
+      const d = new Date(b.date).getTime() - new Date(a.date).getTime();
+      if (d !== 0) return d;
+
+      // gleicher Tag → neueste Buchung zuerst
+      return new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime();
+    });
 }
+
 
 
   openAddDialog() {

@@ -1,23 +1,24 @@
 import { Injectable } from '@angular/core';
-import { CouchDbService } from './couchdb.service';
-import { FeedLogEntry } from '../models/feed'; // ggf. Pfad anpassen
+import { ApiService } from './api.service';
+import { FeedLogEntry } from '../models/feed';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class FeedRepositoryService {
-constructor(private db: CouchDbService) {}
+  constructor(private api: ApiService) {}
 
-  async loadFeed(): Promise<FeedLogEntry[]> {
-  const res = await this.db.find({
-    selector: { docType: 'feedLog' },
-    sort: [{ date: 'desc' }]
+async loadFeed(): Promise<FeedLogEntry[]> {
+  const res = await this.api.find({
+    selector: {
+      docType: 'feedLog'
+    },
+    sort: [{ date: 'desc' }],
+    use_index: ['feed_indexes', 'by_docType_date']
   });
 
-  const entries: FeedLogEntry[] = (res.docs || []).map((d: any) => ({
+  return (res.docs || []).map((d: any) => ({
     _id: d._id,
     _rev: d._rev,
-    date: new Date(d.date),      // String -> Date
+    date: new Date(d.date),
     type: d.type,
     action: d.action,
     amount: d.amount,
@@ -25,76 +26,65 @@ constructor(private db: CouchDbService) {}
     createdAt: d.createdAt,
     updatedAt: d.updatedAt
   }));
-
-  return entries;
 }
-
 
 
   async add(type: 'heu'|'stroh', amount: number, price?: number, date?: Date) {
-  const now = new Date();
-  const docDate = date ?? now;
+    const now = new Date();
+    const docDate = date ?? now;
 
-  const id = `feed:add:${crypto.randomUUID()}`;
+    const id = `feed:add:${crypto.randomUUID()}`;
+    const doc = {
+      _id: id,
+      docType: 'feedLog',
+      action: 'add',
+      type,
+      amount,
+      price,
+      date: docDate.toISOString().slice(0, 10),
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString()
+    };
 
-  const doc = {
-    _id: id,
-    docType: 'feedLog',
-    action: 'add',
-    type,
-    amount,
-    price,
-    date: docDate.toISOString().slice(0,10),
-    createdAt: now.toISOString(),
-    updatedAt: now.toISOString()
-  };
+    return this.api.createDoc(id, doc);
+  }
 
-  // PUT statt POST -> du bestimmst die ID
-  return this.db.putDoc(id, doc);
-}
+  async consume(type: 'heu'|'stroh', amount: number, date?: Date) {
+    const now = new Date();
+    const docDate = date ?? now;
 
-async consume(type: 'heu'|'stroh', amount: number, date?: Date) {
-  const now = new Date();
-  const docDate = date ?? now;
+    const id = `feed:consume:${crypto.randomUUID()}`;
+    const doc = {
+      _id: id,
+      docType: 'feedLog',
+      action: 'consume',
+      type,
+      amount,
+      date: docDate.toISOString().slice(0, 10),
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString()
+    };
 
-  const id = `feed:consume:${crypto.randomUUID()}`;
-
-  const doc = {
-    _id: id,
-    docType: 'feedLog',
-    action: 'consume',
-    type,
-    amount,
-    date: docDate.toISOString().slice(0,10),
-    createdAt: now.toISOString(),
-    updatedAt: now.toISOString()
-  };
-
-  return this.db.putDoc(id, doc);
-}
-
-
+    return this.api.createDoc(id, doc);
+  }
 
   async remove(entry: FeedLogEntry) {
-  if (!entry._id || !entry._rev) throw new Error('id/rev fehlt');
-  return this.db.deleteDoc(entry._id, entry._rev);
-}
+    if (!entry._id || !entry._rev) throw new Error('id/rev fehlt');
+    return this.api.deleteDoc(entry._id, entry._rev);
+  }
 
-async update(entry: FeedLogEntry) {
-  if (!entry._id || !entry._rev) throw new Error('id/rev fehlt');
-  const payload = {
-    _id: entry._id,
-    _rev: entry._rev,
-    docType: 'feedLog',
-    action: entry.action,
-    type: entry.type,
-    amount: entry.amount,
-    price: entry.price,
-    date: entry.date.toISOString().slice(0,10),
-    updatedAt: new Date().toISOString()
-  };
-  return this.db.putDoc(entry._id, payload);
-}
+  async update(entry: FeedLogEntry) {
+    if (!entry._id || !entry._rev) throw new Error('id/rev fehlt');
 
+    const payload = {
+      ...entry,
+      _id: entry._id,
+      _rev: entry._rev,
+      docType: 'feedLog',
+      date: entry.date.toISOString().slice(0, 10),
+      updatedAt: new Date().toISOString()
+    };
 
+    return this.api.updateDoc(entry._id, payload);
+  }
 }
