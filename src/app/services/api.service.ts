@@ -9,6 +9,7 @@ export class ApiService {
 
   private headers(extra?: Record<string, string>) {
     const token = this.auth.token;
+
     return {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -17,10 +18,7 @@ export class ApiService {
   }
 
   async health() {
-    const res = await fetch(`${this.baseUrl}/health`, {
-      headers: { 'Content-Type': 'application/json' }
-    });
-    if (!res.ok) throw new Error(await res.text());
+    const res = await fetch(`${this.baseUrl}/health`);
     return res.json();
   }
 

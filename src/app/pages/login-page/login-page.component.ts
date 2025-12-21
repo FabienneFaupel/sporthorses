@@ -39,6 +39,12 @@ export class LoginPageComponent {
     private auth: AuthService,
     private router: Router
   ) {}
+  
+  async doLogin() {
+  const res = await this.authApi.login(this.username, this.password);
+  this.auth.setSession(res);
+  this.router.navigateByUrl('/');
+}
 
   async ngOnInit() {
     // Wenn schon eingeloggt: direkt in die App

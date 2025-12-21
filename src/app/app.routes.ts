@@ -10,15 +10,17 @@ import { FutterplanPageComponent } from './pages/futterplan-page/futterplan-page
 
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { authGuard } from './guards/auth.guard';
+import { guestGuard } from './guards/guest.guard';
 
 
 export const routes: Routes = [
 
-    { path: 'login', component: LoginPageComponent },
+    { path: 'login', component: LoginPageComponent, canActivate: [guestGuard] },
 
     { 
         path: '', 
         component: MainLayoutComponent, 
+        canActivate: [authGuard],
         children: [
             { path: '', component: LandingPageComponent },
             { path: 'vaccination', component: VaccinationPageComponent },
