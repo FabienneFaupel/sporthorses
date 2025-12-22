@@ -3,7 +3,7 @@ import { AuthService, LoginResponse } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthApiService {
-  private baseUrl = 'http://localhost:3001/api';
+  private baseUrl = '/api';
 
   constructor(private auth: AuthService) {}
 

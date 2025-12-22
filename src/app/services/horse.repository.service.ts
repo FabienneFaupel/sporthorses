@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Horse } from '../models/horse';
+import { newId } from '../utils/id';
 
 @Injectable({ providedIn: 'root' })
 export class HorseRepositoryService {
@@ -8,16 +9,14 @@ export class HorseRepositoryService {
 
   async loadAll(): Promise<Horse[]> {
     const res = await this.api.find({
-      selector: { docType: 'horse' },
-      sort: [{ name: 'asc' }],
-      use_index: ['horse_indexes', 'by_docType_name']
+      selector: { docType: 'horse' }
     });
     return (res.docs || []) as Horse[];
   }
 
-  async create(horse: Omit<Horse, '_id'|'_rev'>) {
+  async create(horse: Omit<Horse, '_id' | '_rev'>) {
     const now = new Date().toISOString();
-    const id = `horse:${crypto.randomUUID()}`;
+    const id = newId('horse:');
 
     const payload: Horse = {
       ...horse,
@@ -32,12 +31,13 @@ export class HorseRepositoryService {
 
   async update(horse: Horse) {
     if (!horse._id || !horse._rev) throw new Error('id/rev fehlt');
-    const now = new Date().toISOString();
-    return this.api.updateDoc(horse._id, { ...horse, updatedAt: now });
+    return this.api.updateDoc(horse._id, {
+      ...horse,
+      updatedAt: new Date().toISOString()
+    });
   }
 
   async remove(horse: Horse) {
-    if (!horse._id || !horse._rev) throw new Error('id/rev fehlt');
-    return this.api.deleteDoc(horse._id, horse._rev);
+    return this.api.deleteDoc(horse._id!, horse._rev!);
   }
 }

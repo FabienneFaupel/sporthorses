@@ -1,39 +1,27 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { FeedLogEntry } from '../models/feed';
+import { newId } from '../utils/id';
 
 @Injectable({ providedIn: 'root' })
 export class FeedRepositoryService {
   constructor(private api: ApiService) {}
 
-async loadFeed(): Promise<FeedLogEntry[]> {
-  const res = await this.api.find({
-    selector: {
-      docType: 'feedLog'
-    },
-    sort: [{ date: 'desc' }],
-    use_index: ['feed_indexes', 'by_docType_date']
-  });
+  async loadFeed(): Promise<FeedLogEntry[]> {
+    const res = await this.api.find({
+      selector: { docType: 'feedLog' }
+    });
 
-  return (res.docs || []).map((d: any) => ({
-    _id: d._id,
-    _rev: d._rev,
-    date: new Date(d.date),
-    type: d.type,
-    action: d.action,
-    amount: d.amount,
-    price: d.price,
-    createdAt: d.createdAt,
-    updatedAt: d.updatedAt
-  }));
-}
+    return (res.docs || []).map((d: any) => ({
+      ...d,
+      date: new Date(d.date)
+    }));
+  }
 
-
-  async add(type: 'heu'|'stroh', amount: number, price?: number, date?: Date) {
+  async add(type: 'heu' | 'stroh', amount: number, price?: number, date?: Date) {
     const now = new Date();
-    const docDate = date ?? now;
+    const id = newId('feed:add:');
 
-    const id = `feed:add:${crypto.randomUUID()}`;
     const doc = {
       _id: id,
       docType: 'feedLog',
@@ -41,7 +29,7 @@ async loadFeed(): Promise<FeedLogEntry[]> {
       type,
       amount,
       price,
-      date: docDate.toISOString().slice(0, 10),
+      date: (date ?? now).toISOString().slice(0, 10),
       createdAt: now.toISOString(),
       updatedAt: now.toISOString()
     };
@@ -49,18 +37,17 @@ async loadFeed(): Promise<FeedLogEntry[]> {
     return this.api.createDoc(id, doc);
   }
 
-  async consume(type: 'heu'|'stroh', amount: number, date?: Date) {
+  async consume(type: 'heu' | 'stroh', amount: number, date?: Date) {
     const now = new Date();
-    const docDate = date ?? now;
+    const id = newId('feed:consume:');
 
-    const id = `feed:consume:${crypto.randomUUID()}`;
     const doc = {
       _id: id,
       docType: 'feedLog',
       action: 'consume',
       type,
       amount,
-      date: docDate.toISOString().slice(0, 10),
+      date: (date ?? now).toISOString().slice(0, 10),
       createdAt: now.toISOString(),
       updatedAt: now.toISOString()
     };
@@ -69,22 +56,14 @@ async loadFeed(): Promise<FeedLogEntry[]> {
   }
 
   async remove(entry: FeedLogEntry) {
-    if (!entry._id || !entry._rev) throw new Error('id/rev fehlt');
-    return this.api.deleteDoc(entry._id, entry._rev);
+    return this.api.deleteDoc(entry._id!, entry._rev!);
   }
 
   async update(entry: FeedLogEntry) {
-    if (!entry._id || !entry._rev) throw new Error('id/rev fehlt');
-
-    const payload = {
+    return this.api.updateDoc(entry._id!, {
       ...entry,
-      _id: entry._id,
-      _rev: entry._rev,
-      docType: 'feedLog',
       date: entry.date.toISOString().slice(0, 10),
       updatedAt: new Date().toISOString()
-    };
-
-    return this.api.updateDoc(entry._id, payload);
+    });
   }
 }

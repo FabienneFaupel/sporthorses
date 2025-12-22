@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { KraftfutterDelivery } from '../models/kraftfutter';
+import { newId } from '../utils/id';
 
 @Injectable({ providedIn: 'root' })
 export class KraftfutterRepositoryService {
@@ -10,35 +11,30 @@ export class KraftfutterRepositoryService {
     const res = await this.api.find({
       selector: { docType: 'kraftfutter' }
     });
-
-    const docs = (res.docs || []) as KraftfutterDelivery[];
-    docs.sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
-    return docs;
+    return res.docs || [];
   }
 
-  async create(delivery: Omit<KraftfutterDelivery, '_id'|'_rev'|'docType'|'createdAt'|'updatedAt'>) {
+  async create(delivery: Omit<KraftfutterDelivery, '_id' | '_rev'>) {
     const now = new Date().toISOString();
-    const id = `kraftfutter:${crypto.randomUUID()}`;
+    const id = newId('kraftfutter:');
 
-    const payload = {
+    return this.api.createDoc(id, {
       ...delivery,
       _id: id,
       docType: 'kraftfutter',
       createdAt: now,
       updatedAt: now
-    };
-
-    return this.api.createDoc(id, payload);
+    });
   }
 
   async update(delivery: KraftfutterDelivery) {
-    if (!delivery._id || !delivery._rev) throw new Error('id/rev fehlt');
-    const now = new Date().toISOString();
-    return this.api.updateDoc(delivery._id, { ...delivery, updatedAt: now });
+    return this.api.updateDoc(delivery._id!, {
+      ...delivery,
+      updatedAt: new Date().toISOString()
+    });
   }
 
   async remove(delivery: KraftfutterDelivery) {
-    if (!delivery._id || !delivery._rev) throw new Error('id/rev fehlt');
-    return this.api.deleteDoc(delivery._id, delivery._rev);
+    return this.api.deleteDoc(delivery._id!, delivery._rev!);
   }
 }

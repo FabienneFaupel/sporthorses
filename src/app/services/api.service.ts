@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private baseUrl = 'http://localhost:3001/api';
+  private baseUrl = '/api';
 
   constructor(private auth: AuthService) {}
 
@@ -18,7 +18,8 @@ export class ApiService {
   }
 
   async health() {
-    const res = await fetch(`${this.baseUrl}/health`);
+    const res = await fetch(`${this.baseUrl}/health`, { headers: this.headers() });
+    if (!res.ok) throw new Error(await res.text());
     return res.json();
   }
 
