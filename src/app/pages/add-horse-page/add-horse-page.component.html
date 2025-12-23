@@ -62,22 +62,7 @@
         </mat-autocomplete>
       </mat-form-field>
 
-      <!-- FN-Profil-URL (optional) -->
-<mat-form-field appearance="outline">
-  <mat-label>FN/Equestrian-Hub Profil-URL (optional)</mat-label>
-  <input
-    matInput
-    placeholder="https://equestrian-hub.com/horse/DE123456789"
-    formControlName="fnProfileUrl"
-    inputmode="url"
-    autocomplete="off"
-  />
-  <mat-hint>Profil-Link deines Pferdes bei FN/Equestrian Hub</mat-hint>
-  <mat-error *ngIf="f['fnProfileUrl'].hasError('maxlength')">Max. 300 Zeichen.</mat-error>
-  <mat-error *ngIf="f['fnProfileUrl'].hasError('pattern')">
-    Bitte eine gültige URL mit http(s) angeben.
-  </mat-error>
-</mat-form-field>
+      
 
 
       <h3>Abstammung (optional)</h3>
@@ -110,7 +95,7 @@
 
       <div class="actions">
         <button mat-stroked-button type="button" (click)="onCancel()">Abbrechen</button>
-        <button color="primary" mat-flat-button type="submit">
+        <button color="primary" mat-flat-button type="submit"  [disabled]="form.invalid">
   {{ editMode ? 'Änderungen speichern' : 'Speichern' }}
 </button>
       </div>

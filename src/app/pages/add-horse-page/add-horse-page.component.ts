@@ -91,7 +91,6 @@ get f() {
       gender: this.horse.gender,
       birth: this.horse.birth ? new Date(this.horse.birth) : '',
       breed: this.horse.breed,
-      fnProfileUrl: this.horse.fnProfileUrl || '',
       father: this.horse.pedigree?.father,
       mother: this.horse.pedigree?.mother,
       motherFather: this.horse.pedigree?.motherFather,
@@ -131,7 +130,6 @@ get f() {
       age: Number(v.age),
       birth: birthIso,
       gender: v.gender,
-      fnProfileUrl: v.fnProfileUrl?.trim() || undefined,
       pedigree: {
         father: v.father,
         mother: v.mother,
@@ -156,7 +154,6 @@ get f() {
       age: Number(v.age),
       birth: birthIso,
       gender: v.gender,
-      fnProfileUrl: v.fnProfileUrl?.trim() || undefined,
       vaccinations: [],
       farrierEntries: [],
       pedigree: {

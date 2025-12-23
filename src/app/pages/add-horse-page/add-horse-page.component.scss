@@ -5,7 +5,6 @@ $bg: #fbf7fb;
 
 .page {
   padding: 16px;
-  background: $bg;
   min-height: 100dvh;
 }
 
@@ -28,6 +27,7 @@ $bg: #fbf7fb;
   border-radius: 16px;
   overflow: hidden;
   padding: 0;
+  margin-bottom: 50px;
 
   .side {
     background: $primarycolor;
