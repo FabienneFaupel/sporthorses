@@ -25,7 +25,7 @@ export class HorseDetailPageComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private data: DataService
+    public data: DataService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -68,4 +68,12 @@ export class HorseDetailPageComponent {
       alert('Konnte nicht löschen.');
     }
   }
+  
+  formatDate(iso?: string): string {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-');
+  if (!y || !m || !d) return iso;
+  return `${d}.${m}.${y}`;
+}
+
 }

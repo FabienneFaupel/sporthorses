@@ -28,6 +28,21 @@ private get stallId(): string {
   return sid;
 }
 
+getDisplayAge(h: Horse, ref = new Date()): number {
+  const year = ref.getFullYear();
+
+  // Fall 1: birth vorhanden -> Stichtagsalter aus Geburtsjahr
+  if (h.birth && /^\d{4}-\d{2}-\d{2}$/.test(h.birth)) {
+    const by = Number(h.birth.slice(0, 4));
+    return Math.max(0, year - by);
+  }
+
+  // Fall 2: nur age -> mit ageBaseYear hochrechnen
+  const baseYear = h.ageBaseYear ?? year; // für alte Daten
+  return Math.max(0, Number(h.age ?? 0) + (year - baseYear));
+}
+
+
 
 
  // --- HORSES (aus DB) ---

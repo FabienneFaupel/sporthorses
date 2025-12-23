@@ -27,7 +27,7 @@
             <a [routerLink]="['/horses', horse._id]" class="box-link">
             <app-landing-horse-box 
                 [horseName]="horse.name" 
-                [horseAge]="horse.age" 
+                [horseAge]="dataService.getDisplayAge(horse)"
                 [horseBirth]="horse.birth"
                 [horseGender]="horse.gender"
                 [horseBreed]="horse.breed"

@@ -37,7 +37,7 @@ export class LandingPageComponent {
 
   horses: Horse[] = [];
 
-  constructor(private dataService: DataService) {}
+  constructor(public dataService: DataService) {}
 
   async ngOnInit(): Promise<void> {
   this.loading = true;

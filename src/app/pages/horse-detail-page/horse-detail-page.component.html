@@ -11,7 +11,7 @@
     <img class="horse-avatar" src="/images/horse.svg"  alt="{{ horse?.name }}" />
     <div class="info-title">
       <h2>{{ horse?.name }}</h2>
-      <p class="age">{{ horse?.age }} Jahre</p>
+      <p class="age">{{ data.getDisplayAge(h) }} Jahre</p>
     </div>
   </div>
 
@@ -21,7 +21,13 @@
     <div class="detail">
       <mat-icon>cake</mat-icon>
       <span>Geburtsdatum:</span>
-      <strong>{{ horse?.birth || 'keine Angabe' }}</strong>
+      <strong *ngIf="h.birth; else noBirth">
+  {{ formatDate(h.birth) }}
+</strong>
+<ng-template #noBirth>
+  <strong>keine Angabe</strong>
+</ng-template>
+
     </div>
 
     <div class="detail">

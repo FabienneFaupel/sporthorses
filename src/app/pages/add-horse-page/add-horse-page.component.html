@@ -28,6 +28,11 @@
         <mat-error *ngIf="f['age'].hasError('min') || f['age'].hasError('max')">
           Bitte einen plausiblen Wert (0–50) eingeben.
         </mat-error>
+        <mat-error *ngIf="f['age'].hasError('ageBirthMismatch')">
+  Alter passt nicht zum Geburtsdatum (Stichtag 01.01).
+</mat-error>
+
+
       </mat-form-field>
 
       <!-- Geschlecht -->

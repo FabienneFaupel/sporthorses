@@ -39,6 +39,7 @@ export interface Horse {
   vaccinations: Vaccination[];
   farrierEntries: FarrierEntry[];
   pedigree?: Pedigree;
+  ageBaseYear?: number;
   createdAt?: string;
   updatedAt?: string;
 }
