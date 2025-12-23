@@ -7,27 +7,30 @@ import { newId } from '../utils/id';
 export class HorseRepositoryService {
   constructor(private api: ApiService) {}
 
-  async loadAll(): Promise<Horse[]> {
-    const res = await this.api.find({
-      selector: { docType: 'horse' }
-    });
-    return (res.docs || []) as Horse[];
-  }
+  async loadAll(stallId: string): Promise<Horse[]> {
+  const res = await this.api.find({
+    selector: { docType: 'horse', stallId }
+  });
+  return (res.docs || []) as Horse[];
+}
 
-  async create(horse: Omit<Horse, '_id' | '_rev'>) {
-    const now = new Date().toISOString();
-    const id = newId('horse:');
 
-    const payload: Horse = {
-      ...horse,
-      _id: id,
-      docType: 'horse',
-      createdAt: now,
-      updatedAt: now
-    } as Horse;
+  async create(stallId: string, horse: Omit<Horse, '_id' | '_rev'>) {
+  const now = new Date().toISOString();
+  const id = newId('horse:');
 
-    return this.api.createDoc(id, payload);
-  }
+  const payload: Horse = {
+    ...horse,
+    _id: id,
+    docType: 'horse',
+    stallId,
+    createdAt: now,
+    updatedAt: now
+  } as Horse;
+
+  return this.api.createDoc(id, payload);
+}
+
 
   async update(horse: Horse) {
     if (!horse._id || !horse._rev) throw new Error('id/rev fehlt');

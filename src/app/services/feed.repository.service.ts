@@ -7,53 +7,58 @@ import { newId } from '../utils/id';
 export class FeedRepositoryService {
   constructor(private api: ApiService) {}
 
-  async loadFeed(): Promise<FeedLogEntry[]> {
-    const res = await this.api.find({
-      selector: { docType: 'feedLog' }
-    });
+  async loadFeed(stallId: string): Promise<FeedLogEntry[]> {
+  const res = await this.api.find({
+    selector: { docType: 'feedLog', stallId }
+  });
 
-    return (res.docs || []).map((d: any) => ({
-      ...d,
-      date: new Date(d.date)
-    }));
-  }
+  return (res.docs || []).map((d: any) => ({
+    ...d,
+    date: new Date(d.date)
+  }));
+}
 
-  async add(type: 'heu' | 'stroh', amount: number, price?: number, date?: Date) {
-    const now = new Date();
-    const id = newId('feed:add:');
 
-    const doc = {
-      _id: id,
-      docType: 'feedLog',
-      action: 'add',
-      type,
-      amount,
-      price,
-      date: (date ?? now).toISOString().slice(0, 10),
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
-    };
+  async add(stallId: string, type: 'heu' | 'stroh', amount: number, price?: number, date?: Date) {
+  const now = new Date();
+  const id = newId('feed:add:');
 
-    return this.api.createDoc(id, doc);
-  }
+  const doc = {
+    _id: id,
+    docType: 'feedLog',
+    stallId,
+    action: 'add',
+    type,
+    amount,
+    price,
+    date: (date ?? now).toISOString().slice(0, 10),
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString()
+  };
 
-  async consume(type: 'heu' | 'stroh', amount: number, date?: Date) {
-    const now = new Date();
-    const id = newId('feed:consume:');
+  return this.api.createDoc(id, doc);
+}
 
-    const doc = {
-      _id: id,
-      docType: 'feedLog',
-      action: 'consume',
-      type,
-      amount,
-      date: (date ?? now).toISOString().slice(0, 10),
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
-    };
 
-    return this.api.createDoc(id, doc);
-  }
+  async consume(stallId: string, type: 'heu' | 'stroh', amount: number, date?: Date) {
+  const now = new Date();
+  const id = newId('feed:consume:');
+
+  const doc = {
+    _id: id,
+    docType: 'feedLog',
+    stallId,
+    action: 'consume',
+    type,
+    amount,
+    date: (date ?? now).toISOString().slice(0, 10),
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString()
+  };
+
+  return this.api.createDoc(id, doc);
+}
+
 
   async remove(entry: FeedLogEntry) {
     return this.api.deleteDoc(entry._id!, entry._rev!);

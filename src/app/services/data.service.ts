@@ -5,6 +5,8 @@ import { Horse, FarrierEntry, Vaccination } from '../models/horse';
 import { KraftfutterRepositoryService } from './kraftfutter.repository.service';
 import { KraftfutterDelivery } from '../models/kraftfutter';
 import { FeedLogEntry } from '../models/feed';
+import { AuthService } from './auth.service';
+
 
 
 
@@ -13,15 +15,29 @@ import { FeedLogEntry } from '../models/feed';
 })
 export class DataService {
 
- constructor(private feedRepo: FeedRepositoryService, private horseRepo: HorseRepositoryService, private kraftRepo: KraftfutterRepositoryService,) {}
+ constructor(
+  private feedRepo: FeedRepositoryService,
+  private horseRepo: HorseRepositoryService,
+  private kraftRepo: KraftfutterRepositoryService,
+  private auth: AuthService
+) {}
+
+private get stallId(): string {
+  const sid = this.auth.user?.stallId;
+  if (!sid) throw new Error('Keine stallId im Login-User gefunden. Bitte neu einloggen.');
+  return sid;
+}
+
+
 
  // --- HORSES (aus DB) ---
 
 private horses: Horse[] = [];
 
 async loadHorsesFromDb() {
-  this.horses = await this.horseRepo.loadAll();
+  this.horses = await this.horseRepo.loadAll(this.stallId);
 }
+
 
 getHorses(): Horse[] {
   return this.horses;
@@ -29,11 +45,13 @@ getHorses(): Horse[] {
 
 async addHorse(horse: Omit<Horse, '_id' | '_rev' | 'docType' | 'createdAt' | 'updatedAt'>) {
   // docType hier ergänzen, Repo erwartet 'horse'
-  const res = await this.horseRepo.create({
-    ...horse,
-    docType: 'horse'
-  } as Horse);
-  this.horses.push({ ...horse, docType: 'horse', _id: res.id, _rev: res.rev });
+  const res = await this.horseRepo.create(this.stallId, {
+  ...horse,
+  docType: 'horse'
+} as Horse);
+
+  this.horses.push({ ...horse, docType: 'horse', stallId: this.stallId, _id: res.id, _rev: res.rev } as Horse);
+
 }
 
 async updateHorse(h: Horse) {
@@ -195,9 +213,10 @@ async deleteVaccination(horseId: string, index: number) {
 
   
   async loadFeedFromDb() {
-  this.feedLog = await this.feedRepo.loadFeed();
+  this.feedLog = await this.feedRepo.loadFeed(this.stallId);
   this.recomputeStocks();
 }
+
 
    // Getter für Max-Werte
   getHayMax(): number {
@@ -235,7 +254,8 @@ async deleteVaccination(horseId: string, index: number) {
   this.recomputeStocks();
 
   try {
-    const res = await this.feedRepo.add(type, entry.amount, entry.price, entry.date);
+    const res = await this.feedRepo.add(this.stallId, type, entry.amount, entry.price, entry.date);
+
     entry._id = res.id;
     entry._rev = res.rev;
   } catch (e) {
@@ -255,7 +275,8 @@ async consumeFeed(type: 'heu' | 'stroh', amount: number, date?: Date) {
   this.recomputeStocks();
 
   try {
-    const res = await this.feedRepo.consume(type, entry.amount, entry.date);
+    const res = await this.feedRepo.consume(this.stallId, type, entry.amount, entry.date);
+
     entry._id = res.id;
     entry._rev = res.rev;
   } catch (e) {
@@ -320,8 +341,9 @@ async updateFeed(entry: FeedLogEntry, patch: Partial<FeedLogEntry>) {
   }
 
   async loadKraftfutterFromDb() {
-    this.kraftfutter = await this.kraftRepo.loadAll();
-  }
+  this.kraftfutter = await this.kraftRepo.loadAll(this.stallId);
+}
+
 
   async addKraftfutter(delivery: Omit<KraftfutterDelivery,'_id'|'_rev'|'createdAt'|'updatedAt'|'docType'>) {
   // Optimistic UI – wir zeigen sofort
@@ -329,7 +351,8 @@ async updateFeed(entry: FeedLogEntry, patch: Partial<FeedLogEntry>) {
   this.kraftfutter = [tmp, ...this.kraftfutter];
 
   try {
-    const res = await this.kraftRepo.create(delivery); // Repo fügt docType & timestamps hinzu
+    const res = await this.kraftRepo.create(this.stallId, delivery);
+ // Repo fügt docType & timestamps hinzu
     // in der Liste das temp-Doc durch das „echte“ mit _id/_rev ersetzen
     this.kraftfutter = this.kraftfutter.map(d => d === tmp ? { ...tmp, _id: res.id, _rev: res.rev, docType: 'kraftfutter' } : d);
   } catch (e) {
