@@ -7,7 +7,8 @@
         <h3>{{ horseName }}</h3>
         <hr>
         <p>Alter: {{ horseAge }} Jahre</p>
-        <p>Geburtsdatum: {{ horseBirth }}</p>
-        <p>Rasse: {{ horseBreed }}</p>
+        <p>Geschlecht: {{ horseGender }}</p>
+        <p *ngIf="horseBirth">Geburtsdatum: {{ formatBirth(horseBirth) }}</p>
+
   </div>
 </div>
