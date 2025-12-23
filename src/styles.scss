@@ -14,13 +14,20 @@ html, body {
   height: 100%;
   margin: 0;
   overflow: hidden;          /* kein Body-Scroll */
+  overflow-x: hidden;
   overscroll-behavior: none; /* verhindert Bounce des Viewports (da wo unterstützt) */
+  touch-action: pan-y;
   background: #fff;
 }
 
 body {
   display: flex;
   flex-direction: column;
-  min-width: 400px;
+}
+
+@media (min-width: 768px) {
+  body {
+    min-width: 400px;
+  }
 }
 
