@@ -1,24 +1,341 @@
+@import '../../styles/colors.scss';
+
+.schedule-card {
+  
+padding: 14px;
+  margin: 0 0 14px 0;
+
+  background: #fff;
+  border-radius: 8px;
+  border: solid 1px #e5e5e5;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+
+  position: relative;
+  overflow: hidden;
+
+  // dünner Top-Akzent
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: rgba(236,72,153,.6);
+  }
+
+  &.ok::before      { background: rgba($secondarycolor, .75); }
+  &.soon::before    { background: rgba(245,158,11,.85); }
+  &.overdue::before { background: rgba(239,68,68,.85); }
+  &.none::before    { background: rgba(148,163,184,.75); }
+
+  .schedule-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .schedule-title {
+    display: flex;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .cal-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    margin-top: 2px;
+    opacity: .85;
+    color: rgba(0,0,0,.75);
+  }
+
+  .title {
+    font-weight: 800;
+    font-size: 16px;
+    line-height: 1.15;
+  }
+
+  .subtitle {
+    margin-top: 3px;
+    font-size: 14px;
+    opacity: .9;
+
+    .subnote {
+      font-size: 12px;
+      opacity: .6;
+      margin-left: 6px;
+      white-space: nowrap;
+    }
+  }
+
+  .meta {
+    margin-top: 6px;
+    font-size: 12px;
+    opacity: .65;
+  }
+
+  // ✅ Status-Bubble gefüllt (wie dein Beispiel)
+  .status-chip {
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    border: 1px solid transparent;
+
+    &.ok {
+      background: rgba(34,197,94,.12);
+      border-color: rgba(34,197,94,.30);
+      color: rgba(22,101,52,1);
+    }
+
+    &.soon {
+      background: rgba(245,158,11,.14);
+      border-color: rgba(245,158,11,.35);
+      color: rgba(146,64,14,1);
+    }
+
+    &.overdue {
+      background: rgba(239,68,68,.14);
+      border-color: rgba(239,68,68,.35);
+      color: rgba(127,29,29,1);
+    }
+
+    &.none {
+      background: rgba(148,163,184,.16);
+      border-color: rgba(148,163,184,.35);
+      color: rgba(51,65,85,1);
+    }
+  }
+
+  // Buttons (nicht zu fett)
+  .schedule-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .action {
+    border-radius: 14px;
+    width: 100%;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 700;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .done {
+    background: $secondarycolor !important;
+    color: #fff !important;
+  }
+
+  .plan-edit, .schedule-setdate {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0,0,0,.08);
+  }
+
+  // Plan edit: kompakt, weniger “Text-Chaos”
+  .plan-grid {
+    display: grid;
+    gap: 10px;
+  }
+
+  .plan-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 6px;
+  }
+
+  .hint {
+    margin: 8px 0 0 0;
+    font-size: 12px;
+    opacity: .65;
+    line-height: 1.35;
+  }
+
+  // Termin setzen: mobile zuerst
+  .schedule-setdate {
+    display: grid;
+    gap: 10px;
+
+    .set-btn {
+      height: 44px;
+      border-radius: 14px;
+      
+    }
+  }
+
+  .banner {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    border: 1px solid rgba($secondarycolor, .25);
+    background: rgba($secondarycolor, .08);
+
+    &.warn {
+      border-color: rgba(239,68,68,.25);
+      background: rgba(239,68,68,.08);
+    }
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      opacity: .9;
+    }
+  }
+
+  // Tablet/Desktop: Datum + Button nebeneinander
+  @media (min-width: 768px) {
+    .schedule-setdate {
+      grid-template-columns: 1fr 220px;
+      align-items: end;
+    }
+    .plan-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}
 
 
+
+
+//übergang
+
+
+
+.section-accent {
+  margin-top: 7px;
+  width: 70%;
+  height: 2.5px;
+  background: $primarycolor;
+}
+
+
+
+.section-head {
+  margin: 35px 0 25px 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.section-left {
+  min-width: 0;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 900;
+  font-size: 15px;
+  line-height: 1.2;
+  
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    opacity: .85;
+    color: $secondarycolor;
+  }
+}
+
+.section-sub {
+  margin-top: 10px;
+  font-size: 12px;
+  opacity: .65;
+  line-height: 1.35;
+}
+
+.section-add {
+  border-radius: 999px;
+  height: 38px;
+  padding: 0 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.section-divider {
+  height: 1px;
+  background: rgba(0,0,0,.08);
+  margin: 0 0 14px 0;
+}
+
+
+
+
+//ab hier einzelne impfungren
 .container {
   padding: 1rem;
   max-width: 800px;
   margin: auto;
 }
 
-.btn-box {
-  margin-bottom: 15px;
+.section-cta {
+  margin: 12px 0 10px 0;
+ 
 }
 
 
+.cta-btn {
+  width: 100%;
+  height: 46px;
+  border-radius: 14px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+
+
 hr {
-  border-top: 2px solid #ec4899;
+  border-top: 2px solid $secondarycolor;
 }
 
 
 .horse-card {
   margin-bottom: 2rem;
   padding: 1rem;
+}
+
+.horse-title-box {
+  display: flex;
+ 
+}
+
+.horse-img {
+  width: 40px;
 }
 
 .vaccination-card {
@@ -52,3 +369,9 @@ hr {
   color: red;
   font-weight: bold;
 }
+
+.muted {
+  opacity: .6;
+  font-size: 13px;
+}
+

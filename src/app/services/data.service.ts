@@ -6,6 +6,8 @@ import { KraftfutterRepositoryService } from './kraftfutter.repository.service';
 import { KraftfutterDelivery } from '../models/kraftfutter';
 import { FeedLogEntry } from '../models/feed';
 import { AuthService } from './auth.service';
+import { VaccinationSchedule } from '../models/vaccination-schedule';
+import { VaccinationScheduleRepositoryService } from './vaccination-schedule.repository.service';
 
 
 
@@ -19,7 +21,8 @@ export class DataService {
   private feedRepo: FeedRepositoryService,
   private horseRepo: HorseRepositoryService,
   private kraftRepo: KraftfutterRepositoryService,
-  private auth: AuthService
+  private auth: AuthService,
+  private vacScheduleRepo: VaccinationScheduleRepositoryService
 ) {}
 
 private get stallId(): string {
@@ -171,6 +174,134 @@ async deleteVaccination(horseId: string, index: number) {
   horse._rev = res.rev;
   this.horses[i] = horse;
 }
+
+// ---------------- Vaccination Schedule ----------------
+
+private vaccinationSchedule: VaccinationSchedule | null = null;
+
+private toYYYYMMFromISODate(iso: string): string {
+  // iso: YYYY-MM-DD
+  return iso.slice(0, 7);
+}
+
+private toYYYYMM(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  return `${y}-${m}`;
+}
+
+async loadVaccinationScheduleFromDb() {
+  this.vaccinationSchedule = await this.vacScheduleRepo.loadOne(this.stallId);
+
+  // ✅ Migration: falls altes Doc nur nextVisitDate hat, dueMonth ergänzen
+  if (this.vaccinationSchedule && !this.vaccinationSchedule.dueMonth) {
+    const nd = this.vaccinationSchedule.nextVisitDate;
+    const due = nd ? this.toYYYYMMFromISODate(nd) : this.toYYYYMM(new Date());
+    await this.vacScheduleRepo.upsert(this.stallId, {
+      ...this.vaccinationSchedule,
+      dueMonth: due
+    });
+    this.vaccinationSchedule = await this.vacScheduleRepo.loadOne(this.stallId);
+  }
+}
+
+getVaccinationSchedule(): VaccinationSchedule | null {
+  return this.vaccinationSchedule;
+}
+
+/**
+ * Termin setzen/ändern (konkretes Datum).
+ * dueMonth wird automatisch aus dem Datum abgeleitet.
+ */
+async saveVaccinationScheduleDate(nextVisitDateIso: string, intervalMonths = 6, remindDaysBefore = 14) {
+  const dueMonth = this.toYYYYMMFromISODate(nextVisitDateIso);
+
+  await this.vacScheduleRepo.upsert(this.stallId, {
+    docType: 'vaccination_schedule',
+    stallId: this.stallId,
+    dueMonth,
+    nextVisitDate: nextVisitDateIso,
+    intervalMonths,
+    remindDaysBefore
+  } as VaccinationSchedule);
+
+  await this.loadVaccinationScheduleFromDb();
+}
+
+/**
+ * Nur den fälligen Monat setzen (wenn du noch keinen konkreten Tag weißt)
+ */
+async saveVaccinationScheduleDueMonth(dueMonth: string, intervalMonths = 6, remindDaysBefore = 14) {
+  await this.vacScheduleRepo.upsert(this.stallId, {
+    docType: 'vaccination_schedule',
+    stallId: this.stallId,
+    dueMonth,
+    nextVisitDate: undefined, // ✅ noch kein konkreter Termin
+    intervalMonths,
+    remindDaysBefore
+  } as VaccinationSchedule);
+
+  await this.loadVaccinationScheduleFromDb();
+}
+
+/**
+ * ✅ "Erledigt" heißt:
+ * - Nächster Monat = dueMonth + 6 Monate
+ * - nextVisitDate löschen (unbekannt)
+ */
+async markScheduleDoneMoveToNextMonth() {
+  const s = this.vaccinationSchedule;
+  if (!s) return;
+
+  const baseIso = `${s.dueMonth}-01`; // ✅ immer Soll-Monat als Basis
+  const nextDue = this.computeNextDueMonthFromVisit(baseIso, s.intervalMonths);
+
+  await this.vacScheduleRepo.upsert(this.stallId, {
+    ...s,
+    dueMonth: nextDue,
+    nextVisitDate: undefined
+  });
+
+  await this.loadVaccinationScheduleFromDb();
+}
+
+
+computeNextDueMonthFromVisit(visitIso: string, intervalMonths: number): string {
+  const d = new Date(visitIso + 'T00:00:00');
+  d.setMonth(d.getMonth() + intervalMonths);
+  return this.toYYYYMM(d);
+}
+
+/**
+ * Status:
+ * - wenn nextVisitDate existiert -> Reminder relativ zu diesem Datum
+ * - sonst Reminder relativ zu Monatsbeginn / Monatsende von dueMonth
+ */
+getScheduleStatus(s: VaccinationSchedule, ref = new Date()): 'ok' | 'soon' | 'overdue' {
+  const ms = 24 * 60 * 60 * 1000;
+
+  // Wenn konkretes Datum bekannt:
+  if (s.nextVisitDate) {
+    const visit = new Date(s.nextVisitDate + 'T00:00:00');
+    const remindFrom = new Date(visit.getTime() - s.remindDaysBefore * ms);
+    if (ref > visit) return 'overdue';
+    if (ref >= remindFrom) return 'soon';
+    return 'ok';
+  }
+
+  // Nur fälliger Monat:
+  const [y, m] = s.dueMonth.split('-').map(Number);
+  const monthStart = new Date(y, m - 1, 1);
+  const monthEnd = new Date(y, m, 0); // letzter Tag des Monats
+  const remindFrom = new Date(monthStart.getTime() - s.remindDaysBefore * ms);
+
+  if (ref > monthEnd) return 'overdue';
+  if (ref >= remindFrom) return 'soon';
+  return 'ok';
+}
+
+
+
   
 // DB Feed
 

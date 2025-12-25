@@ -1,15 +1,179 @@
+<!-- Schedule / Reminder -->
+<mat-card class="schedule-card" *ngIf="schedule as s; else noSchedule" [ngClass]="scheduleStatus">
 
-<div class="btn-box">
-  <button mat-raised-button color="primary" (click)="openVaccinationDialog()">
-    ➕ Impfung hinzufügen
+  <!-- Kopf -->
+  <div class="schedule-top">
+    <div class="schedule-title">
+      <mat-icon class="cal-icon">calendar_month</mat-icon>
+
+      <div class="txt">
+        <div class="title">Tierarzttermin</div>
+
+        <div class="subtitle" *ngIf="s.nextVisitDate; else monthOnly">
+          Termin: <strong>{{ formatDate(s.nextVisitDate) }}</strong>
+        </div>
+
+        <ng-template #monthOnly>
+          <div class="subtitle">
+            Fällig im <strong>{{ formatMonth(s.dueMonth) }}</strong>
+          </div>
+        </ng-template>
+
+        <div class="meta">
+          Erinnerung: {{ s.remindDaysBefore }} Tage vorher · Intervall: {{ s.intervalMonths }} Monate
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Bubble (gefüllt) -->
+    <div class="status-chip" [ngClass]="scheduleStatus">
+      {{ scheduleStatus === 'ok' ? 'OK' : (scheduleStatus === 'soon' ? 'bald' : 'überfällig') }}
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="schedule-actions">
+    <button mat-stroked-button class="action plan" type="button" (click)="startEditPlan()">
+      <mat-icon>tune</mat-icon>
+      Plan
+    </button>
+
+    <button mat-flat-button class="action done" type="button" (click)="markVisitDone()">
+      <mat-icon>check_circle</mat-icon>
+      Erledigt
+    </button>
+  </div>
+
+  <!-- Plan bearbeiten -->
+  <div class="plan-edit" *ngIf="editPlan">
+    <div class="plan-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Fällig im (YYYY-MM)</mat-label>
+        <input matInput placeholder="2026-06" [(ngModel)]="editDueMonth" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Reminder (Tage vorher)</mat-label>
+        <input matInput type="number" [(ngModel)]="editReminderDays" />
+      </mat-form-field>
+    </div>
+
+    <div class="plan-buttons">
+      <button mat-stroked-button type="button" (click)="cancelEditPlan()">Abbrechen</button>
+      <button mat-flat-button color="primary" type="button" (click)="savePlanSettings()">Speichern</button>
+    </div>
+
+    <p class="hint">
+      Ohne Datum erinnert die App {{ editReminderDays }} Tage vor dem 1. des fälligen Monats.
+      Wenn du ein Datum setzt, zählt der Reminder ab diesem Datum.
+    </p>
+  </div>
+
+  <!-- Termin eintragen (nur wenn kein Datum existiert) -->
+  <div class="schedule-setdate" *ngIf="!s.nextVisitDate">
+    <mat-form-field appearance="outline" class="date-field">
+      <mat-label>Termin eintragen</mat-label>
+      <input matInput [matDatepicker]="visitPicker2" [(ngModel)]="selectedVisit" />
+      <mat-datepicker-toggle matSuffix [for]="visitPicker2"></mat-datepicker-toggle>
+      <mat-datepicker #visitPicker2></mat-datepicker>
+      <mat-hint>Im fälligen Monat oder ±1 Monat</mat-hint>
+    </mat-form-field>
+
+    <button mat-flat-button class="set-btn" [disabled]="!selectedVisit" (click)="setSchedule()">
+      Speichern
+    </button>
+  </div>
+
+  <!-- Hinweise -->
+  <div class="banner" *ngIf="scheduleStatus === 'soon'">
+    <mat-icon>notifications</mat-icon>
+    Reminder: Termin steht bald an.
+  </div>
+
+  <div class="banner warn" *ngIf="scheduleStatus === 'overdue'">
+    <mat-icon>warning</mat-icon>
+    Termin ist überfällig!
+  </div>
+
+</mat-card>
+
+
+<!-- No Schedule -->
+<ng-template #noSchedule>
+  <mat-card class="schedule-card none">
+    <div class="schedule-top">
+      <div class="schedule-title">
+        <mat-icon class="cal-icon">event</mat-icon>
+        <div>
+          <div class="title">Tierarzttermin</div>
+          <div class="subtitle">Noch kein Plan gesetzt.</div>
+          <div class="meta">Lege den ersten Termin fest, danach läuft der Rhythmus automatisch.</div>
+        </div>
+      </div>
+      <div class="status-chip none">–</div>
+    </div>
+
+    <div class="schedule-setdate">
+      <mat-form-field appearance="outline" class="date-field">
+        <mat-label>Ersten Termin wählen</mat-label>
+        <input matInput [matDatepicker]="visitPicker" [(ngModel)]="selectedVisit" />
+        <mat-datepicker-toggle matSuffix [for]="visitPicker"></mat-datepicker-toggle>
+        <mat-datepicker #visitPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="days-field">
+        <mat-label>Reminder (Tage vorher)</mat-label>
+        <input matInput type="number" [(ngModel)]="remindDaysBefore" />
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" class="set-btn" [disabled]="!selectedVisit" (click)="setSchedule()">
+        Plan speichern
+      </button>
+    </div>
+  </mat-card>
+</ng-template>
+
+
+
+<!-- Übergang / Section Header -->
+<div class="section-head">
+  <div class="section-left">
+    <div class="section-title">
+      <mat-icon>vaccines</mat-icon>
+      Impfungen pro Pferd
+    </div> 
+
+   <div class="section-accent"></div>
+    
+    <div class="section-sub">
+      Hier können einzelne Impfungen dokumentiert werden
+    </div>
+
+   
+  </div>
+  
+</div>
+<div class="section-cta">
+  <button mat-raised-button color="primary" class="cta-btn" (click)="openVaccinationDialog()">
+    <mat-icon>add</mat-icon>
+    Impfung hinzufügen
   </button>
 </div>
+
+
+
+
+
+
 
 
 <mat-tab-group>
   <mat-tab *ngFor="let horse of horses" label="{{ horse.name }}">
     <div class="horse-card">
-      <h2>🐴 {{ horse.name }} ({{ horse.age }} Jahre, {{ horse.gender }})</h2>
+      <div class="horse-title-box">
+          <img src="/images/horse.svg" alt="{{ horse.name }}" class="horse-img">
+          <h3>{{ horse.name }}</h3>
+      </div>
 
       <div *ngFor="let vac of horse.vaccinations; let i = index" class="vaccination-card" [ngClass]="vac.status">
         <div class="vac-card-header">
@@ -24,8 +188,20 @@
           </div>
         </div>
         <hr>
-        <p>📅 Datum: {{ vac.date }}</p>
-        <p>🔁 Nächste: {{ vac.next }}</p>
+        <p>Datum: {{ formatDate(vac.date) }}</p>
+        <p>
+  Nächste:
+  <ng-container *ngIf="vac.next; else notPlanned">
+    {{ formatDate(vac.next) }}
+  </ng-container>
+</p>
+
+<ng-template #notPlanned>
+  <span class="muted"> noch nicht geplant </span>
+</ng-template>
+
+
+
         <p>Status: <span class="status">{{ vac.status }}</span></p>
       </div>
     </div>
