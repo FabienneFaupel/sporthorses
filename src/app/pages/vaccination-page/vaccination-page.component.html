@@ -59,14 +59,26 @@
     </div>
 
     <div class="plan-buttons">
-      <button mat-stroked-button type="button" (click)="cancelEditPlan()">Abbrechen</button>
-      <button mat-flat-button color="primary" type="button" (click)="savePlanSettings()">Speichern</button>
-    </div>
+  <!-- links: Reset Icon -->
+  <button
+    mat-icon-button
+    matTooltip="Plan zurücksetzen"
+    class="reset-btn"
+    type="button"
+    (click)="resetSchedule()"
+    aria-label="Plan zurücksetzen">
+    <mat-icon>restart_alt</mat-icon>
+  </button>
 
-    <p class="hint">
-      Ohne Datum erinnert die App {{ editReminderDays }} Tage vor dem 1. des fälligen Monats.
-      Wenn du ein Datum setzt, zählt der Reminder ab diesem Datum.
-    </p>
+  <!-- rechts: Abbrechen + Speichern -->
+  <div class="plan-actions-right">
+    <button mat-stroked-button type="button" (click)="cancelEditPlan()">Abbrechen</button>
+    <button mat-flat-button color="primary" type="button" (click)="savePlanSettings()">Speichern</button>
+  </div>
+</div>
+
+
+    
   </div>
 
   <!-- Termin eintragen (nur wenn kein Datum existiert) -->
@@ -136,6 +148,8 @@
 
 
 <!-- Übergang / Section Header -->
+
+
 <div class="section-head">
   <div class="section-left">
     <div class="section-title">
@@ -175,38 +189,75 @@
           <h3>{{ horse.name }}</h3>
       </div>
 
-      <div *ngFor="let vac of horse.vaccinations; let i = index" class="vaccination-card" [ngClass]="vac.status">
-        <div class="vac-card-header">
-          <p><strong>💉 {{ vac.type }}</strong></p>
-          <div class="info-card-actions">
-              <button mat-icon-button color="primary" (click)="editVaccination(horse._id!, i, vac)" >
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button color="warn" (click)="deleteVaccination(horse._id!, i)" >
-               <mat-icon>delete</mat-icon>
-              </button>
-          </div>
-        </div>
-        <hr>
-        <p>Datum: {{ formatDate(vac.date) }}</p>
-        <p>
-  Nächste:
-  <ng-container *ngIf="vac.next; else notPlanned">
-    {{ formatDate(vac.next) }}
-  </ng-container>
-</p>
+      <!-- Empty State nur wenn keine Impfungen -->
+<mat-card class="empty-vacs" *ngIf="!horse.vaccinations || horse.vaccinations.length === 0">
+  <div class="empty-head">
+    <mat-icon class="warn-icon">info</mat-icon>
+    <span class="title">Noch keine Impfungen</span>
+  </div>
 
-<ng-template #notPlanned>
-  <span class="muted"> noch nicht geplant </span>
-</ng-template>
+  <div class="sub">
+    Lege die erste Impfung über „Impfung hinzufügen“ an.
+  </div>
+</mat-card>
 
 
+      <div *ngFor="let vac of horse.vaccinations; let i = index"
+     class="vaccination-card"
+     [ngClass]="getVaccinationDisplayStatus(vac)">
 
-        <p>Status: <span class="status">{{ vac.status }}</span></p>
-      </div>
+  <div class="vac-card-header">
+    <p><strong>💉 {{ vac.type }}</strong></p>
+
+    <div class="info-card-actions">
+      <button mat-icon-button color="primary" (click)="editVaccination(horse._id!, i, vac)">
+        <mat-icon>edit</mat-icon>
+      </button>
+
+      <button mat-icon-button color="warn" (click)="deleteVaccination(horse._id!, i)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+
+  </div>
+
+  <hr class="vac-divider" [ngClass]="getVaccinationDisplayStatus(vac)" />
+
+
+  <p>Datum: {{ formatDate(vac.date) }}</p>
+
+  <p>
+    Nächste:
+    <ng-container *ngIf="vac.next; else notPlanned">
+      {{ formatDate(vac.next) }}
+    </ng-container>
+    <ng-template #notPlanned>
+      <span class="muted">noch nicht geplant</span>
+    </ng-template>
+  </p>
+
+  <div class="vac-footer">
+  <span class="vac-chip" [ngClass]="getVaccinationDisplayStatus(vac)">
+    {{ getVaccinationStatusLabel(getVaccinationDisplayStatus(vac)) }}
+  </span>
+
+  <button
+    *ngIf="getVaccinationDisplayStatus(vac) !== 'geimpft'"
+    mat-mini-fab
+    class="done-fab"
+    (click)="markVaccinationDone(horse._id!, i)"
+    aria-label="Als geimpft markieren">
+    <mat-icon>check</mat-icon>
+  </button>
+</div>
+
+</div>
+
     </div>
   </mat-tab>
 </mat-tab-group>
+
+
 
 
 

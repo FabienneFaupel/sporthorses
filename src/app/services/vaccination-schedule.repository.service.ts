@@ -46,4 +46,11 @@ export class VaccinationScheduleRepositoryService {
       updatedAt: now
     });
   }
+
+  async remove(doc: VaccinationSchedule): Promise<void> {
+  if (!doc._id || !doc._rev) throw new Error('id/rev fehlt');
+  await this.api.deleteDoc(doc._id, doc._rev);
+}
+
+
 }

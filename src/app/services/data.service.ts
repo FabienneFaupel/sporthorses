@@ -300,6 +300,20 @@ getScheduleStatus(s: VaccinationSchedule, ref = new Date()): 'ok' | 'soon' | 'ov
   return 'ok';
 }
 
+async resetVaccinationSchedule(): Promise<void> {
+  const s = this.vaccinationSchedule;
+
+  // Wenn nix da ist -> einfach sicherheitshalber neu laden
+  if (!s || !s._id || !s._rev) {
+    await this.loadVaccinationScheduleFromDb();
+    return;
+  }
+
+  await this.vacScheduleRepo.remove(s);
+  this.vaccinationSchedule = null;
+}
+
+
 
 
   

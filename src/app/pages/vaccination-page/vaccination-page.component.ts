@@ -240,4 +240,44 @@ cancelEditPlan() {
       console.error('Delete vaccination failed', e);
     }
   }
+
+  getVaccinationDisplayStatus(vac: Vaccination): 'geimpft' | 'geplant' | 'überfällig' {
+  if (vac.status === 'geimpft') return 'geimpft';
+
+  // falls kein Datum da ist: als geplant behandeln
+  if (!vac.date) return 'geplant';
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const d = new Date(vac.date + 'T00:00:00');
+  return d < today ? 'überfällig' : 'geplant';
+}
+
+getVaccinationStatusLabel(st: 'geimpft' | 'geplant' | 'überfällig'): string {
+  if (st === 'geimpft') return 'geimpft';
+  if (st === 'überfällig') return 'überfällig';
+  return 'geplant';
+}
+
+async markVaccinationDone(horseId: string, index: number) {
+  await this.dataService.updateVaccination(horseId, index, { status: 'geimpft' });
+  this.horses = this.dataService.getHorses();
+}
+
+
+async resetSchedule() {
+  const ok = confirm('Plan wirklich zurücksetzen?\nTermin/Reminder werden entfernt.');
+  if (!ok) return;
+
+  await this.dataService.resetVaccinationSchedule();
+  this.schedule = this.dataService.getVaccinationSchedule(); // ist dann null
+
+  this.selectedVisit = null;
+  this.editPlan = false;
+}
+
+
+
+
 }
