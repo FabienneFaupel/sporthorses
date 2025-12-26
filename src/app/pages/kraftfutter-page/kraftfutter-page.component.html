@@ -1,113 +1,117 @@
 <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
 <div class="hafer-container">
 
   <mat-card class="hafer-hero">
-  <ng-container *ngIf="visibleProducts.length > 0; else emptyHero">
-    <mat-tab-group headerPosition="below">
-      <mat-tab *ngFor="let p of visibleProducts" [label]="p.label">
-        <div class="hafer-hero-header">
-          <div>
-            <h2>{{ p.label }}</h2>
-            <div class="hafer-subtitle">Lieferübersicht</div>
-          </div>
-        </div>
-
-        <div class="hafer-stat-row">
-          <div class="stat">
-            <div class="stat-label">Letzte Lieferung</div>
-            <div class="stat-value">{{ statsByProduct[p.key]?.last ?? '–' }}</div>
+    <ng-container *ngIf="visibleProducts.length > 0; else emptyHero">
+      <mat-tab-group headerPosition="below">
+        <mat-tab *ngFor="let p of visibleProducts" [label]="p.label">
+          <div class="hafer-hero-header">
+            <div>
+              <h2>{{ p.label }}</h2>
+              <div class="hafer-subtitle">Lieferübersicht</div>
+            </div>
           </div>
 
-          <div class="stat">
-            <div class="stat-label">Anzahl Lieferungen (Jahr)</div>
-            <div class="stat-value">{{ statsByProduct[p.key]?.count ?? 0 }}</div>
+          <div class="hafer-stat-row">
+            <div class="stat">
+              <div class="stat-label">Letzte Lieferung</div>
+              <div class="stat-value">{{ statsByProduct[p.feedDefId]?.last ?? '–' }}</div>
+            </div>
+
+            <div class="stat">
+              <div class="stat-label">Anzahl Lieferungen (Jahr)</div>
+              <div class="stat-value">{{ statsByProduct[p.feedDefId]?.count ?? 0 }}</div>
+            </div>
+
+            <div class="stat">
+              <div class="stat-label">Gesamt bezahlt (Jahr)</div>
+              <div class="stat-value">{{ statsByProduct[p.feedDefId]?.totalFormatted ?? '€ 0,–' }}</div>
+            </div>
+
+            <div class="stat">
+              <div class="stat-label">Status</div>
+              <div class="stat-chip ok">ausreichend</div>
+            </div>
           </div>
+        </mat-tab>
+      </mat-tab-group>
+    </ng-container>
 
-          <div class="stat">
-            <div class="stat-label">Gesamt bezahlt (Jahr)</div>
-            <div class="stat-value">{{ statsByProduct[p.key]?.totalFormatted ?? '€ 0,–' }}</div>
-          </div>
-
-          <div class="stat">
-            <div class="stat-label">Status</div>
-            <div class="stat-chip ok">ausreichend</div>
-          </div>
-        </div>
-      </mat-tab>
-    </mat-tab-group>
-  </ng-container>
-
-  <ng-template #emptyHero>
-    <div class="empty-hero">
-      <h2>Kraftfutter</h2>
-      <div class="hafer-subtitle">Noch keine Daten vorhanden</div>
-      <p class="muted">
-        Erfasse eine Lieferung oder lege im Futterplan fest, was gefüttert wird.
-      </p>
-    </div>
-  </ng-template>
-</mat-card>
-
-
-  <div class="liefer-add-btn-box">
-  <button mat-raised-button color="primary" (click)="openKraftfutterDialog()" class="liefer-add-btn">
-            <mat-icon>add</mat-icon> Lieferung erfassen
-    </button>
-</div>
-
-  <!-- Jahr-Auswahl -->
-<div class="hafer-year-filter">
-  <mat-form-field>
-    <mat-label>Jahr auswählen</mat-label>
-    <mat-select [(value)]="selectedYear" (selectionChange)="applyFilters()">
-      <mat-option *ngFor="let y of years" [value]="y">
-        {{ y === 'all' ? 'Alle Jahre' : y }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-</div>
-
-  <!-- Lieferliste -->
-  <!-- Lieferliste dynamisch -->
-<div class="hafer-list" *ngIf="!loading">
-  <mat-card class="delivery-card" *ngFor="let d of filteredDeliveries">
-    <div class="delivery-header">
-      <div class="left">
-        <img class="feed-icon" [src]="'/images/' + iconFor(d.product)" [alt]="labelFor(d.product)">
-        <h3>{{ labelFor(d.product) }} • {{ formatDateGermanFromIso(d.date) }}</h3>
+    <ng-template #emptyHero>
+      <div class="empty-hero">
+        <h2>Kraftfutter</h2>
+        <div class="hafer-subtitle">Noch keine Daten vorhanden</div>
+        <p class="muted">
+          Erfasse eine Lieferung, um hier eine Übersicht zu sehen.
+        </p>
       </div>
-      <span class="badge">{{ d.packageType === 'bigbag' ? 'BigBag' : 'Sack' }}</span>
-    </div>
-
-    <hr>
-
-    <div class="delivery-grid">
-      <div *ngIf="d.packageType === 'bigbag'">
-        <span>Menge</span><strong>{{ d.weightKg }}&nbsp;kg</strong>
-      </div>
-
-      <ng-container *ngIf="d.packageType === 'sack'">
-        <div><span>Menge pro Sack</span><strong>{{ d.sackWeightKg }}&nbsp;kg</strong></div>
-        <div><span>Anzahl</span><strong>{{ d.count }}</strong></div>
-      </ng-container>
-
-      <div *ngIf="d.priceEuro != null"><span>Preis</span><strong>{{ d.priceEuro }}&nbsp;€</strong></div>
-      <div *ngIf="d.supplier"><span>Lieferant</span><strong>{{ d.supplier }}</strong></div>
-    </div>
-
-    <div class="delivery-footer">
-  <p class="note" *ngIf="d.note">Notiz: {{ d.note }}</p>
-  <div class="delivery-card-actions">
-    <button mat-icon-button color="primary" (click)="edit(d)" aria-label="Lieferung bearbeiten">
-      <mat-icon>edit</mat-icon>
-    </button>
-    <button mat-icon-button color="warn" (click)="remove(d)" aria-label="Lieferung löschen">
-      <mat-icon>delete</mat-icon>
-    </button>
-  </div>
-</div>
+    </ng-template>
   </mat-card>
 
-  <p *ngIf="filteredDeliveries.length === 0" class="muted">Keine Lieferungen im ausgewählten Zeitraum.</p>
+  <div class="liefer-add-btn-box">
+    <button mat-raised-button color="primary" (click)="openKraftfutterDialog()" class="liefer-add-btn">
+      <mat-icon>add</mat-icon> Lieferung erfassen
+    </button>
+  </div>
+
+  <!-- Jahr-Auswahl -->
+  <div class="hafer-year-filter">
+    <mat-form-field>
+      <mat-label>Jahr auswählen</mat-label>
+      <mat-select [(value)]="selectedYear" (selectionChange)="applyFilters()">
+        <mat-option *ngFor="let y of years" [value]="y">
+          {{ y === 'all' ? 'Alle Jahre' : y }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Lieferliste -->
+  <div class="hafer-list" *ngIf="!loading">
+    <mat-card class="delivery-card" *ngFor="let d of filteredDeliveries">
+      <div class="delivery-header">
+        <div class="left">
+          <img class="feed-icon"
+               [src]="'/images/' + iconForBaseType(d.baseType)"
+               [alt]="d.name">
+          <h3>{{ d.name }} • {{ formatDateGermanFromIso(d.date) }}</h3>
+        </div>
+        <span class="badge">{{ d.packageType === 'bigbag' ? 'BigBag' : 'Sack' }}</span>
+      </div>
+
+      <hr>
+
+      <div class="delivery-grid">
+        <div *ngIf="d.packageType === 'bigbag'">
+          <span>Menge</span><strong>{{ d.weightKg }}&nbsp;kg</strong>
+        </div>
+
+        <ng-container *ngIf="d.packageType === 'sack'">
+          <div><span>Menge pro Sack</span><strong>{{ d.sackWeightKg }}&nbsp;kg</strong></div>
+          <div><span>Anzahl</span><strong>{{ d.count }}</strong></div>
+        </ng-container>
+
+        <div *ngIf="d.priceEuro != null"><span>Preis</span><strong>{{ d.priceEuro }}&nbsp;€</strong></div>
+        <div *ngIf="d.supplier"><span>Lieferant</span><strong>{{ d.supplier }}</strong></div>
+      </div>
+
+      <div class="delivery-footer">
+        <p class="note" *ngIf="d.note">Notiz: {{ d.note }}</p>
+        <div class="delivery-card-actions">
+          <button mat-icon-button color="primary" (click)="edit(d)" aria-label="Lieferung bearbeiten">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="remove(d)" aria-label="Lieferung löschen">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card>
+
+    <p *ngIf="filteredDeliveries.length === 0" class="muted">
+      Keine Lieferungen im ausgewählten Zeitraum.
+    </p>
+  </div>
 
 </div>

@@ -25,9 +25,9 @@
      (click)="openEditDialog(h, s, idx)">
                 <div class="feed-item">
                   <div class="left">
-                    <img class="feed-icon-img" [src]="i.icon" [alt]="i.product">
+                    <img class="feed-icon-img" [src]="i.icon" [alt]="i.name">
+<span class="product">{{ i.name }}</span>
 
-                    <span class="product">{{ i.product }}</span>
                   </div>
                   <span class="amount">{{ i.amount }}</span>
                 </div>

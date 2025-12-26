@@ -1,16 +1,17 @@
-export type Slot = 'Morgens' | 'Mittags' | 'Abends';
+// feed-plan.ts
+import type { UnitKey, FeedBaseType } from './feed-definition';
 
-export type ProductKey = 'hafer' | 'heu' | 'mash' | 'pellets' | 'muesli';
-export type UnitKey = 'schippe' | 'becher' | 'portion' | 'anzahl' | 'g' | 'kg' | 'ml' | 'l';
+export type Slot = 'Morgens' | 'Mittags' | 'Abends';
+export type PlanBaseType = FeedBaseType;
 
 export interface FeedPlanItem {
-  // Anzeige
-  product: string;
+  feedDefId?: string;
+  baseType: PlanBaseType;
+
+  name: string;
   amount: string;
   icon: string;
 
-  // Rohdaten für Edit
-  productKey: ProductKey;
   unitKey: UnitKey;
   preset?: string;
   amountNum?: number;

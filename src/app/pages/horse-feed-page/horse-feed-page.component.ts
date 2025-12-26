@@ -52,7 +52,14 @@ export class HorseFeedPageComponent {
 
   constructor(private dialog: MatDialog, private dataService: DataService) {}
 
-  
+  iconForFeedType(type: 'heu' | 'stroh'): string {
+  switch (type) {
+    case 'heu': return '/images/heu.svg';
+    case 'stroh': return '/images/stroh.svg'; // falls du die Datei so hast
+    default: return '/images/default.svg';
+  }
+}
+
 
   // Jahr-Filter
  selectedYear: number | 'all' = new Date().getFullYear();

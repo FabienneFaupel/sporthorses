@@ -8,7 +8,8 @@ import { FeedLogEntry } from '../models/feed';
 import { AuthService } from './auth.service';
 import { VaccinationSchedule } from '../models/vaccination-schedule';
 import { VaccinationScheduleRepositoryService } from './vaccination-schedule.repository.service';
-
+import { FeedDefinitionRepositoryService } from './feed-definition.repository.service';
+import { FeedDefinition } from '../models/feed-definition';
 
 
 
@@ -22,7 +23,8 @@ export class DataService {
   private horseRepo: HorseRepositoryService,
   private kraftRepo: KraftfutterRepositoryService,
   private auth: AuthService,
-  private vacScheduleRepo: VaccinationScheduleRepositoryService
+  private vacScheduleRepo: VaccinationScheduleRepositoryService,
+  private feedDefRepo: FeedDefinitionRepositoryService,
 ) {}
 
 private get stallId(): string {
@@ -313,6 +315,73 @@ async resetVaccinationSchedule(): Promise<void> {
   this.vaccinationSchedule = null;
 }
 
+//DB Feed definition
+private feedDefs: FeedDefinition[] = [];
+
+getFeedDefinitions(): FeedDefinition[] {
+  return this.feedDefs;
+}
+
+
+private readonly DEFAULT_FEED_DEFS: Array<Pick<FeedDefinition,'baseType'|'name'|'scope'|'isDefault'>> = [
+  { baseType: 'hafer',   name: 'Hafer',   scope: 'both', isDefault: true },
+  { baseType: 'muesli',  name: 'Müsli',   scope: 'both', isDefault: true },
+  { baseType: 'mash',    name: 'Mash',    scope: 'both', isDefault: true },
+  { baseType: 'pellets', name: 'Pellets', scope: 'both', isDefault: true },
+];
+
+async loadFeedDefinitionsFromDb() {
+  this.feedDefs = await this.feedDefRepo.loadAll(this.stallId);
+
+  // ✅ Seed nur wenn noch gar keine existieren
+  if (this.feedDefs.length === 0) {
+    for (const d of this.DEFAULT_FEED_DEFS) {
+      await this.feedDefRepo.create(this.stallId, {
+        baseType: d.baseType,
+        name: d.name,
+        scope: d.scope,
+        isDefault: true
+      });
+    }
+    this.feedDefs = await this.feedDefRepo.loadAll(this.stallId);
+  }
+}
+
+async addFeedDefinition(def: Omit<FeedDefinition,'_id'|'_rev'|'docType'|'stallId'|'createdAt'|'updatedAt'>) {
+  const tmp: FeedDefinition = {
+    ...def,
+    docType: 'feed_definition',
+    stallId: this.stallId
+  } as any;
+
+  this.feedDefs = [tmp, ...this.feedDefs];
+
+  try {
+    const res = await this.feedDefRepo.create(this.stallId, def);
+    this.feedDefs = this.feedDefs.map(x => x === tmp ? { ...tmp, _id: res.id, _rev: res.rev } : x);
+  } catch (e) {
+    console.error('addFeedDefinition failed', e);
+    await this.loadFeedDefinitionsFromDb();
+  }
+}
+
+async updateFeedDefinition(def: FeedDefinition) {
+  this.feedDefs = this.feedDefs.map(x => x._id === def._id ? { ...def } : x);
+  const res = await this.feedDefRepo.update(def);
+  this.feedDefs = this.feedDefs.map(x => x._id === def._id ? { ...x, _rev: res.rev } : x);
+}
+
+async deleteFeedDefinition(def: FeedDefinition) {
+  if (def.isDefault) return;
+  if (!def._id || !def._rev) throw new Error('id/rev fehlt');
+  this.feedDefs = this.feedDefs.filter(x => x._id !== def._id);
+  try {
+    await this.feedDefRepo.remove(def);
+  } catch (e) {
+    console.error('deleteFeedDefinition failed', e);
+    await this.loadFeedDefinitionsFromDb();
+  }
+}
 
 
 

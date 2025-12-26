@@ -7,41 +7,42 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 
-import { FeedPlanItem, Slot, ProductKey, UnitKey } from '../../models/feed-plan';
-
-
-
+import { FeedDefinition } from '../../models/feed-definition';
+import { FeedPlanItem, Slot, PlanBaseType } from '../../models/feed-plan';
+import type { UnitKey } from '../../models/feed-definition';
 
 export interface DialogData {
   horseName: string;
   slot: Slot;
   mode?: 'add' | 'edit';
   initial?: FeedPlanItem;
+  feedDefs: FeedDefinition[];
 }
 
 interface PresetOption {
-  value: string;   // was gespeichert wird, z.B. "1/2"
-  label: string;   // Anzeige, z.B. "½"
+  value: string;
+  label: string;
 }
-
 interface UnitOption {
   key: UnitKey;
-  label: string;                 // "Schippe", "g", "kg", ...
-  mode: 'preset' | 'number';     // preset = Auswahl 1/4, 1/2,... / number = Zahlenfeld
-  presets?: PresetOption[];      // nur bei preset
-  step?: number;                 // optional für number input
+  label: string;
+  mode: 'preset' | 'number';
+  presets?: PresetOption[];
+  step?: number;
   min?: number;
   hint?: string;
 }
 
 interface ProductOption {
-  key: ProductKey;
+  id: string;                 // ✅ eindeutig: def._id oder 'heu'
+  baseType: PlanBaseType;      // ✅ hafer/muesli/.../heu/zusatzfutter/medizin
   label: string;
-  iconPath: string;              // "/images/hafer.svg"
-  units: UnitOption[];
+  iconPath: string;
+  feedDefId?: string;          // ✅ bei 'heu' undefined
+  allowedUnits?: UnitKey[];
 }
 
-// Presets für "Behälter-Einheiten"
+// Presets
 const FRACTION_PRESETS: PresetOption[] = [
   { value: '1/4', label: '¼' },
   { value: '1/2', label: '½' },
@@ -56,66 +57,48 @@ const HAY_PORTION_PRESETS: PresetOption[] = [
   { value: 'Große Portion', label: 'Große Portion' },
 ];
 
-
-const PRODUCTS: ProductOption[] = [
-  {
-    key: 'hafer',
-    label: 'Hafer',
-    iconPath: '/images/hafer.svg',
-    units: [
-      { key: 'schippe', label: 'Schippe', mode: 'preset', presets: FRACTION_PRESETS, hint: 'Richtwert: 1 Schippe ≈ 500 g ' },
-      { key: 'g', label: 'g', mode: 'number', step: 10, min: 0 },
-      { key: 'kg', label: 'kg', mode: 'number', step: 0.1, min: 0 }
-    ]
-  },
-  {
-  key: 'heu',
-  label: 'Heu',
-  iconPath: '/images/heu.svg',
-  units: [
+const UNITS_BY_BASETYPE: Record<PlanBaseType, UnitOption[]> = {
+  hafer: [
+    { key: 'schippe', label: 'Schippe', mode: 'preset', presets: FRACTION_PRESETS, hint: 'Richtwert: 1 Schippe ≈ 500 g' },
+    { key: 'g', label: 'g', mode: 'number', step: 10, min: 0 },
+    { key: 'kg', label: 'kg', mode: 'number', step: 0.1, min: 0 },
+  ],
+  heu: [
     { key: 'portion', label: 'Portion', mode: 'preset', presets: HAY_PORTION_PRESETS },
-    { key: 'kg', label: 'kg', mode: 'number', step: 0.5, min: 0 }
-  ]
-},
-
-  {
-  key: 'mash',
-  label: 'Mash',
-  iconPath: '/images/mash.svg',
-  units: [
-    { key: 'schippe', label: 'Schippe', mode: 'preset', presets: FRACTION_PRESETS, hint: 'Richtwert: 1 Schippe ≈ 1000 g ' },
+    { key: 'kg', label: 'kg', mode: 'number', step: 0.5, min: 0 },
+  ],
+  mash: [
+    { key: 'schippe', label: 'Schippe', mode: 'preset', presets: FRACTION_PRESETS, hint: 'Richtwert: 1 Schippe ≈ 1000 g' },
     { key: 'g', label: 'g', mode: 'number', step: 10, min: 0 },
     { key: 'kg', label: 'kg', mode: 'number', step: 0.1, min: 0 },
     { key: 'ml', label: 'ml', mode: 'number', step: 50, min: 0 },
-    { key: 'l', label: 'l', mode: 'number', step: 0.1, min: 0 }
-  ]
-},
-
-  {
-  key: 'pellets',
-  label: 'Pellets',
-  iconPath: '/images/pellets.svg',
-  units: [
-    { key: 'schippe', label: 'Schippe', mode: 'preset', presets: FRACTION_PRESETS, hint: 'Richtwert: 1 Schippe ≈ 500 g ' },
-    { key: 'becher', label: 'Becher', mode: 'preset', presets: FRACTION_PRESETS, hint: 'Richtwert: 1 Becher ≈ 250 ml ' },
+    { key: 'l', label: 'l', mode: 'number', step: 0.1, min: 0 },
+  ],
+  pellets: [
+    { key: 'schippe', label: 'Schippe', mode: 'preset', presets: FRACTION_PRESETS, hint: 'Richtwert: 1 Schippe ≈ 500 g' },
+    { key: 'becher', label: 'Becher', mode: 'preset', presets: FRACTION_PRESETS, hint: 'Richtwert: 1 Becher ≈ 250 ml' },
     { key: 'g', label: 'g', mode: 'number', step: 10, min: 0 },
-    { key: 'kg', label: 'kg', mode: 'number', step: 0.1, min: 0 }
-  ]
-},
-
-  {
-  key: 'muesli',
-  label: 'Müsli',
-  iconPath: '/images/muesli1.png',
-  units: [
-    { key: 'schippe', label: 'Schippe', mode: 'preset', presets: FRACTION_PRESETS, hint: 'Richtwert: 1 Schippe ≈ 500 g ' },
-    { key: 'becher', label: 'Becher', mode: 'preset', presets: FRACTION_PRESETS, hint: 'Richtwert: 1 Becher ≈ 250 ml ' },
+    { key: 'kg', label: 'kg', mode: 'number', step: 0.1, min: 0 },
+  ],
+  muesli: [
+    { key: 'schippe', label: 'Schippe', mode: 'preset', presets: FRACTION_PRESETS, hint: 'Richtwert: 1 Schippe ≈ 500 g' },
+    { key: 'becher', label: 'Becher', mode: 'preset', presets: FRACTION_PRESETS, hint: 'Richtwert: 1 Becher ≈ 250 ml' },
     { key: 'g', label: 'g', mode: 'number', step: 10, min: 0 },
-    { key: 'kg', label: 'kg', mode: 'number', step: 0.1, min: 0 }
-  ]
-},
+    { key: 'kg', label: 'kg', mode: 'number', step: 0.1, min: 0 },
+  ],
+  zusatzfutter: [
+    { key: 'g', label: 'g', mode: 'number', step: 10, min: 0 },
+    { key: 'kg', label: 'kg', mode: 'number', step: 0.1, min: 0 },
+    { key: 'ml', label: 'ml', mode: 'number', step: 10, min: 0 },
+    { key: 'l', label: 'l', mode: 'number', step: 0.1, min: 0 },
+    { key: 'anzahl', label: 'Anzahl', mode: 'number', step: 1, min: 0 },
+  ],
+  medizin: [
+    { key: 'ml', label: 'ml', mode: 'number', step: 1, min: 0 },
+    { key: 'tabletten', label: 'Tabletten', mode: 'number', step: 1, min: 0 },
+  ],
+};
 
-];
 
 
 @Component({
@@ -133,64 +116,110 @@ const PRODUCTS: ProductOption[] = [
 })
 
 export class FutterplanAddDialogComponent {
-  products = PRODUCTS;
+  products: ProductOption[] = [];
 
   form!: FormGroup<{
-    productKey: FormControl<ProductKey | null>;
+    productId: FormControl<string | null>;  // ✅ neu
     unitKey: FormControl<UnitKey | null>;
-    preset: FormControl<string | null>;     // z.B. "1/2"
-    amountNum: FormControl<number | null>;  // z.B. 250
+    preset: FormControl<string | null>;
+    amountNum: FormControl<number | null>;
   }>;
 
   constructor(
     private fb: FormBuilder,
     private ref: MatDialogRef<FutterplanAddDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
-
   ) {
+    const fromDefs: ProductOption[] = (data.feedDefs ?? [])
+      .filter(d => d.scope === 'feedplan' || d.scope === 'both')
+      .map(d => ({
+        id: d._id!, // ✅ eindeutig
+        baseType: d.baseType as PlanBaseType,
+        label: d.name,
+        iconPath: this.iconFor(d.baseType),
+        feedDefId: d._id,
+        allowedUnits: d.allowedUnits as any
+      }));
+
+    const hay: ProductOption = {
+      id: 'heu',
+      baseType: 'heu',
+      label: 'Heu',
+      iconPath: '/images/heu.svg'
+    };
+
+    this.products = [hay, ...fromDefs];
+
     this.form = this.fb.group({
-      productKey: this.fb.control<ProductKey | null>(null, Validators.required),
+      productId: this.fb.control<string | null>(null, Validators.required),
       unitKey: this.fb.control<UnitKey | null>(null, Validators.required),
       preset: this.fb.control<string | null>(null),
       amountNum: this.fb.control<number | null>(null),
     });
 
-    // Wenn Produkt gewechselt wird: Unit zurücksetzen + Menge reset
-    this.form.controls.productKey.valueChanges.subscribe(() => {
+    // Produktwechsel
+    this.form.controls.productId.valueChanges.subscribe(() => {
       this.form.controls.unitKey.setValue(null);
       this.form.controls.preset.setValue(null);
       this.form.controls.amountNum.setValue(null);
     });
 
-    // Wenn Unit gewechselt wird: passende Eingabe aktivieren
+    // Unitwechsel
     this.form.controls.unitKey.valueChanges.subscribe(() => {
       this.form.controls.preset.setValue(null);
       this.form.controls.amountNum.setValue(null);
     });
 
-    // ✅ Wenn Edit: Werte vorausfüllen
-if (this.data.mode === 'edit' && this.data.initial) {
-  const init = this.data.initial;
+    // ✅ Edit vorausfüllen
+    if (data.mode === 'edit' && data.initial) {
+      const init = data.initial;
 
-  this.form.controls.productKey.setValue(init.productKey);
-  this.form.controls.unitKey.setValue(init.unitKey);
+      const pid = init.feedDefId ?? (init.baseType === 'heu' ? 'heu' : null);
+      this.form.controls.productId.setValue(pid);
 
-  if (init.preset) this.form.controls.preset.setValue(init.preset);
-  if (init.amountNum != null) this.form.controls.amountNum.setValue(init.amountNum);
-}
+      this.form.controls.unitKey.setValue(init.unitKey);
 
+      if (init.preset) this.form.controls.preset.setValue(init.preset);
+      if (init.amountNum != null) this.form.controls.amountNum.setValue(init.amountNum);
+    }
+  }
+
+  private iconFor(baseType: string): string {
+    switch (baseType) {
+      case 'hafer': return '/images/hafer.svg';
+      case 'mash': return '/images/mash.svg';
+      case 'pellets': return '/images/pellets.svg';
+      case 'muesli': return '/images/muesli1.png';
+      case 'zusatzfutter': return '/images/zusatzfutter.png';
+      case 'medizin': return '/images/medizin.svg';
+      case 'heu': return '/images/heu.svg';
+      default: return '/images/default.svg';
+    }
   }
 
   get selectedProduct(): ProductOption | null {
-    const key = this.form.controls.productKey.value;
-    return key ? this.products.find(p => p.key === key) ?? null : null;
+    const id = this.form.controls.productId.value;
+    if (!id) return null;
+    return this.products.find(p => p.id === id) ?? null;
+  }
+
+  get unitOptions(): UnitOption[] {
+    const p = this.selectedProduct;
+    if (!p) return [];
+
+    const all = UNITS_BY_BASETYPE[p.baseType] ?? [];
+
+    // nur bei Zusatzfutter/Medizin einschränken
+    const restrictable = p.baseType === 'zusatzfutter' || p.baseType === 'medizin';
+    if (!restrictable) return all;
+
+    if (!p.allowedUnits || p.allowedUnits.length === 0) return all;
+    return all.filter(u => (p.allowedUnits as any).includes(u.key));
   }
 
   get selectedUnit(): UnitOption | null {
     const uk = this.form.controls.unitKey.value;
-    const p = this.selectedProduct;
-    if (!uk || !p) return null;
-    return p.units.find(u => u.key === uk) ?? null;
+    return uk ? (this.unitOptions.find(u => u.key === uk) ?? null) : null;
   }
 
   get amountMode(): 'preset' | 'number' | null {
@@ -215,38 +244,31 @@ if (this.data.mode === 'edit' && this.data.initial) {
     let amountText = '';
 
     if (u.mode === 'preset') {
-  const pr = this.form.controls.preset.value;
-  if (!pr) return;
+      const pr = this.form.controls.preset.value;
+      if (!pr) return;
 
-  // Wenn preset wie "1/2" aussieht -> Einheit anhängen
-  // Wenn preset Text ist ("Handvoll") -> 그대로 speichern
-  const isFraction = pr.includes('/') || pr === '1';
-
-  amountText = isFraction ? `${pr} ${u.label}` : pr;
-}
- else {
+      const isFraction = pr.includes('/') || pr === '1';
+      amountText = isFraction ? `${pr} ${u.label}` : pr;
+    } else {
       const n = this.form.controls.amountNum.value;
       if (n == null) return;
-      // z.B. "250 g"
       amountText = `${n} ${u.label}`;
     }
 
     const result: FeedPlanItem = {
-  product: p.label,
-  amount: amountText,
-  icon: p.iconPath,
+      feedDefId: p.feedDefId,        // ✅ undefined bei Heu
+      baseType: p.baseType,          // ✅ korrekt
+      name: p.label,
+      amount: amountText,
+      icon: p.iconPath,
+      unitKey: u.key,
+      preset: u.mode === 'preset' ? (this.form.controls.preset.value ?? undefined) : undefined,
+      amountNum: u.mode === 'number' ? (this.form.controls.amountNum.value ?? undefined) : undefined
+    };
 
-  productKey: p.key,
-  unitKey: u.key,
-  preset: u.mode === 'preset' ? (this.form.controls.preset.value ?? undefined) : undefined,
-  amountNum: u.mode === 'number' ? (this.form.controls.amountNum.value ?? undefined) : undefined
-};
-
-this.ref.close(result);
-
+    this.ref.close(result);
   }
 
-  // Für Button-Disable im Template
   isSaveDisabled(): boolean {
     if (this.form.invalid) return true;
     const u = this.selectedUnit;
@@ -257,7 +279,6 @@ this.ref.close(result);
   }
 
   remove() {
-  this.ref.close({ delete: true });
-}
-
+    this.ref.close({ delete: true });
+  }
 }

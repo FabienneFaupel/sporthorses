@@ -35,7 +35,7 @@ const BASE_TYPES: BaseTypeOption[] = [
   { key: 'mash',        label: 'Mash',        iconPath: '/images/mash.svg',        defaultScope: 'both',     isCustomUnitType: false },
   { key: 'pellets',     label: 'Pellets',     iconPath: '/images/pellets.svg',     defaultScope: 'both',     isCustomUnitType: false },
 
-  { key: 'heu',         label: 'Heu',         iconPath: '/images/heu.svg',         defaultScope: 'feedplan', isCustomUnitType: false },
+  
 
   { key: 'zusatzfutter',label: 'Zusatzfutter',iconPath: '/images/zusatzfutter.svg',defaultScope: 'feedplan', isCustomUnitType: true  },
   { key: 'medizin',     label: 'Medizin',     iconPath: '/images/medizin.svg',     defaultScope: 'feedplan', isCustomUnitType: true  },
@@ -234,13 +234,18 @@ if (reservedError) {
     const meta = this.baseTypes.find(b => b.key === baseType)!;
 
     const result: FeedDefinition = {
-      id: this.data.initial?.id ?? `tmp-${Math.random().toString(36).slice(2, 10)}`, // v1 lokal
-      baseType,
-      name,
-      scope: baseType === 'medizin' ? 'feedplan' : scope,
-      allowedUnits: meta.isCustomUnitType ? allowedUnits : undefined,
-      isDefault: this.data.initial?.isDefault ?? false
-    };
+  ...(this.data.initial?._id ? { _id: this.data.initial._id, _rev: this.data.initial._rev } : {}),
+  docType: 'feed_definition',
+  stallId: this.data.initial?.stallId ?? '', // wird bei ADD eh rausgestrippt
+  baseType,
+  name,
+  scope: baseType === 'medizin' ? 'feedplan' : scope,
+  allowedUnits: meta.isCustomUnitType ? allowedUnits : undefined,
+  isDefault: this.data.initial?.isDefault ?? false
+};
+
+
+
 
     this.ref.close(result);
   }

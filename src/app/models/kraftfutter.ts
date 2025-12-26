@@ -1,22 +1,29 @@
-// src/app/models/kraftfutter.ts
-export type KraftfutterType = 'hafer' | 'muesli' | 'pellets' | 'mash';
+// kraftfutter.ts
+import { FeedBaseType } from './feed-definition';
 export type PackageType = 'bigbag' | 'sack';
 
 export interface KraftfutterDelivery {
   _id?: string;
   _rev?: string;
   docType: 'kraftfutter';
-  product: KraftfutterType;
-  date: string;   // ISO yyyy-mm-dd
+
+  // ❌ product raus
+  // product: KraftfutterType;
+
+  date: string;
+
+  feedDefId: string;        // ✅ Referenz
+  baseType: FeedBaseType;   // ✅ hafer/muesli/mash/pellets
+  name: string;             // ✅ Anzeige im UI
+
   packageType: PackageType;
-  weightKg?: number;     // wenn BigBag
-  sackWeightKg?: number; // wenn Sack
-  count?: number;        // wenn Sack
+  weightKg?: number;
+  sackWeightKg?: number;
+  count?: number;
   priceEuro?: number;
   supplier?: string;
   note?: string;
 
-  // das speicherst du sowieso schon:
   createdAt?: string;
   updatedAt?: string;
 }

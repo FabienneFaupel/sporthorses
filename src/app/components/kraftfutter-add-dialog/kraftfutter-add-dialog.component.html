@@ -10,19 +10,21 @@
 
 <form [formGroup]="form" mat-dialog-content class="kf-form one-col">
   <!-- Futterart (Pflicht) -->
-  <mat-form-field appearance="fill" class="header-select full">
-    <mat-label>Futterart</mat-label>
-    <mat-select formControlName="product" required>
-  <mat-option value="hafer">Hafer</mat-option>
-  <mat-option value="muesli">Müsli</mat-option>
-  <mat-option value="pellets">Pellets</mat-option>
-  <mat-option value="mash">Mash</mat-option>
-</mat-select>
+  <!-- Futterart (Pflicht) -->
+<mat-form-field appearance="fill" class="header-select full">
+  <mat-label>Futterart</mat-label>
 
-    <mat-error *ngIf="form.get('product')?.hasError('required')">
-      Bitte eine Futterart wählen.
-    </mat-error>
-  </mat-form-field>
+  <mat-select formControlName="feedDefId" required>
+    <mat-option *ngFor="let d of options" [value]="d._id">
+      {{ d.name }}
+    </mat-option>
+  </mat-select>
+
+  <mat-error *ngIf="form.get('feedDefId')?.hasError('required')">
+    Bitte eine Futterart wählen.
+  </mat-error>
+</mat-form-field>
+
 
   <!-- Datum (Pflicht) -->
   <mat-form-field appearance="outline" class="full">

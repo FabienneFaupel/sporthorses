@@ -46,6 +46,8 @@ export class FutterplanPageComponent {
 
   async ngOnInit() {
   await this.data.loadHorsesFromDb();
+  await this.data.loadFeedDefinitionsFromDb();
+
   this.horses = this.data.getHorses();
 
   // Plan default + Slots absichern
@@ -65,9 +67,15 @@ export class FutterplanPageComponent {
 
   async openAddDialog(h: Horse, slot: Slot) {
   const ref = this.dialog.open(FutterplanAddDialogComponent, {
-    width: '420px',
-    data: { horseName: h.name, slot, mode: 'add' }
-  });
+  width: '420px',
+  data: {
+    horseName: h.name,
+    slot,
+    mode: 'add',
+    feedDefs: this.data.getFeedDefinitions() // ✅ neu
+  }
+});
+
 
   ref.afterClosed().subscribe(async (res?: FeedPlanItem) => {
     if (!res) return;
@@ -90,7 +98,14 @@ export class FutterplanPageComponent {
 
   const ref = this.dialog.open(FutterplanAddDialogComponent, {
     width: '420px',
-    data: { horseName: h.name, slot, mode: 'edit', initial: current }
+    data: {
+  horseName: h.name,
+  slot,
+  mode: 'edit',
+  initial: current,
+  feedDefs: this.data.getFeedDefinitions()
+}
+
   });
 
   ref.afterClosed().subscribe(async (res?: FeedPlanItem | { delete: true }) => {

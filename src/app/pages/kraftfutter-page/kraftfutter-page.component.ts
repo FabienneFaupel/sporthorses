@@ -11,12 +11,13 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { KraftfutterAddDialogComponent } from '../../components/kraftfutter-add-dialog/kraftfutter-add-dialog.component';
 import { DataService } from '../../services/data.service';
-import { KraftfutterDelivery, KraftfutterType } from '../../models/kraftfutter';
+import { KraftfutterDelivery } from '../../models/kraftfutter';
+import { FeedBaseType } from '../../models/feed-definition';
 
 interface ProductMeta {
-  key: KraftfutterType;
-  label: string;
-  icon: string;
+  feedDefId: string;
+  label: string;         // delivery.name (aus FeedDefinition)
+  baseType: FeedBaseType; // für Icon
 }
 
 interface ProductStats {
@@ -26,12 +27,6 @@ interface ProductStats {
   last: string | null;
 }
 
-const PRODUCTS: ProductMeta[] = [
-  { key: 'muesli',  label: 'Müsli',  icon: 'muesli1.png' },
-  { key: 'pellets', label: 'Pellets', icon: 'pellets.svg' }, // Icon-Datei anlegen
-  { key: 'mash',    label: 'Mash',    icon: 'mash.svg' },    // Icon-Datei anlegen
-  { key: 'hafer',   label: 'Hafer',   icon: 'hafer.svg' },
-];
 
 @Component({
   selector: 'app-kraftfutter-page',
@@ -59,11 +54,11 @@ export class KraftfutterPageComponent {
   years: (number | 'all')[] = [];
   selectedYear: number | 'all' = this.currentYear;
 
-  // 👇 Tabs, die angezeigt werden
+  // Tabs (nur wenn Lieferungen existieren)
   visibleProducts: ProductMeta[] = [];
 
-  // 👇 Stats dynamisch, keyed by KraftfutterType
-  statsByProduct: Partial<Record<KraftfutterType, ProductStats>> = {};
+  // Stats keyed by feedDefId
+  statsByProduct: Record<string, ProductStats> = {};
 
   constructor(private dialog: MatDialog, private data: DataService) {}
 
@@ -72,7 +67,7 @@ export class KraftfutterPageComponent {
     this.deliveries = this.data.getKraftfutter();
 
     this.setupYears();
-    this.applyFilters(); // setzt filteredDeliveries + stats + visibleProducts
+    this.applyFilters();
 
     this.loading = false;
   }
@@ -124,32 +119,38 @@ export class KraftfutterPageComponent {
 
     this.filteredDeliveries = this.sortDescByDate(list);
 
-    // 1) relevante Produkte aus Lieferungen bestimmen (später + Plan)
-    const fromDeliveries = new Set<KraftfutterType>(this.deliveries.map(d => d.product));
-    // später:
-    // const fromPlan = new Set<KraftfutterType>(this.data.getFeedTypesFromPlan());
-    // const relevant = new Set([...fromDeliveries, ...fromPlan]);
+    // ✅ Tabs/Produkte NUR aus vorhandenen Lieferungen:
+    const map = new Map<string, ProductMeta>();
 
-    const relevant = fromDeliveries;
+    for (const d of this.deliveries) {
+      if (!d.feedDefId) continue;
+      if (!map.has(d.feedDefId)) {
+        map.set(d.feedDefId, {
+          feedDefId: d.feedDefId,
+          label: d.name,
+          baseType: d.baseType
+        });
+      }
+    }
 
-    // 2) Tabs/Meta setzen (nur die relevanten)
-    this.visibleProducts = PRODUCTS.filter(p => relevant.has(p.key));
+    this.visibleProducts = Array.from(map.values()).sort((a, b) =>
+      a.label.localeCompare(b.label, 'de')
+    );
 
-    // 3) Stats neu rechnen
     this.recomputeStats();
   }
 
   private recomputeStats() {
-    const stats: Partial<Record<KraftfutterType, ProductStats>> = {};
+    const stats: Record<string, ProductStats> = {};
 
     for (const p of this.visibleProducts) {
-      const arr = this.filteredDeliveries.filter(d => d.product === p.key);
+      const arr = this.filteredDeliveries.filter(d => d.feedDefId === p.feedDefId);
 
       const count = arr.length;
       const total = arr.reduce((sum, x) => sum + (x.priceEuro ?? 0), 0);
       const lastIso = arr.length ? this.sortDescByDate(arr)[0].date : null;
 
-      stats[p.key] = {
+      stats[p.feedDefId] = {
         count,
         total,
         totalFormatted: this.formatEuroShort(total),
@@ -160,56 +161,64 @@ export class KraftfutterPageComponent {
     this.statsByProduct = stats;
   }
 
-  iconFor(p: KraftfutterType): string {
-    return PRODUCTS.find(x => x.key === p)?.icon ?? 'default.svg';
+  iconForBaseType(t: FeedBaseType): string {
+  switch (t) {
+    case 'hafer': return 'hafer.svg';
+    case 'muesli': return 'muesli1.png';
+    case 'mash': return 'mash.svg';
+    case 'pellets': return 'pellets.svg';
+    case 'zusatzfutter': return 'zusatzfutter.svg'; // oder .svg je nach Datei
+    case 'medizin': return 'medizin.svg';
+    case 'heu': return 'heu.svg';                   // ✅ wichtig
+    default: return 'default.svg';
+  }
+}
+
+  openKraftfutterDialog() {
+    const ref = this.dialog.open(KraftfutterAddDialogComponent, {
+      width: '420px',
+      data: { feedDefs: this.data.getFeedDefinitions() }
+    });
+
+    ref.afterClosed().subscribe(async (res?: {
+      mode: 'add';
+      delivery: Omit<KraftfutterDelivery,'_id'|'_rev'|'createdAt'|'updatedAt'|'docType'>;
+    }) => {
+      if (!res) return;
+      if (res.mode !== 'add') return;
+
+      await this.data.addKraftfutter(res.delivery);
+      this.deliveries = this.data.getKraftfutter();
+      this.applyFilters();
+    });
   }
 
-  labelFor(p: KraftfutterType): string {
-    return PRODUCTS.find(x => x.key === p)?.label ?? p;
+  edit(delivery: KraftfutterDelivery) {
+    const ref = this.dialog.open(KraftfutterAddDialogComponent, {
+      width: '420px',
+      data: {
+        delivery,
+        feedDefs: this.data.getFeedDefinitions()
+      }
+    });
+
+    ref.afterClosed().subscribe(async (res?: {
+      mode: 'edit';
+      delivery: KraftfutterDelivery;
+    }) => {
+      if (!res) return;
+      if (res.mode !== 'edit') return;
+
+      await this.data.updateKraftfutter(res.delivery);
+      this.deliveries = this.data.getKraftfutter();
+      this.applyFilters();
+    });
   }
 
-openKraftfutterDialog() {
-  const ref = this.dialog.open(KraftfutterAddDialogComponent, { width: '420px' });
-
-  ref.afterClosed().subscribe(async (res?: {
-    mode: 'add';
-    delivery: Omit<KraftfutterDelivery,'_id'|'_rev'|'createdAt'|'updatedAt'|'docType'>;
-  }) => {
-    if (!res) return;
-    if (res.mode !== 'add') return;
-
-    await this.data.addKraftfutter(res.delivery);
+  async remove(delivery: KraftfutterDelivery) {
+    if (!confirm('Diese Lieferung wirklich löschen?')) return;
+    await this.data.deleteKraftfutter(delivery);
     this.deliveries = this.data.getKraftfutter();
     this.applyFilters();
-  });
-}
-
-edit(delivery: KraftfutterDelivery) {
-  const ref = this.dialog.open(KraftfutterAddDialogComponent, {
-    width: '420px',
-    data: { delivery }
-  });
-
-  ref.afterClosed().subscribe(async (res?: {
-    mode: 'edit';
-    delivery: KraftfutterDelivery;
-  }) => {
-    if (!res) return;
-    if (res.mode !== 'edit') return;
-
-    await this.data.updateKraftfutter(res.delivery);
-    this.deliveries = this.data.getKraftfutter();
-    this.applyFilters();
-  });
-}
-
-async remove(delivery: KraftfutterDelivery) {
-  if (!confirm('Diese Lieferung wirklich löschen?')) return;
-  await this.data.deleteKraftfutter(delivery);
-  this.deliveries = this.data.getKraftfutter();
-  this.applyFilters();
-}
-
-
-
+  }
 }
