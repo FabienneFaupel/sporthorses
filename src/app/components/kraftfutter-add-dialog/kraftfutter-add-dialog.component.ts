@@ -57,7 +57,7 @@ original?: KraftfutterDelivery;
       date:    [ this.original ? new Date(this.original.date) : new Date(), Validators.required ],
       packageType: [ (this.original?.packageType ?? 'bigbag') as PackageType, Validators.required ],
       // BigBag
-      weightKg:     [ this.original?.weightKg ?? 1000 ],
+      weightKg:     [ this.original?.weightKg ?? 750 ],
       // Sack
       sackWeightKg: [ this.original?.sackWeightKg ?? 20 ],
       count:        [ this.original?.count ?? 1 ],
