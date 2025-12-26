@@ -1,4 +1,5 @@
-<h2 mat-dialog-title>Eintrag hinzufügen</h2>
+<h2 mat-dialog-title>{{ data.mode === 'edit' ? 'Eintrag bearbeiten' : 'Eintrag hinzufügen' }}</h2>
+
 
 <div mat-dialog-content class="content">
   <div class="subtitle">
@@ -54,9 +55,14 @@
   </mat-form-field>
 </div>
 
-<div mat-dialog-actions align="end">
+
+
+<div mat-dialog-actions align="end" class="actions">
+  <button *ngIf="data.mode === 'edit'" mat-button color="warn" (click)="remove()">Löschen</button>
+  <span class="spacer"></span>
   <button mat-button (click)="cancel()">Abbrechen</button>
   <button mat-raised-button color="primary" (click)="save()" [disabled]="isSaveDisabled()">
-    Hinzufügen
+    {{ data.mode === 'edit' ? 'Speichern' : 'Hinzufügen' }}
   </button>
 </div>
+

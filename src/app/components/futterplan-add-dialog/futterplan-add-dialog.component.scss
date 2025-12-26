@@ -15,3 +15,11 @@
   vertical-align: middle;
 }
 
+
+.actions {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.spacer { flex: 1; }
+

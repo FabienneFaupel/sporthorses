@@ -20,7 +20,9 @@
             </div>
 
             <ng-container *ngIf="feedsFor(h, s).length > 0; else noFeeds">
-              <div *ngFor="let i of feedsFor(h, s)" class="feed-card">
+              <div *ngFor="let i of feedsFor(h, s); let idx = index"
+     class="feed-card clickable"
+     (click)="openEditDialog(h, s, idx)">
                 <div class="feed-item">
                   <div class="left">
                     <img class="feed-icon-img" [src]="i.icon" [alt]="i.product">

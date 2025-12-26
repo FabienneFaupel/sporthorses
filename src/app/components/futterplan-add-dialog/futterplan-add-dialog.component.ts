@@ -9,11 +9,27 @@ import { MatButtonModule } from '@angular/material/button';
 
 export type Slot = 'Morgens' | 'Mittags' | 'Abends';
 
-export interface FeedItem {
-  product: string;
-  amount: string;  // z.B. "1/2 Schippe" oder "250 g"
-  icon: string;    // Pfad zu SVG ("/images/hafer.svg")
+export interface DialogData {
+  horseName: string;
+  slot: Slot;
+  mode?: 'add' | 'edit';
+  initial?: FeedItem;
 }
+
+
+export interface FeedItem {
+  // Anzeige
+  product: string;   // "Hafer"
+  amount: string;    // "1/2 Schippe" oder "250 g"
+  icon: string;      // "/images/hafer.svg"
+
+  // Rohdaten für Edit
+  productKey: ProductKey;
+  unitKey: UnitKey;
+  preset?: string;        // z.B. "1/2" oder "Handvoll"
+  amountNum?: number;     // z.B. 250
+}
+
 
 type ProductKey = 'hafer' | 'heu' | 'mash' | 'pellets' | 'muesli';
 type UnitKey = 'schippe' | 'becher' | 'portion' | 'anzahl' | 'g' | 'kg' | 'ml' | 'l';
@@ -144,7 +160,8 @@ export class FutterplanAddDialogComponent {
   constructor(
     private fb: FormBuilder,
     private ref: MatDialogRef<FutterplanAddDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { horseName: string; slot: Slot }
+    @Inject(MAT_DIALOG_DATA) public data: DialogData
+
   ) {
     this.form = this.fb.group({
       productKey: this.fb.control<ProductKey | null>(null, Validators.required),
@@ -165,6 +182,18 @@ export class FutterplanAddDialogComponent {
       this.form.controls.preset.setValue(null);
       this.form.controls.amountNum.setValue(null);
     });
+
+    // ✅ Wenn Edit: Werte vorausfüllen
+if (this.data.mode === 'edit' && this.data.initial) {
+  const init = this.data.initial;
+
+  this.form.controls.productKey.setValue(init.productKey);
+  this.form.controls.unitKey.setValue(init.unitKey);
+
+  if (init.preset) this.form.controls.preset.setValue(init.preset);
+  if (init.amountNum != null) this.form.controls.amountNum.setValue(init.amountNum);
+}
+
   }
 
   get selectedProduct(): ProductOption | null {
@@ -218,12 +247,18 @@ export class FutterplanAddDialogComponent {
     }
 
     const result: FeedItem = {
-      product: p.label,
-      amount: amountText,
-      icon: p.iconPath
-    };
+  product: p.label,
+  amount: amountText,
+  icon: p.iconPath,
 
-    this.ref.close(result);
+  productKey: p.key,
+  unitKey: u.key,
+  preset: u.mode === 'preset' ? (this.form.controls.preset.value ?? undefined) : undefined,
+  amountNum: u.mode === 'number' ? (this.form.controls.amountNum.value ?? undefined) : undefined
+};
+
+this.ref.close(result);
+
   }
 
   // Für Button-Disable im Template
@@ -235,4 +270,9 @@ export class FutterplanAddDialogComponent {
     if (u.mode === 'preset') return !this.form.controls.preset.value;
     return this.form.controls.amountNum.value == null;
   }
+
+  remove() {
+  this.ref.close({ delete: true });
+}
+
 }

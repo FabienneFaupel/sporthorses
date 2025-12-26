@@ -89,4 +89,30 @@ export class FutterplanPageComponent {
   });
 }
 
+openEditDialog(h: HorsePlan, slot: Slot, index: number) {
+  const current = h.feedsBySlot[slot][index];
+
+  const ref = this.dialog.open(FutterplanAddDialogComponent, {
+    width: '420px',
+    data: {
+      horseName: h.name,
+      slot,
+      mode: 'edit',
+      initial: current
+    }
+  });
+
+  ref.afterClosed().subscribe((res?: FeedItem | { delete: true }) => {
+    if (!res) return;
+
+    if ((res as any).delete) {
+      h.feedsBySlot[slot].splice(index, 1);
+      return;
+    }
+
+    h.feedsBySlot[slot][index] = res as FeedItem;
+  });
+}
+
+
 }

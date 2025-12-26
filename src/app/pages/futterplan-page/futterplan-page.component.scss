@@ -59,6 +59,15 @@
   align-items: center;
 }
 
+.feed-card.clickable {
+  cursor: pointer;
+}
+.feed-card.clickable:active {
+  transform: scale(0.99);
+}
+
+
+
 .left {
   display: flex;
   align-items: center;
