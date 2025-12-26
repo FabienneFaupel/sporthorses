@@ -1,0 +1,52 @@
+<div class="page">
+
+  <div class="header">
+    <h1>Kalender</h1>
+
+    <!-- Design-FAB -->
+    <button class="fab" aria-label="Termin hinzufügen">
+      <span>+</span>
+    </button>
+  </div>
+
+  <!-- Kalender -->
+  <div class="calendar-card">
+    <mat-calendar
+      [selected]="selectedDate"
+      (selectedChange)="onDateChanged($event)">
+    </mat-calendar>
+  </div>
+
+  <!-- Terminliste -->
+  <div class="list-card">
+    <div class="list-header">
+      Termine am {{ selectedDate | date:'dd.MM.yyyy' }}
+    </div>
+
+    <div *ngIf="dayEvents.length === 0" class="empty">
+      Keine Termine
+    </div>
+
+    <div *ngFor="let e of dayEvents" class="event">
+      <div class="icon">
+        <mat-icon>{{ iconForType(e.type) }}</mat-icon>
+      </div>
+
+      <div class="content">
+        <div class="title">
+          <span *ngIf="e.time" class="time">{{ e.time }}</span>
+          {{ e.title }}
+        </div>
+        <div class="meta">
+          {{ labelForType(e.type) }}
+          <span *ngIf="e.note">• {{ e.note }}</span>
+        </div>
+      </div>
+
+      <button class="delete" (click)="deleteEvent(e.id)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+
+</div>

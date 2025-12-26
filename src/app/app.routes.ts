@@ -12,6 +12,7 @@ import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { authGuard } from './guards/auth.guard';
 import { guestGuard } from './guards/guest.guard';
 import { FuttersortenPageComponent } from './pages/futtersorten-page/futtersorten-page.component';
+import { CalendarPageComponent } from './pages/calendar-page/calendar-page.component';
 
 export const routes: Routes = [
 
@@ -30,6 +31,8 @@ export const routes: Routes = [
             { path: 'horses/:id', component: HorseDetailPageComponent },
             { path: 'futterplan', component: FutterplanPageComponent },
             { path: 'futtersorten', component: FuttersortenPageComponent },
+            { path: 'calendar', component: CalendarPageComponent },
+
 
 
 
