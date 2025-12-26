@@ -68,6 +68,11 @@
 .feed-icon {
   font-size: 20px;
 }
+.feed-icon-img {
+  width: 22px;
+  height: 22px;
+}
+
 
 .product {
   font-size: 1rem;
@@ -85,7 +90,4 @@
   font-style: italic;
 }
 
-/* Icon-Farben */
-.icon-grain { color: #f59e0b; }     /* Hafer -> Gold */
-.icon-hay { color: #22c55e; }       /* Heu -> Grün */
-.icon-supplement { color: #3b82f6; }/* Cavalor Calm -> Blau */
+

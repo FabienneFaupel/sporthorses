@@ -1,39 +1,49 @@
 <mat-card class="card">
-<mat-tab-group class="tabs">
-  <mat-tab *ngFor="let s of slots" [label]="s">
-    <div class="content">
-      <ng-container *ngFor="let h of horses">
-        <div class="horse-block">
-          <!-- Pferdename + Plus-Button -->
-          <div class="horse-header">
-            <div class="horse-name-box">
-            <img src="/images/horse.svg" alt="{{ h.name }}" class="horse-img">
-            <span class="horse">{{ h.name }}</span>
-            </div>
-            <button mat-icon-button class="add-btn" aria-label="Hinzufügen">
-              <mat-icon>add</mat-icon>
-            </button>
-          </div>
+  <mat-tab-group class="tabs">
+    <mat-tab *ngFor="let s of slots" [label]="s">
+      <div class="content">
+        <ng-container *ngFor="let h of horses">
+          <div class="horse-block">
 
-          <!-- Einträge mit Abstand -->
-          <ng-container *ngIf="h.feeds.length > 0; else noFeeds">
-            <div *ngFor="let i of h.feeds" class="feed-card">
-              <div class="feed-item">
-                <div class="left">
-                  <mat-icon class="feed-icon" [ngClass]="i.iconColor">{{ i.icon }}</mat-icon>
-                  <span class="product">{{ i.product }}</span>
-                </div>
-                <span class="amount">{{ i.amount }}</span>
+            <div class="horse-header">
+              <div class="horse-name-box">
+                <img src="/images/horse.svg" alt="{{ h.name }}" class="horse-img">
+                <span class="horse">{{ h.name }}</span>
               </div>
-            </div>
-          </ng-container>
 
-          <ng-template #noFeeds>
-            <div class="empty">Keine Einträge</div>
-          </ng-template>
+              <button mat-icon-button class="add-btn"
+        (click)="openAddDialog(h, s)"
+        aria-label="Hinzufügen">
+  <mat-icon>add</mat-icon>
+</button>
+
+            </div>
+
+            <ng-container *ngIf="feedsFor(h, s).length > 0; else noFeeds">
+              <div *ngFor="let i of feedsFor(h, s)" class="feed-card">
+                <div class="feed-item">
+                  <div class="left">
+                    <img class="feed-icon-img" [src]="i.icon" [alt]="i.product">
+
+                    <span class="product">{{ i.product }}</span>
+                  </div>
+                  <span class="amount">{{ i.amount }}</span>
+                </div>
+              </div>
+            </ng-container>
+
+            <ng-template #noFeeds>
+              <div class="empty">Keine Einträge</div>
+            </ng-template>
+
+          </div>
+        </ng-container>
+
+        <!-- optional: wenn gar keine Pferde existieren -->
+        <div class="empty" *ngIf="horses.length === 0">
+          Keine Pferde angelegt.
         </div>
-      </ng-container>
-    </div>
-  </mat-tab>
-</mat-tab-group>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
 </mat-card>

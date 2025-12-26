@@ -6,6 +6,26 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { FutterplanAddDialogComponent } from '../../components/futterplan-add-dialog/futterplan-add-dialog.component';
+
+
+
+import { DataService } from '../../services/data.service';
+
+type Slot = 'Morgens' | 'Mittags' | 'Abends';
+
+interface FeedItem {
+  product: string;
+  amount: string;
+  icon: string;
+  iconColor: string;
+}
+
+interface HorsePlan {
+  name: string;
+  feedsBySlot: Record<Slot, FeedItem[]>;
+}
 
 
 
@@ -19,28 +39,54 @@ import { MatButtonModule } from '@angular/material/button';
     MatListModule,
     MatIconModule,
     MatDividerModule,
-    MatButtonModule
+    MatButtonModule,
+    MatDialogModule,
+FutterplanAddDialogComponent,
+
   ],
   templateUrl: './futterplan-page.component.html',
   styleUrl: './futterplan-page.component.scss'
 })
 export class FutterplanPageComponent {
-  slots = ['Morgens', 'Mittags', 'Abends', 'Nachts'];
+  slots: Slot[] = ['Morgens', 'Mittags', 'Abends'];
 
-  horses = [
-    {
-      name: 'Somersby',
-      feeds: [
-        { product: 'Hafer', amount: '1 Schippe', icon: 'spa', iconColor: 'icon-grain' },
-        { product: 'Cavalor Calm', amount: '5 g', icon: 'science', iconColor: 'icon-supplement' }
-      ]
-    },
-    {
-      name: 'test',
-      feeds: [
-        { product: 'Hafer', amount: '1/2 Schippe', icon: 'spa', iconColor: 'icon-grain' },
-        { product: 'Heu', amount: 'Große Portion', icon: 'eco', iconColor: 'icon-hay' }
-      ]
-    }
-  ];
+  // dynamisch aus angelegten Pferden
+  horses: HorsePlan[] = [];
+
+  constructor(private data: DataService, private dialog: MatDialog) {}
+
+
+  async ngOnInit() {
+  try {
+    await this.data.loadHorsesFromDb();
+  } catch (e) {
+    console.error(e);
+  }
+
+  const horsesFromDb = this.data.getHorses();
+  this.horses = (horsesFromDb ?? []).map((h: any) => ({
+    name: h.name,
+    feedsBySlot: { Morgens: [], Mittags: [], Abends: [] }
+  }));
+}
+
+
+
+  feedsFor(h: HorsePlan, slot: Slot): FeedItem[] {
+    return h.feedsBySlot[slot] ?? [];
+  }
+
+  openAddDialog(h: HorsePlan, slot: Slot) {
+
+  const ref = this.dialog.open(FutterplanAddDialogComponent, {
+    width: '420px',
+    data: { horseName: h.name, slot }
+  });
+
+  ref.afterClosed().subscribe((res?: FeedItem) => {
+    if (!res) return;
+    h.feedsBySlot[slot].push(res);
+  });
+}
+
 }
