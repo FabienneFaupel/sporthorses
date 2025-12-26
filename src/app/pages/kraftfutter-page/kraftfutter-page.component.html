@@ -5,7 +5,7 @@
   <mat-card class="hafer-hero">
     <ng-container *ngIf="visibleProducts.length > 0; else emptyHero">
       <mat-tab-group headerPosition="below">
-        <mat-tab *ngFor="let p of visibleProducts" [label]="p.label">
+        <mat-tab *ngFor="let p of visibleProducts; trackBy: trackProduct" [label]="p.label">
           <div class="hafer-hero-header">
             <div>
               <h2>{{ p.label }}</h2>
@@ -30,9 +30,18 @@
             </div>
 
             <div class="stat">
-              <div class="stat-label">Status</div>
-              <div class="stat-chip ok">ausreichend</div>
-            </div>
+  <div class="stat-label">Status</div>
+
+  <div
+  class="stat-chip"
+  [ngClass]="statusByProduct[p.feedDefId]?.css ?? 'unknown'"
+  [matTooltip]="statusByProduct[p.feedDefId]?.hint ?? ''"
+>
+  {{ statusByProduct[p.feedDefId]?.label ?? 'Noch kein Status' }}
+</div>
+
+</div>
+
           </div>
         </mat-tab>
       </mat-tab-group>
@@ -69,7 +78,7 @@
 
   <!-- Lieferliste -->
   <div class="hafer-list" *ngIf="!loading">
-    <mat-card class="delivery-card" *ngFor="let d of filteredDeliveries">
+    <mat-card class="delivery-card" *ngFor="let d of filteredDeliveries; trackBy: trackDelivery">
       <div class="delivery-header">
         <div class="left">
           <img class="feed-icon"
