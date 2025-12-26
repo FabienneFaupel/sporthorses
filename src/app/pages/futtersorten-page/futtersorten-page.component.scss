@@ -88,3 +88,8 @@
   color: #9ca3af;
   font-style: italic;
 }
+
+:host ::ng-deep .mat-mdc-tab-body-content {
+  overflow: visible !important;
+}
+
