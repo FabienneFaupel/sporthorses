@@ -1,18 +1,42 @@
 :host {
   display: block;
-  padding-top: 12px;
-  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  padding: 10px 0 max(10px, env(safe-area-inset-bottom));
 }
 
 .sheet-grabber {
-  width: 48px;
-  height: 4px;
-  border-radius: 4px;
+  width: 44px;
+  height: 5px;
+  border-radius: 99px;
   margin: 6px auto 12px;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.18);
 }
 
-mat-nav-list a[mat-list-item] {
-  border-radius: 12px;
-  margin: 4px 8px;
+.sheet-list {
+  padding: 0;
+}
+
+/* volle Breite, große Tap-Fläche */
+.sheet-item {
+  height: 60px;
+  padding: 0 18px;
+}
+
+/* saubere Trennlinie wie iOS/Spotify */
+.sheet-item:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* modernes Touch-Feedback */
+.sheet-item:active {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.sheet-icon {
+  margin-right: 16px;
+  opacity: 0.8;
+}
+
+.sheet-label {
+  font-size: 18px;
+  font-weight: 600;
 }

@@ -127,4 +127,14 @@
   opacity: 1;
 }
 
+.bottom-nav .nav-btn {
+  color: inherit;          // ✅ wichtig: verhindert hellblau
+  -webkit-tap-highlight-color: transparent; // optional, nice auf Handy
+}
+
+.bottom-nav mat-icon {
+  color: inherit;          // ✅ Icon übernimmt immer die Textfarbe (grau/pink)
+}
+
+
 
