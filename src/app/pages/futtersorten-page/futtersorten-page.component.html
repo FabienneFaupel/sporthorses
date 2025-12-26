@@ -22,7 +22,8 @@
      [class.disabled]="d.isDefault"
      [attr.aria-disabled]="d.isDefault"
      matTooltip="Standard-Futtersorten können nicht bearbeitet werden."
-     [matTooltipDisabled]="!d.isDefault">
+     [matTooltipDisabled]="!d.isDefault"
+     matTooltipTouchGestures="off">
             <div class="left">
               <img class="icon" [src]="iconForBaseType(d.baseType)" [alt]="d.baseType">
               <div class="texts">
