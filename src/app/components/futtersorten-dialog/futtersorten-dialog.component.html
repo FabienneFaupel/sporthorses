@@ -1,5 +1,5 @@
 <!-- HEADER -->
-<div class="dlg-header" mat-dialog-title>
+<div  mat-dialog-title class="dlg-header">
   <div class="hdr-left">
     <div class="hdr-icon">
       <img
@@ -30,7 +30,7 @@
 
     <div class="grid-2">
       <!-- BaseType -->
-      <mat-form-field appearance="outline" class="full">
+      <mat-form-field appearance="outline" class="full no-subscript">
         <mat-label>Art</mat-label>
 
         <mat-select [formControl]="form.controls.baseType" panelClass="type-panel">
@@ -62,7 +62,7 @@
       </mat-form-field>
 
       <!-- Name -->
-      <mat-form-field appearance="outline" class="full">
+      <mat-form-field appearance="outline" class="full card-text">
         <mat-label>Name</mat-label>
         <input
           matInput
@@ -71,7 +71,7 @@
         />
 
         <mat-hint *ngIf="form.controls.baseType.value as bt">
-          Tipp: Für Standard-Namen (z.B. „Hafer“) bitte einen speziellen Namen wählen.
+          Tipp: nicht den Standardnamen verwenden.
         </mat-hint>
 
         <mat-error *ngIf="form.controls.name.hasError('required')">Bitte einen Namen eingeben.</mat-error>
@@ -105,7 +105,7 @@
               <mat-icon class="choice-ico">event_note</mat-icon>
             </div>
             <div class="choice-desc">
-              Ideal für interne Planwerte ohne Einfluss auf Lieferübersichten.
+              
             </div>
           </div>
         </mat-radio-button>
@@ -128,7 +128,6 @@
               <mat-icon class="choice-ico">local_shipping</mat-icon>
             </div>
             <div class="choice-desc">
-              Wird im Futterplan und in der Liefer-/Bestandslogik sichtbar.
             </div>
           </div>
         </mat-radio-button>
@@ -153,7 +152,7 @@
       <span>Einheiten</span>
     </div>
 
-    <mat-form-field appearance="outline" class="full">
+    <mat-form-field appearance="outline" class="full card-text">
       <mat-label>Erlaubte Einheiten</mat-label>
       <mat-select [formControl]="form.controls.allowedUnits" multiple>
         <mat-select-trigger>
@@ -173,7 +172,7 @@
           {{ u.label }}
         </mat-option>
       </mat-select>
-      <mat-hint>Wird im Futterplan-Dialog als Auswahl angeboten.</mat-hint>
+      <mat-hint>Wird im Futterplan als Auswahl angeboten.</mat-hint>
     </mat-form-field>
   </section>
 

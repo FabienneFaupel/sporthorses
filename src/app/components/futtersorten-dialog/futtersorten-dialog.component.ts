@@ -54,20 +54,26 @@ const UNIT_OPTIONS: { key: UnitKey; label: string }[] = [
 ];
 
 // Namen, die für die jeweiligen BaseTypes "reserviert" sind (damit du nicht "Hafer" als custom Hafer anlegst)
-const RESERVED_NAMES: Record<string, string[]> = {
-  hafer: ['hafer'],
-  heu: ['heu'],
-  mash: ['mash'],
-  pellets: ['pellets'],
-  muesli: ['müsli', 'muesli']
-};
+const RESERVED_STANDARD_NAMES = new Set([
+  'hafer',
+  'mash',
+  'pellets',
+  'müsli',
+  'muesli',
+  'heu',
+]);
+
 
 function normalizeName(s: string): string {
   return (s ?? '')
     .trim()
     .toLowerCase()
-    .replace(/\s+/g, ' ');
+    .replace(/\s+/g, ' ')
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue');
 }
+
 
 
 @Component({
@@ -176,15 +182,14 @@ baseTypes = BASE_TYPES;
     this.ref.close({ delete: true });
   }
 
-  private validateReservedName(baseType: FeedBaseType, name: string): string | null {
-    const list = RESERVED_NAMES[baseType];
-    if (!list) return null;
-    const n = normalizeName(name);
-    if (list.includes(n)) {
-      return `Der Name „${name}“ ist für ${baseType} bereits als Standard vorhanden. Bitte z.B. „Gequetschter ${baseType}“ verwenden.`;
-    }
-    return null;
+  private validateReservedName(name: string): string | null {
+  const n = normalizeName(name);
+  if (RESERVED_STANDARD_NAMES.has(n)) {
+    return `„${name}“ ist bereits als Standardname vorhanden. Bitte einen speziellen Namen wählen (z.B. „Gequetschter ${name}“).`;
   }
+  return null;
+}
+
 
   save() {
     if (this.form.invalid) return;
@@ -194,12 +199,12 @@ baseTypes = BASE_TYPES;
     const scope = this.form.controls.scope.value;
     const allowedUnits = this.form.controls.allowedUnits.value ?? [];
 
-    const reservedError = this.validateReservedName(baseType, name);
-    if (reservedError) {
-      // simple: block save und markiere name als invalid (ohne extra UI libs)
-      this.form.controls.name.setErrors({ reserved: true });
-      return;
-    }
+    const reservedError = this.validateReservedName(name);
+if (reservedError) {
+  this.form.controls.name.setErrors({ reserved: true });
+  return;
+}
+
 
     const meta = this.baseTypes.find(b => b.key === baseType)!;
 
