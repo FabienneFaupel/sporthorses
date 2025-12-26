@@ -1,5 +1,5 @@
 // src/app/models/kraftfutter.ts
-export type KraftfutterType = 'hafer' | 'muesli' | 'zusatz';
+export type KraftfutterType = 'hafer' | 'muesli' | 'pellets' | 'mash';
 export type PackageType = 'bigbag' | 'sack';
 
 export interface KraftfutterDelivery {

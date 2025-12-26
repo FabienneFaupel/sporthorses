@@ -13,14 +13,25 @@ import { KraftfutterAddDialogComponent } from '../../components/kraftfutter-add-
 import { DataService } from '../../services/data.service';
 import { KraftfutterDelivery, KraftfutterType } from '../../models/kraftfutter';
 
-type ProductKey = 'hafer' | 'muesli' | 'zusatz';
+interface ProductMeta {
+  key: KraftfutterType;
+  label: string;
+  icon: string;
+}
 
 interface ProductStats {
   count: number;
-  total: number;            // €
+  total: number;
   totalFormatted: string;
-  last: string | null;      // dd.MM.yyyy
+  last: string | null;
 }
+
+const PRODUCTS: ProductMeta[] = [
+  { key: 'muesli',  label: 'Müsli',  icon: 'muesli1.png' },
+  { key: 'pellets', label: 'Pellets', icon: 'pellets.svg' }, // Icon-Datei anlegen
+  { key: 'mash',    label: 'Mash',    icon: 'mash.svg' },    // Icon-Datei anlegen
+  { key: 'hafer',   label: 'Hafer',   icon: 'hafer.svg' },
+];
 
 @Component({
   selector: 'app-kraftfutter-page',
@@ -40,33 +51,32 @@ interface ProductStats {
   styleUrl: './kraftfutter-page.component.scss'
 })
 export class KraftfutterPageComponent {
- deliveries: KraftfutterDelivery[] = [];
- filteredDeliveries: KraftfutterDelivery[] = [];
+  deliveries: KraftfutterDelivery[] = [];
+  filteredDeliveries: KraftfutterDelivery[] = [];
   loading = true;
 
-  // Jahr-Filter
   currentYear = new Date().getFullYear();
-  years: (number | 'all')[] = [];                  // 👈 Optionen im Dropdown
+  years: (number | 'all')[] = [];
   selectedYear: number | 'all' = this.currentYear;
 
-  statsByProduct: Record<ProductKey, ProductStats> = {
-    hafer: { count: 0, total: 0, totalFormatted: '€ 0,–', last: null },
-    muesli: { count: 0, total: 0, totalFormatted: '€ 0,–', last: null },
-    zusatz: { count: 0, total: 0, totalFormatted: '€ 0,–', last: null },
-  };
+  // 👇 Tabs, die angezeigt werden
+  visibleProducts: ProductMeta[] = [];
 
+  // 👇 Stats dynamisch, keyed by KraftfutterType
+  statsByProduct: Partial<Record<KraftfutterType, ProductStats>> = {};
 
   constructor(private dialog: MatDialog, private data: DataService) {}
 
-   async ngOnInit() {
+  async ngOnInit() {
     await this.data.loadKraftfutterFromDb();
     this.deliveries = this.data.getKraftfutter();
+
     this.setupYears();
-    this.applyFilters();        // 👈 initial filtern + sortieren
+    this.applyFilters(); // setzt filteredDeliveries + stats + visibleProducts
+
     this.loading = false;
   }
 
-  // Optionen: aktuelles Jahr, 3 weitere zurück (insgesamt 4), plus "Alle Jahre"
   private setupYears() {
     this.years = [
       this.currentYear,
@@ -78,14 +88,12 @@ export class KraftfutterPageComponent {
     ];
   }
 
-   /** ISO 'yyyy-MM-dd' -> Date (mittags, um TZ-Effekte zu vermeiden) */
   private parseIsoDate(iso: string): Date {
     if (!iso) return new Date(0);
     const [y, m, d] = iso.split('-').map(n => parseInt(n, 10));
     return new Date(y, (m || 1) - 1, d || 1, 12, 0, 0);
   }
 
-  /** ISO -> 'dd.MM.yyyy' */
   formatDateGermanFromIso = (iso: string | null | undefined): string | null => {
     if (!iso) return null;
     const dt = this.parseIsoDate(iso);
@@ -95,10 +103,8 @@ export class KraftfutterPageComponent {
     return `${dd}.${mm}.${yyyy}`;
   };
 
-  /** neu -> alt */
   private sortDescByDate(list: KraftfutterDelivery[]): KraftfutterDelivery[] {
     return [...list].sort((a, b) => {
-      // ISO ist lexikographisch sortierbar, aber wir gehen über Date für Sicherheit
       const da = this.parseIsoDate(a.date).getTime();
       const db = this.parseIsoDate(b.date).getTime();
       return db - da;
@@ -117,69 +123,50 @@ export class KraftfutterPageComponent {
     }
 
     this.filteredDeliveries = this.sortDescByDate(list);
+
+    // 1) relevante Produkte aus Lieferungen bestimmen (später + Plan)
+    const fromDeliveries = new Set<KraftfutterType>(this.deliveries.map(d => d.product));
+    // später:
+    // const fromPlan = new Set<KraftfutterType>(this.data.getFeedTypesFromPlan());
+    // const relevant = new Set([...fromDeliveries, ...fromPlan]);
+
+    const relevant = fromDeliveries;
+
+    // 2) Tabs/Meta setzen (nur die relevanten)
+    this.visibleProducts = PRODUCTS.filter(p => relevant.has(p.key));
+
+    // 3) Stats neu rechnen
     this.recomputeStats();
   }
 
   private recomputeStats() {
-    const base: Record<ProductKey, ProductStats> = {
-      hafer: { count: 0, total: 0, totalFormatted: '€ 0,–', last: null },
-      muesli: { count: 0, total: 0, totalFormatted: '€ 0,–', last: null },
-      zusatz: { count: 0, total: 0, totalFormatted: '€ 0,–', last: null },
-    };
+    const stats: Partial<Record<KraftfutterType, ProductStats>> = {};
 
-    const byProduct: Record<ProductKey, KraftfutterDelivery[]> = {
-      hafer: [], muesli: [], zusatz: [],
-    };
+    for (const p of this.visibleProducts) {
+      const arr = this.filteredDeliveries.filter(d => d.product === p.key);
 
-    for (const d of this.filteredDeliveries) {
-      const key = (d.product as ProductKey) ?? 'zusatz';
-      byProduct[key].push(d);
-    }
-
-    (Object.keys(byProduct) as ProductKey[]).forEach(p => {
-      const arr = byProduct[p];
       const count = arr.length;
       const total = arr.reduce((sum, x) => sum + (x.priceEuro ?? 0), 0);
       const lastIso = arr.length ? this.sortDescByDate(arr)[0].date : null;
 
-      base[p] = {
+      stats[p.key] = {
         count,
         total,
         totalFormatted: this.formatEuroShort(total),
         last: this.formatDateGermanFromIso(lastIso),
       };
-    });
+    }
 
-    this.statsByProduct = base;
+    this.statsByProduct = stats;
   }
-
-
 
   iconFor(p: KraftfutterType): string {
-  switch (p) {
-    case 'hafer':
-      return 'hafer.svg';
-    case 'muesli':
-      return 'muesli1.png';
-    case 'zusatz':
-      return 'zusatzfutter.svg';   // 👈 genau so benannt
-    default:
-      return 'default.svg';        // fallback falls mal was anderes drinsteht
+    return PRODUCTS.find(x => x.key === p)?.icon ?? 'default.svg';
   }
-}
 
-labelFor(p: KraftfutterType): string {
-  switch (p) {
-    case 'hafer':
-      return 'Hafer';
-    case 'muesli':
-      return 'Müsli';
-    case 'zusatz':
-      return 'Zusatzfutter';
-    default:
-      return p;
+  labelFor(p: KraftfutterType): string {
+    return PRODUCTS.find(x => x.key === p)?.label ?? p;
   }
-}
 
 openKraftfutterDialog() {
   const ref = this.dialog.open(KraftfutterAddDialogComponent, { width: '420px' });
