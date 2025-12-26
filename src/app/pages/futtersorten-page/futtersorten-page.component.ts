@@ -101,11 +101,13 @@ export class FuttersortenPageComponent {
       if (!res) return;
 
       if ((res as any).delete) {
-        if (item.isDefault) return;
-        await this.data.deleteFeedDefinition(item);
-        this.defs = this.data.getFeedDefinitions();
-        return;
-      }
+  if (item.isDefault) return;
+
+  await this.data.deleteFeedDefinitionCascade(item); // ✅ HIER
+  this.defs = this.data.getFeedDefinitions();
+  return;
+}
+
 
       await this.data.updateFeedDefinition(res as FeedDefinition);
       this.defs = this.data.getFeedDefinitions();

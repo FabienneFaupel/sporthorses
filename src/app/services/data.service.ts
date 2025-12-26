@@ -384,6 +384,70 @@ async deleteFeedDefinition(def: FeedDefinition) {
 }
 
 
+async deleteFeedDefinitionCascade(def: FeedDefinition) {
+  if (def.isDefault) return;
+  if (!def._id || !def._rev) throw new Error('id/rev fehlt');
+
+  const defId = def._id;
+
+  // ----------------------------
+  // A) Aus allen Futterplänen entfernen
+  // ----------------------------
+  // Sicherstellen, dass horses geladen sind
+  if (!this.horses || this.horses.length === 0) {
+    await this.loadHorsesFromDb();
+  }
+
+  // Slots wie bei dir
+  const slots: Array<'Morgens' | 'Mittags' | 'Abends'> = ['Morgens', 'Mittags', 'Abends'];
+
+  for (const h of this.horses) {
+    if (!h.feedPlan) continue;
+
+    let changed = false;
+
+    for (const s of slots) {
+      const arr = h.feedPlan[s] ?? [];
+      const filtered = arr.filter(item => item.feedDefId !== defId);
+
+      if (filtered.length !== arr.length) {
+        h.feedPlan[s] = filtered;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      // nutzt deine bestehende Update-Logik inkl. _rev refresh & change detection
+      await this.updateHorse(h);
+    }
+  }
+
+  // ----------------------------
+  // B) Kraftfutterlieferungen löschen, die diese Sorte referenzieren
+  // ----------------------------
+  if (!this.kraftfutter) {
+    await this.loadKraftfutterFromDb();
+  }
+
+  const toDelete = this.kraftfutter.filter(d => d.feedDefId === defId);
+
+  for (const d of toDelete) {
+    // nutzt deine bestehende Delete-Logik
+    await this.deleteKraftfutter(d);
+  }
+
+  // ----------------------------
+  // C) Jetzt die Sorte selbst löschen
+  // ----------------------------
+  await this.deleteFeedDefinition(def);
+
+  // Optional: neu laden, falls du absolut safe sein willst
+  // await this.loadFeedDefinitionsFromDb();
+  // await this.loadKraftfutterFromDb();
+  // await this.loadHorsesFromDb();
+}
+
+
 
   
 // DB Feed
