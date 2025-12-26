@@ -58,7 +58,7 @@ isMoreActive = false;
 
     // alle Seiten, die zu "Mehr" gehören
     return url.startsWith('/futterplan') ||
-           url.startsWith('/profile') ||
+           url.startsWith('/futtersorten') ||
            url.startsWith('/support');
   }
 
