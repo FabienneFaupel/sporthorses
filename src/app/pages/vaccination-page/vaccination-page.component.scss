@@ -495,3 +495,22 @@ padding: 14px;
   opacity: .7;
   line-height: 1.35;
 }
+
+
+.empty-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 16px 18px;
+  border-radius: 14px;
+
+  background: #f6f7f8;
+  color: #333;
+
+  font-size: 15px;
+}
+
+.empty-info .info-icon {
+  color: #555;
+}

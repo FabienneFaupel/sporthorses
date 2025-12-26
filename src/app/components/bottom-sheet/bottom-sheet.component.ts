@@ -18,9 +18,9 @@ constructor(
   ) {}
 
   items = [
-    { label: 'Futterplan',    icon: 'restaurant',   link: '/futterplan' },
-    { label: 'Futtersorten',   icon: 'insights',     link: '/futtersorten' },
-    { label: 'Turnierbericht',icon: 'emoji_events', link: '/more/turnierbericht' },
+    { label: 'Futterplan',    icon: 'event_note',   link: '/futterplan' },
+    { label: 'Futtersorten',   icon: 'inventory_2',     link: '/futtersorten' },
+    { label: 'Statistik',icon: 'bar_chart', link: '/more/turnierbericht' },
   ];
 
   go(link: string) {

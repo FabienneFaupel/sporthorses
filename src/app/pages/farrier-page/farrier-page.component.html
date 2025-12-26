@@ -21,14 +21,26 @@
   </mat-form-field>
 </div>
 
+<!-- ✅ EMPTY STATE: Keine Pferde -->
+<div *ngIf="!loading && (!horses || horses.length === 0)" class="empty-state">
+  <mat-icon>info</mat-icon>
+  <p>Noch kein Pferd angelegt.</p>
+</div>
 
-    <mat-tab-group>
+
+    <mat-tab-group *ngIf="!loading && horses?.length">
         <mat-tab *ngFor="let horse of horses; let i = index" label="{{ horse.name }}">
             <div class="horse-card">
                 <div class="horse-title-box">
                     <img src="/images/horse.svg" alt="{{ horse.name }}" class="horse-img">
                 <h3>{{ horse.name }}</h3>
                 </div>
+
+                  <!-- ✅ EMPTY STATE: Keine Beschlag-Einträge (nach Filter!) -->
+      <div *ngIf="filteredFarrierEntries(horse).length === 0" class="empty-state small">
+        <mat-icon>info</mat-icon>
+        <p>Noch keine Beschlag-Einträge vorhanden.</p>
+      </div>
 
                 <div *ngFor="let entry of filteredFarrierEntries(horse)" class="farrier-card">
                     <div class="farrier-card-header">

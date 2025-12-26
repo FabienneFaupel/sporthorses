@@ -145,11 +145,15 @@
   </mat-card>
 </ng-template>
 
+<mat-card class="empty-info" *ngIf="!horses || horses.length === 0">
+  <mat-icon class="info-icon">info</mat-icon>
+  <span>Noch kein Pferd angelegt.</span>
+</mat-card>
 
 
 <!-- Übergang / Section Header -->
 
-
+<div *ngIf="horses && horses.length > 0">
 <div class="section-head">
   <div class="section-left">
     <div class="section-title">
@@ -257,7 +261,7 @@
   </mat-tab>
 </mat-tab-group>
 
-
+</div>
 
 
 
