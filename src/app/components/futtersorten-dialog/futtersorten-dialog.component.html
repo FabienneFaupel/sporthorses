@@ -90,49 +90,37 @@
       <span>Verwendung</span>
     </div>
 
-    <div class="choice-grid" [class.choice-grid--single]="scopeDisabled">
-      <!-- Card 1 -->
-      <label class="choice-card" [class.is-checked]="form.controls.scope.value === 'feedplan'">
-        <mat-radio-button
-          class="choice-radio"
-          value="feedplan"
-          [formControl]="form.controls.scope"
-          [disabled]="scopeDisabled"
-        >
-          <div class="choice-content">
-            <div class="choice-head">
-              <span class="choice-title">Nur im Futterplan</span>
-              <mat-icon class="choice-ico">event_note</mat-icon>
-            </div>
-            <div class="choice-desc">
-              
-            </div>
-          </div>
-        </mat-radio-button>
-      </label>
+    <mat-radio-group [formControl]="form.controls.scope" class="choice-grid" [class.choice-grid--single]="scopeDisabled">
 
-      <!-- Card 2 -->
-      <label
-        class="choice-card"
-        *ngIf="!scopeDisabled"
-        [class.is-checked]="form.controls.scope.value === 'both'"
-      >
-        <mat-radio-button
-          class="choice-radio"
-          value="both"
-          [formControl]="form.controls.scope"
-        >
-          <div class="choice-content">
-            <div class="choice-head">
-              <span class="choice-title">Futterplan & Lieferübersicht</span>
-              <mat-icon class="choice-ico">local_shipping</mat-icon>
-            </div>
-            <div class="choice-desc">
-            </div>
-          </div>
-        </mat-radio-button>
-      </label>
-    </div>
+  <label class="choice-card" [class.is-checked]="form.controls.scope.value === 'feedplan'">
+    <mat-radio-button
+      class="choice-radio"
+      value="feedplan"
+      [disabled]="scopeDisabled">
+      <div class="choice-content">
+        <div class="choice-head">
+          <span class="choice-title">Nur im Futterplan</span>
+          <mat-icon class="choice-ico">event_note</mat-icon>
+        </div>
+      </div>
+    </mat-radio-button>
+  </label>
+
+  <label class="choice-card"
+         *ngIf="!scopeDisabled"
+         [class.is-checked]="form.controls.scope.value === 'both'">
+    <mat-radio-button class="choice-radio" value="both">
+      <div class="choice-content">
+        <div class="choice-head">
+          <span class="choice-title">Futterplan & Lieferübersicht</span>
+          <mat-icon class="choice-ico">local_shipping</mat-icon>
+        </div>
+      </div>
+    </mat-radio-button>
+  </label>
+
+</mat-radio-group>
+
 
     <div class="hint-row" *ngIf="scopeDisabled">
       <mat-icon>info</mat-icon>
@@ -192,7 +180,7 @@
   <span class="spacer"></span>
 
   <button mat-button (click)="cancel()">Abbrechen</button>
-  <button mat-raised-button color="primary" (click)="save()" [disabled]="isSaveDisabled()">
+  <button mat-raised-button color="primary" (click)="save()" [disabled]="isReadOnly || isSaveDisabled()">
     {{ data.mode === 'edit' ? 'Speichern' : 'Anlegen' }}
   </button>
 </div>

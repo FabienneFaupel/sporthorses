@@ -18,8 +18,11 @@
         <div class="list">
           <div class="row"
                *ngFor="let d of visibleDefs(t.key)"
-               (click)="openEdit(d)"
-               [class.disabled]="d.isDefault">
+               (click)="!d.isDefault && openEdit(d)"
+     [class.disabled]="d.isDefault"
+     [attr.aria-disabled]="d.isDefault"
+     matTooltip="Standard-Futtersorten können nicht bearbeitet werden."
+     [matTooltipDisabled]="!d.isDefault">
             <div class="left">
               <img class="icon" [src]="iconForBaseType(d.baseType)" [alt]="d.baseType">
               <div class="texts">
@@ -36,7 +39,7 @@
 
             <div class="right">
               <span class="badge" *ngIf="d.isDefault">Standard</span>
-              <mat-icon class="chev">chevron_right</mat-icon>
+              <mat-icon class="chev" *ngIf="!d.isDefault">chevron_right</mat-icon>
             </div>
           </div>
 

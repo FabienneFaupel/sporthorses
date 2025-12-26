@@ -5,6 +5,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { FeedDefinition, FeedBaseType, UnitKey } from '../../models/feed-definition';
 import { FuttersortenDialogComponent } from '../../components/futtersorten-dialog/futtersorten-dialog.component';
@@ -20,7 +21,8 @@ type TabKey = 'kraftfutter' | 'zusatzfutter' | 'medizin';
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
-    FuttersortenDialogComponent
+    FuttersortenDialogComponent,
+    MatTooltipModule
   ],
   templateUrl: './futtersorten-page.component.html',
   styleUrl: './futtersorten-page.component.scss'

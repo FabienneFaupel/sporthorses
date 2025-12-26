@@ -120,30 +120,45 @@ baseTypes = BASE_TYPES;
     const initialUnits = (init?.allowedUnits ?? preset?.allowedUnits ?? []) as UnitKey[];
 
     this.form = this.fb.group({
-      baseType: this.fb.control<FeedBaseType | null>(initialBaseType, Validators.required),
-      name: this.fb.nonNullable.control(init?.name ?? preset?.name ?? '', [Validators.required, Validators.minLength(2)]),
-      scope: this.fb.nonNullable.control(initialScope),
-      allowedUnits: this.fb.nonNullable.control(initialUnits),
-    });
+  baseType: this.fb.control<FeedBaseType | null>(initialBaseType, Validators.required),
+
+  name: this.fb.nonNullable.control(
+    init?.name ?? preset?.name ?? '',
+    [Validators.required, Validators.minLength(2)]
+  ),
+
+  // ✅ required + sicherer Default
+  scope: this.fb.nonNullable.control<Scope>(
+    initialScope ?? 'feedplan',
+    { validators: [Validators.required] }
+  ),
+
+  allowedUnits: this.fb.nonNullable.control(initialUnits),
+});
+
 
     // Wenn BaseType geändert wird: Default-Scope setzen + allowedUnits ggf resetten
     this.form.controls.baseType.valueChanges.subscribe(bt => {
-      const meta = bt ? this.baseTypes.find(b => b.key === bt) : null;
-      if (!meta) return;
+  const meta = bt ? this.baseTypes.find(b => b.key === bt) : null;
+  if (!meta) return;
 
-      // standardmäßig scope setzen (User kann trotzdem ändern, außer medizin)
-      this.form.controls.scope.setValue(meta.defaultScope);
+  const scopeCtrl = this.form.controls.scope;
 
-      // für non-custom-unit types: allowedUnits leeren
-      if (!meta.isCustomUnitType) {
-        this.form.controls.allowedUnits.setValue([]);
-      } else {
-        // für zusatzfutter/medizin: wenn leer, einen sinnvollen default
-        if ((this.form.controls.allowedUnits.value ?? []).length === 0) {
-          this.form.controls.allowedUnits.setValue(bt === 'medizin' ? ['ml', 'tabletten'] : ['g', 'ml']);
-        }
-      }
-    });
+  // ✅ Default nur setzen, wenn User noch nichts aktiv gewählt hat
+  if (!scopeCtrl.dirty) {
+    scopeCtrl.setValue(meta.defaultScope, { emitEvent: false });
+  }
+
+  // allowedUnits Logik wie gehabt
+  if (!meta.isCustomUnitType) {
+    this.form.controls.allowedUnits.setValue([]);
+  } else {
+    if ((this.form.controls.allowedUnits.value ?? []).length === 0) {
+      this.form.controls.allowedUnits.setValue(bt === 'medizin' ? ['ml', 'tabletten'] : ['g', 'ml']);
+    }
+  }
+});
+
 
     // Medizin immer nur feedplan
     this.form.controls.scope.valueChanges.subscribe(sc => {
@@ -152,7 +167,17 @@ baseTypes = BASE_TYPES;
         this.form.controls.scope.setValue('feedplan');
       }
     });
+
+    if (this.isReadOnly) {
+  this.form.disable({ emitEvent: false });
+}
+
   }
+
+  get isReadOnly(): boolean {
+  return this.data.mode === 'edit' && !!this.data.initial?.isDefault;
+}
+
 
   get title(): string {
     return this.data.mode === 'edit' ? 'Futtersorte bearbeiten' : 'Futtersorte anlegen';
