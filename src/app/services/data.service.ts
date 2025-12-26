@@ -76,14 +76,16 @@ async addHorse(horse: Omit<Horse, '_id' | '_rev' | 'docType' | 'createdAt' | 'up
 
 async updateHorse(h: Horse) {
   const res = await this.horseRepo.update(h);
+  h._rev = res.rev;
+  h.updatedAt = new Date().toISOString();
+
   const i = this.horses.findIndex(x => x._id === h._id);
   if (i >= 0) {
-    // komplettes Objekt ersetzen + neue _rev setzen
-    this.horses[i] = { ...h, _rev: res.rev };
-    // Array neu zuweisen, damit Angular Updates sicher mitbekommt
-    this.horses = [...this.horses];
+    this.horses[i] = h;          // gleiche Referenz fürs Objekt
+    this.horses = [...this.horses]; // UI “tick”
   }
 }
+
 
 
 async deleteHorse(h: Horse) {
