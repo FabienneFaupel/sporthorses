@@ -448,6 +448,23 @@ async deleteFeedDefinitionCascade(def: FeedDefinition) {
 }
 
 
+countFeedPlanUsages(defId: string): number {
+  let count = 0;
+
+  for (const h of this.horses) {
+    if (!h.feedPlan) continue;
+    for (const slot of ['Morgens','Mittags','Abends'] as const) {
+      count += (h.feedPlan[slot] ?? []).filter(i => i.feedDefId === defId).length;
+    }
+  }
+  return count;
+}
+
+countKraftfutterUsages(defId: string): number {
+  return this.kraftfutter.filter(d => d.feedDefId === defId).length;
+}
+
+
 
   
 // DB Feed

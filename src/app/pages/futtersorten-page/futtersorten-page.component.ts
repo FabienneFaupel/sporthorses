@@ -103,10 +103,25 @@ export class FuttersortenPageComponent {
       if ((res as any).delete) {
   if (item.isDefault) return;
 
-  await this.data.deleteFeedDefinitionCascade(item); // ✅ HIER
+  await this.data.loadHorsesFromDb();
+  await this.data.loadKraftfutterFromDb();
+
+  const planCount = this.data.countFeedPlanUsages(item._id!);
+  const deliveryCount = this.data.countKraftfutterUsages(item._id!);
+
+  const ok = await this.confirmDelete(
+    item.name,
+    planCount,
+    deliveryCount
+  );
+
+  if (!ok) return;
+
+  await this.data.deleteFeedDefinitionCascade(item);
   this.defs = this.data.getFeedDefinitions();
   return;
 }
+
 
 
       await this.data.updateFeedDefinition(res as FeedDefinition);
@@ -123,4 +138,22 @@ export class FuttersortenPageComponent {
     }
     return { baseType: 'medizin', scope: 'feedplan', allowedUnits: ['ml','tabletten'] as UnitKey[] };
   }
+
+  async confirmDelete(
+  name: string,
+  planCount: number,
+  deliveryCount: number
+): Promise<boolean> {
+  const messageLines = [
+    `„${name}“ wirklich löschen?`,
+    '',
+    planCount > 0 ? `• ${planCount} Einträge im Futterplan` : null,
+    deliveryCount > 0 ? `• ${deliveryCount} Kraftfutter-Lieferungen` : null,
+    '',
+    'Alle Enträge aus dem Futterplan und der Lieferübersicht werden von diesem Produkt gelöscht.'
+  ].filter(Boolean);
+
+  return confirm(messageLines.join('\n'));
+}
+
 }
