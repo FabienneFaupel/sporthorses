@@ -1,0 +1,199 @@
+<!-- HEADER -->
+<div class="dlg-header" mat-dialog-title>
+  <div class="hdr-left">
+    <div class="hdr-icon">
+      <img
+        *ngIf="selectedBaseTypeMeta?.iconPath"
+        [src]="selectedBaseTypeMeta?.iconPath"
+        [alt]="selectedBaseTypeMeta?.label"
+      />
+      <mat-icon *ngIf="!selectedBaseTypeMeta?.iconPath">inventory_2</mat-icon>
+    </div>
+
+    <div class="hdr-text">
+      <div class="hdr-title">{{ title }}</div>
+      <div class="hdr-subtitle">
+        Lege eine Futtersorte an und bestimme, wo sie auswählbar ist.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div mat-dialog-content class="dlg-content">
+
+  <!-- SECTION: Basis -->
+  <section class="section-card">
+    <div class="section-title">
+      <mat-icon>tune</mat-icon>
+      <span>Basis</span>
+    </div>
+
+    <div class="grid-2">
+      <!-- BaseType -->
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Art</mat-label>
+
+        <mat-select [formControl]="form.controls.baseType" panelClass="type-panel">
+          <mat-select-trigger>
+            <div class="type-trigger">
+              <img
+                *ngIf="selectedBaseTypeMeta?.iconPath"
+                class="opt-img"
+                [src]="selectedBaseTypeMeta?.iconPath"
+                [alt]="selectedBaseTypeMeta?.label"
+              />
+              <span>{{ selectedBaseTypeMeta?.label || 'Bitte wählen' }}</span>
+            </div>
+          </mat-select-trigger>
+
+          <mat-option *ngFor="let b of baseTypes" [value]="b.key">
+            <div class="type-option">
+              <img class="opt-img" [src]="b.iconPath" [alt]="b.label" />
+              <div class="type-option-text">
+                <div class="type-label">{{ b.label }}</div>
+                <div class="type-meta">
+                  {{ b.defaultScope === 'both' ? 'Futterplan + Lieferübersicht' : 'Nur Futterplan' }}
+                  <span *ngIf="b.isCustomUnitType"> • Einheiten wählbar</span>
+                </div>
+              </div>
+            </div>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Name -->
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Name</mat-label>
+        <input
+          matInput
+          [formControl]="form.controls.name"
+          placeholder="z.B. Gequetschter Hafer / Magnesium / Wurmkur"
+        />
+
+        <mat-hint *ngIf="form.controls.baseType.value as bt">
+          Tipp: Für Standard-Namen (z.B. „Hafer“) bitte einen speziellen Namen wählen.
+        </mat-hint>
+
+        <mat-error *ngIf="form.controls.name.hasError('required')">Bitte einen Namen eingeben.</mat-error>
+        <mat-error *ngIf="form.controls.name.hasError('minlength')">Mindestens 2 Zeichen.</mat-error>
+        <mat-error *ngIf="form.controls.name.hasError('reserved')">
+          Dieser Name ist bereits als Standard vorhanden. Bitte einen anderen Namen wählen.
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </section>
+
+  <!-- SECTION: Verwendung -->
+  <section class="section-card">
+    <div class="section-title">
+      <mat-icon>rule</mat-icon>
+      <span>Verwendung</span>
+    </div>
+
+    <div class="choice-grid" [class.choice-grid--single]="scopeDisabled">
+      <!-- Card 1 -->
+      <label class="choice-card" [class.is-checked]="form.controls.scope.value === 'feedplan'">
+        <mat-radio-button
+          class="choice-radio"
+          value="feedplan"
+          [formControl]="form.controls.scope"
+          [disabled]="scopeDisabled"
+        >
+          <div class="choice-content">
+            <div class="choice-head">
+              <span class="choice-title">Nur im Futterplan</span>
+              <mat-icon class="choice-ico">event_note</mat-icon>
+            </div>
+            <div class="choice-desc">
+              Ideal für interne Planwerte ohne Einfluss auf Lieferübersichten.
+            </div>
+          </div>
+        </mat-radio-button>
+      </label>
+
+      <!-- Card 2 -->
+      <label
+        class="choice-card"
+        *ngIf="!scopeDisabled"
+        [class.is-checked]="form.controls.scope.value === 'both'"
+      >
+        <mat-radio-button
+          class="choice-radio"
+          value="both"
+          [formControl]="form.controls.scope"
+        >
+          <div class="choice-content">
+            <div class="choice-head">
+              <span class="choice-title">Futterplan & Lieferübersicht</span>
+              <mat-icon class="choice-ico">local_shipping</mat-icon>
+            </div>
+            <div class="choice-desc">
+              Wird im Futterplan und in der Liefer-/Bestandslogik sichtbar.
+            </div>
+          </div>
+        </mat-radio-button>
+      </label>
+    </div>
+
+    <div class="hint-row" *ngIf="scopeDisabled">
+      <mat-icon>info</mat-icon>
+      <span>Medizin ist nur im Futterplan verfügbar.</span>
+    </div>
+
+    <div class="hint-row" *ngIf="!scopeDisabled">
+      <mat-icon>info</mat-icon>
+      <span>Bestimmt, wo diese Futtersorte auswählbar ist.</span>
+    </div>
+  </section>
+
+  <!-- SECTION: Einheiten -->
+  <section class="section-card" *ngIf="showUnits">
+    <div class="section-title">
+      <mat-icon>straighten</mat-icon>
+      <span>Einheiten</span>
+    </div>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Erlaubte Einheiten</mat-label>
+      <mat-select [formControl]="form.controls.allowedUnits" multiple>
+        <mat-select-trigger>
+          <span class="units-trigger">
+            {{
+              (form.controls.allowedUnits.value?.length || 0) === 0
+                ? 'Bitte auswählen'
+                : (form.controls.allowedUnits.value?.slice(0, 2)?.join(', '))
+            }}
+            <span class="muted" *ngIf="(form.controls.allowedUnits.value?.length || 0) > 2">
+              +{{ (form.controls.allowedUnits.value?.length || 0) - 2 }}
+            </span>
+          </span>
+        </mat-select-trigger>
+
+        <mat-option *ngFor="let u of unitOptions" [value]="u.key">
+          {{ u.label }}
+        </mat-option>
+      </mat-select>
+      <mat-hint>Wird im Futterplan-Dialog als Auswahl angeboten.</mat-hint>
+    </mat-form-field>
+  </section>
+
+</div>
+
+<!-- ACTIONS -->
+<div mat-dialog-actions class="dlg-actions" align="end">
+  <button
+    *ngIf="data.mode === 'edit' && !data.initial?.isDefault"
+    mat-stroked-button
+    color="warn"
+    (click)="remove()"
+  >
+    Löschen
+  </button>
+
+  <span class="spacer"></span>
+
+  <button mat-button (click)="cancel()">Abbrechen</button>
+  <button mat-raised-button color="primary" (click)="save()" [disabled]="isSaveDisabled()">
+    {{ data.mode === 'edit' ? 'Speichern' : 'Anlegen' }}
+  </button>
+</div>

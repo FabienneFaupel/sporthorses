@@ -1,0 +1,50 @@
+<mat-card class="card">
+  <div class="header">
+    <div>
+      <h2>Futtersorten</h2>
+      <div class="sub">Lege eigene Sorten an (z.B. spezieller Hafer, Zusatzfutter, Medizin)</div>
+    </div>
+  </div>
+
+  <mat-tab-group>
+    <mat-tab *ngFor="let t of tabs" [label]="t.label">
+      <div class="tab-content">
+        <button mat-raised-button color="primary" class="add"
+                (click)="openAdd(t.key)">
+          <mat-icon>add</mat-icon>
+          Neue Futtersorte
+        </button>
+
+        <div class="list">
+          <div class="row"
+               *ngFor="let d of visibleDefs(t.key)"
+               (click)="openEdit(d)"
+               [class.disabled]="d.isDefault">
+            <div class="left">
+              <img class="icon" [src]="iconForBaseType(d.baseType)" [alt]="d.baseType">
+              <div class="texts">
+                <div class="name">{{ d.name }}</div>
+                <div class="meta">
+                  {{ d.baseType }} • {{ d.scope === 'both' ? 'Futterplan + Kraftfutter' : 'nur Futterplan' }}
+                 <span *ngIf="d.allowedUnits?.length">
+  • {{ d.allowedUnits?.join(', ') }}
+</span>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="right">
+              <span class="badge" *ngIf="d.isDefault">Standard</span>
+              <mat-icon class="chev">chevron_right</mat-icon>
+            </div>
+          </div>
+
+          <div class="empty" *ngIf="visibleDefs(t.key).length === 0">
+            Keine Einträge.
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>

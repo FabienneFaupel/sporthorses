@@ -1,0 +1,89 @@
+.card {
+  margin-top: 20px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border: solid 1px #e5e5e5;
+}
+
+.header h2 {
+  margin: 0;
+}
+
+.sub {
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.tab-content {
+  padding: 12px 4px 18px;
+}
+
+.add {
+  margin: 6px 0 14px;
+}
+
+.list {
+  display: grid;
+  gap: 10px;
+}
+
+.row {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(148,163,184,0.18);
+  box-shadow: 0 4px 16px rgba(15,23,42,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.row.disabled {
+  opacity: 0.9;
+}
+
+.left {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.icon {
+  width: 26px;
+  height: 26px;
+}
+
+.name {
+  font-weight: 700;
+  color: #111827;
+}
+
+.meta {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(148,163,184,0.5);
+  color: #374151;
+}
+
+.chev {
+  color: #9ca3af;
+}
+
+.empty {
+  padding: 12px;
+  color: #9ca3af;
+  font-style: italic;
+}
