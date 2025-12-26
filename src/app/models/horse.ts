@@ -1,3 +1,6 @@
+import { FeedPlan } from "./feed-plan";
+
+
 export interface Vaccination {
   type: string;
   date: string;   // ISO YYYY-MM-DD
@@ -27,6 +30,8 @@ export interface Pedigree {
   grandmother?: string;
 }
 
+
+
 export interface Horse {
   _id?: string;   // CouchDB
   _rev?: string;  // CouchDB
@@ -42,4 +47,5 @@ export interface Horse {
   ageBaseYear?: number;
   createdAt?: string;
   updatedAt?: string;
+  feedPlan?: FeedPlan;
 }

@@ -7,26 +7,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { FutterplanAddDialogComponent } from '../../components/futterplan-add-dialog/futterplan-add-dialog.component';
 
+
+import { FutterplanAddDialogComponent } from '../../components/futterplan-add-dialog/futterplan-add-dialog.component';
+import { Slot, FeedPlanItem, FeedPlan } from '../../models/feed-plan';
+import { Horse } from '../../models/horse';
 
 
 import { DataService } from '../../services/data.service';
-
-type Slot = 'Morgens' | 'Mittags' | 'Abends';
-
-interface FeedItem {
-  product: string;
-  amount: string;
-  icon: string;
-  iconColor: string;
-}
-
-interface HorsePlan {
-  name: string;
-  feedsBySlot: Record<Slot, FeedItem[]>;
-}
-
 
 
 
@@ -48,71 +36,81 @@ FutterplanAddDialogComponent,
   styleUrl: './futterplan-page.component.scss'
 })
 export class FutterplanPageComponent {
-  slots: Slot[] = ['Morgens', 'Mittags', 'Abends'];
-
-  // dynamisch aus angelegten Pferden
-  horses: HorsePlan[] = [];
+  
+ slots: Slot[] = ['Morgens', 'Mittags', 'Abends'];
+  horses: Horse[] = [];
+  
 
   constructor(private data: DataService, private dialog: MatDialog) {}
 
 
   async ngOnInit() {
-  try {
-    await this.data.loadHorsesFromDb();
-  } catch (e) {
-    console.error(e);
-  }
+  await this.data.loadHorsesFromDb();
+  this.horses = this.data.getHorses();
 
-  const horsesFromDb = this.data.getHorses();
-  this.horses = (horsesFromDb ?? []).map((h: any) => ({
-    name: h.name,
-    feedsBySlot: { Morgens: [], Mittags: [], Abends: [] }
-  }));
+  // Plan default + Slots absichern
+  for (const h of this.horses) {
+    h.feedPlan ??= { Morgens: [], Mittags: [], Abends: [] };
+    h.feedPlan.Morgens ??= [];
+    h.feedPlan.Mittags ??= [];
+    h.feedPlan.Abends ??= [];
+  }
 }
 
 
+  feedsFor(h: Horse, slot: Slot): FeedPlanItem[] {
+  return h.feedPlan?.[slot] ?? [];
+}
 
-  feedsFor(h: HorsePlan, slot: Slot): FeedItem[] {
-    return h.feedsBySlot[slot] ?? [];
-  }
 
-  openAddDialog(h: HorsePlan, slot: Slot) {
-
+  async openAddDialog(h: Horse, slot: Slot) {
   const ref = this.dialog.open(FutterplanAddDialogComponent, {
     width: '420px',
-    data: { horseName: h.name, slot }
+    data: { horseName: h.name, slot, mode: 'add' }
   });
 
-  ref.afterClosed().subscribe((res?: FeedItem) => {
+  ref.afterClosed().subscribe(async (res?: FeedPlanItem) => {
     if (!res) return;
-    h.feedsBySlot[slot].push(res);
-  });
-}
 
-openEditDialog(h: HorsePlan, slot: Slot, index: number) {
-  const current = h.feedsBySlot[slot][index];
+    // optimistic
+    h.feedPlan![slot].push(res);
 
-  const ref = this.dialog.open(FutterplanAddDialogComponent, {
-    width: '420px',
-    data: {
-      horseName: h.name,
-      slot,
-      mode: 'edit',
-      initial: current
+    try {
+      await this.data.updateHorse(h);
+    } catch (e) {
+      console.error(e);
+      h.feedPlan![slot].pop(); // rollback
     }
   });
+}
 
-  ref.afterClosed().subscribe((res?: FeedItem | { delete: true }) => {
+
+  async openEditDialog(h: Horse, slot: Slot, index: number) {
+  const current = h.feedPlan![slot][index];
+
+  const ref = this.dialog.open(FutterplanAddDialogComponent, {
+    width: '420px',
+    data: { horseName: h.name, slot, mode: 'edit', initial: current }
+  });
+
+  ref.afterClosed().subscribe(async (res?: FeedPlanItem | { delete: true }) => {
     if (!res) return;
+
+    const prev = [...h.feedPlan![slot]];
 
     if ((res as any).delete) {
-      h.feedsBySlot[slot].splice(index, 1);
-      return;
+      h.feedPlan![slot].splice(index, 1);
+    } else {
+      h.feedPlan![slot][index] = res as FeedPlanItem;
     }
 
-    h.feedsBySlot[slot][index] = res as FeedItem;
+    try {
+      await this.data.updateHorse(h);
+    } catch (e) {
+      console.error(e);
+      h.feedPlan![slot] = prev; // rollback
+    }
   });
 }
-
 
 }

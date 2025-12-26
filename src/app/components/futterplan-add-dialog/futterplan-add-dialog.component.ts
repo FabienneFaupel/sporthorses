@@ -7,32 +7,17 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 
-export type Slot = 'Morgens' | 'Mittags' | 'Abends';
+import { FeedPlanItem, Slot, ProductKey, UnitKey } from '../../models/feed-plan';
+
+
+
 
 export interface DialogData {
   horseName: string;
   slot: Slot;
   mode?: 'add' | 'edit';
-  initial?: FeedItem;
+  initial?: FeedPlanItem;
 }
-
-
-export interface FeedItem {
-  // Anzeige
-  product: string;   // "Hafer"
-  amount: string;    // "1/2 Schippe" oder "250 g"
-  icon: string;      // "/images/hafer.svg"
-
-  // Rohdaten für Edit
-  productKey: ProductKey;
-  unitKey: UnitKey;
-  preset?: string;        // z.B. "1/2" oder "Handvoll"
-  amountNum?: number;     // z.B. 250
-}
-
-
-type ProductKey = 'hafer' | 'heu' | 'mash' | 'pellets' | 'muesli';
-type UnitKey = 'schippe' | 'becher' | 'portion' | 'anzahl' | 'g' | 'kg' | 'ml' | 'l';
 
 interface PresetOption {
   value: string;   // was gespeichert wird, z.B. "1/2"
@@ -246,7 +231,7 @@ if (this.data.mode === 'edit' && this.data.initial) {
       amountText = `${n} ${u.label}`;
     }
 
-    const result: FeedItem = {
+    const result: FeedPlanItem = {
   product: p.label,
   amount: amountText,
   icon: p.iconPath,
