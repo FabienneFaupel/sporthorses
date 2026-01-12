@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { FeedLogEntry } from '../models/feed';
 import { newId } from '../utils/id';
+import { toDateOnlyIsoLocal, fromDateOnlyIsoLocal } from '../utils/date';
 
 @Injectable({ providedIn: 'root' })
 export class FeedRepositoryService {
@@ -12,14 +13,12 @@ export class FeedRepositoryService {
     selector: { docType: 'feedLog', stallId }
   });
 
-  return (res.docs || []).map((d: any) => ({
-    ...d,
-    date: new Date(d.date)
-  }));
+  return (res.docs || []) as FeedLogEntry[];
+
 }
 
 
-  async add(stallId: string, type: 'heu' | 'stroh', amount: number, price?: number, date?: Date) {
+  async add(stallId: string, type: 'heu' | 'stroh', amount: number, price?: number, dateIso?: string) {
   const now = new Date();
   const id = newId('feed:add:');
 
@@ -31,7 +30,7 @@ export class FeedRepositoryService {
     type,
     amount,
     price,
-    date: (date ?? now).toISOString().slice(0, 10),
+    date: dateIso ?? toDateOnlyIsoLocal(new Date()),
     createdAt: now.toISOString(),
     updatedAt: now.toISOString()
   };
@@ -40,7 +39,7 @@ export class FeedRepositoryService {
 }
 
 
-  async consume(stallId: string, type: 'heu' | 'stroh', amount: number, date?: Date) {
+  async consume(stallId: string, type: 'heu' | 'stroh', amount: number, dateIso?: string) {
   const now = new Date();
   const id = newId('feed:consume:');
 
@@ -51,7 +50,7 @@ export class FeedRepositoryService {
     action: 'consume',
     type,
     amount,
-    date: (date ?? now).toISOString().slice(0, 10),
+    date: dateIso ?? toDateOnlyIsoLocal(new Date()),
     createdAt: now.toISOString(),
     updatedAt: now.toISOString()
   };
@@ -67,7 +66,7 @@ export class FeedRepositoryService {
   async update(entry: FeedLogEntry) {
     return this.api.updateDoc(entry._id!, {
       ...entry,
-      date: entry.date.toISOString().slice(0, 10),
+      date: entry.date,
       updatedAt: new Date().toISOString()
     });
   }

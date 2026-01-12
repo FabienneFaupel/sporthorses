@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://85.215.242.240",
+    "target": "https://stallfaupel.de",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"

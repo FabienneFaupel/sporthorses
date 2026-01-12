@@ -42,14 +42,14 @@
         <p>Noch keine Beschlag-Einträge vorhanden.</p>
       </div>
 
-                <div *ngFor="let entry of filteredFarrierEntries(horse)" class="farrier-card">
+                <div *ngFor="let entry of filteredFarrierEntries(horse); trackBy: trackFarrierEntry" class="farrier-card">
                     <div class="farrier-card-header">
                         <p><strong>🔨 {{ entry.type }}</strong></p>
                         <div class="info-card-actions">
-                            <button mat-icon-button color="primary" (click)="editEntry(horse._id!, i, entry)">
+                            <button mat-icon-button color="primary" (click)="editEntry(horse._id!, entry)">
                                 <mat-icon>edit</mat-icon>
                             </button>
-                            <button mat-icon-button color="warn" (click)="deleteEntry(horse._id!, i)">
+                            <button mat-icon-button color="warn" (click)="deleteEntry(horse._id!, entry)">
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </div>

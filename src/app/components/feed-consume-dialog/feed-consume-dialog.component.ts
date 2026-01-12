@@ -11,7 +11,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import {MatCardModule} from '@angular/material/card';
-
+import { toDateOnlyIsoLocal, fromDateOnlyIsoLocal } from '../../utils/date';
 
 
 
@@ -51,7 +51,12 @@ export class FeedConsumeDialogComponent {
   if (data) {
     this.type = data.type ?? this.type;
     this.amount = data.amount ?? this.amount;
-    this.date = data.date ? new Date(data.date) : this.date;
+    this.date = data?.date
+  ? (typeof data.date === 'string'
+      ? fromDateOnlyIsoLocal(data.date)
+      : data.date)
+  : this.date;
+
 
     this.hayCurrent = data.hayCurrent ?? 0;
     this.strawCurrent = data.strawCurrent ?? 0;
@@ -66,7 +71,7 @@ get maxAmount(): number {
   confirm() {
   this.dialogRef.close({
     type: this.type,
-    date: this.date,
+    date: toDateOnlyIsoLocal(this.date),
     amount: this.amount,
   });
 }

@@ -16,6 +16,7 @@ export interface Hoof {
 }
 
 export interface FarrierEntry {
+  id?: string;
   date: string; // ISO YYYY-MM-DD
   type: string;
   comment?: string;

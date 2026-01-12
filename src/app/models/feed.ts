@@ -7,7 +7,7 @@ export interface FeedLogEntry {
   _id?: string;   // CouchDB
   _rev?: string;  // CouchDB
 
-  date: Date;           // in TS als Date
+  date: string;           // in TS als Date
   type: FeedType;       // 'heu' | 'stroh'
   action: FeedAction;   // 'add' | 'consume'
   amount: number;

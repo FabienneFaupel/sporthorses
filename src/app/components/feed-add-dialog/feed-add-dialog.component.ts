@@ -10,7 +10,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import {MatCardModule} from '@angular/material/card';
-
+import { toDateOnlyIsoLocal, fromDateOnlyIsoLocal } from '../../utils/date';
 
 export interface AddDialogData {
   type: 'hay' | 'straw';
@@ -47,7 +47,12 @@ export class FeedAddDialogComponent {
     this.type = data.type ?? this.type;
     this.amount = data.amount ?? this.amount;
     this.price = data.price ?? this.price;
-    this.date = data.date ? new Date(data.date) : this.date;
+    this.date = data?.date
+  ? (typeof data.date === 'string'
+      ? fromDateOnlyIsoLocal(data.date)
+      : data.date)
+  : this.date;
+
   }
 }
 
@@ -55,7 +60,7 @@ export class FeedAddDialogComponent {
   confirm() {
   this.dialogRef.close({
     type: this.type,
-    date: this.date,
+    date: toDateOnlyIsoLocal(this.date),
     amount: this.amount,
     price: this.price
   });

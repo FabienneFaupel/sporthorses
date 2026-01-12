@@ -12,7 +12,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { Vaccination, Horse } from '../../models/horse';
-
+import { toDateOnlyIsoLocal, fromDateOnlyIsoLocal } from '../../utils/date';
 
 
 @Component({
@@ -58,7 +58,8 @@ export class VaccinationDialogComponent {
 
     // Datum
     const inDate = (data.vaccination as any).date;
-    this.vaccinationDate = inDate ? new Date(inDate) : new Date();
+this.vaccinationDate = inDate ? fromDateOnlyIsoLocal(inDate) : new Date();
+
 
     // Status sicher casten
     const allowedStatus = ['geimpft', 'überfällig', 'geplant'] as const;
@@ -76,9 +77,10 @@ export class VaccinationDialogComponent {
     );
   }
 
-  private toIsoDate(d: Date | null): string {
-    return new Date(d ?? new Date()).toISOString().slice(0, 10);
-  }
+ private toIsoDate(d: Date | null): string {
+  return toDateOnlyIsoLocal(d ?? new Date());
+}
+
 
   save(): void {
     const entry: Vaccination = {

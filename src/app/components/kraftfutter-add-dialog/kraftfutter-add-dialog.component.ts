@@ -10,7 +10,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-
+import { toDateOnlyIsoLocal, fromDateOnlyIsoLocal } from '../../utils/date';
 import { KraftfutterDelivery, PackageType } from '../../models/kraftfutter';
 import { FeedDefinition } from '../../models/feed-definition';
 
@@ -65,7 +65,7 @@ export class KraftfutterAddDialogComponent {
 
     this.form = this.fb.group({
       feedDefId: [initFeedDefId, Validators.required],
-      date: [this.original ? new Date(this.original.date) : new Date(), Validators.required],
+      date: [this.original?.date ? fromDateOnlyIsoLocal(this.original.date) : new Date(), Validators.required],
       packageType: [(this.original?.packageType ?? 'bigbag') as PackageType, Validators.required],
 
       weightKg: [this.original?.weightKg ?? 750],
@@ -124,7 +124,7 @@ export class KraftfutterAddDialogComponent {
       baseType: def.baseType,
       name: def.name,
 
-      date: new Date(v.date).toISOString().slice(0, 10),
+      date: toDateOnlyIsoLocal(new Date(v.date)),
       packageType: v.packageType as PackageType,
 
       weightKg: this.isBigbag ? Number(v.weightKg) : undefined,

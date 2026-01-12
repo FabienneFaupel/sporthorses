@@ -16,8 +16,8 @@ import { FarrierDialogComponent } from '../../components/farrier-dialog/farrier-
 
 import { DataService } from '../../services/data.service';
 import { Horse, Hoof, FarrierEntry } from '../../models/horse';
-
-
+import { toDateOnlyIsoLocal } from '../../utils/date';
+import { newId } from '../../utils/id';
 
 
 @Component({
@@ -73,13 +73,16 @@ filteredFarrierEntries(horse: Horse) {
   return (horse.farrierEntries ?? [])
     .filter(entry => {
       if (this.selectedYear === 'all') return true;
-      return new Date(entry.date).getFullYear() === this.selectedYear;
+      return Number(entry.date.slice(0, 4)) === this.selectedYear;
+
     })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => b.date.localeCompare(a.date));
 }
 
   // optional: stabilere *ngFor
   trackHorse = (_: number, h: Horse) => h._id ?? h.name;
+  trackFarrierEntry = (_: number, e: FarrierEntry) => `${e.date}-${e.type}-${e.comment ?? ''}`;
+
 
   getHoofClass(entry: FarrierEntry, pos: Hoof['position']): string {
     const hoof = entry.hooves.find(h => h.position === pos);
@@ -107,9 +110,11 @@ filteredFarrierEntries(horse: Horse) {
         const dateStr =
           typeof res.entry.date === 'string'
             ? res.entry.date
-            : new Date(res.entry.date as any).toISOString().slice(0, 10);
+            : toDateOnlyIsoLocal(new Date(res.entry.date as any));
+
 
         const cleanEntry: FarrierEntry = {
+          id: res.entry.id ?? newId('farrier:'),
           ...res.entry,
           date: dateStr,
           comment: res.entry.comment ?? '',
@@ -125,36 +130,52 @@ filteredFarrierEntries(horse: Horse) {
   }
 
   // 2) EDIT
-  editEntry(horseId: string, index: number, original: FarrierEntry) {
-    const ref = this.dialog.open(FarrierDialogComponent, {
-      width: '400px',
-      data: { horses: this.horses, horseId, entry: original }
-    });
+  editEntry(horseId: string, original: FarrierEntry) {
+  const ref = this.dialog.open(FarrierDialogComponent, {
+    width: '400px',
+    data: { horses: this.horses, horseId, entry: original }
+  });
 
-    ref.afterClosed().subscribe(async (res?: { entry: Partial<FarrierEntry> }) => {
-      if (!res) return;
-      try {
-        const patch: Partial<FarrierEntry> = { ...res.entry };
-        if (patch.date && typeof patch.date !== 'string') {
-          patch.date = (patch.date as Date).toISOString().slice(0, 10);
-        }
+  ref.afterClosed().subscribe(async (res?: { entry: Partial<FarrierEntry> }) => {
+    if (!res) return;
 
-        await this.dataService.updateFarrierEntry(horseId, index, patch);
-        this.horses = this.dataService.getHorses();
-      } catch (e) {
-        console.error('Update failed', e);
-      }
-    });
-  }
-
-  // 2) DELETE
-  async deleteEntry(horseId: string, index: number) {
-    if (!confirm('Diesen Eintrag wirklich löschen?')) return;
     try {
-      await this.dataService.deleteFarrierEntry(horseId, index);
+      if (!original.id) {
+        console.error('FarrierEntry hat keine id (Migration noch nicht gelaufen?)', original);
+        return;
+      }
+
+      const patch: Partial<FarrierEntry> = { ...res.entry };
+
+      if (patch.date && typeof patch.date !== 'string') {
+        patch.date = toDateOnlyIsoLocal(patch.date as Date);
+      }
+
+      await this.dataService.updateFarrierEntryById(horseId, original.id, patch);
       this.horses = this.dataService.getHorses();
     } catch (e) {
-      console.error('Delete failed', e);
+      console.error('Update failed', e);
     }
+  });
+}
+
+
+  // 2) DELETE
+ async deleteEntry(horseId: string, original: FarrierEntry) {
+  if (!confirm('Diesen Eintrag wirklich löschen?')) return;
+
+  try {
+    if (!original.id) {
+      console.error('FarrierEntry hat keine id (Migration noch nicht gelaufen?)', original);
+      return;
+    }
+
+    await this.dataService.deleteFarrierEntryById(horseId, original.id);
+    this.horses = this.dataService.getHorses();
+  } catch (e) {
+    console.error('Delete failed', e);
   }
+}
+
+
 }

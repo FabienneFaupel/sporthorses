@@ -10,6 +10,8 @@ import { VaccinationSchedule } from '../models/vaccination-schedule';
 import { VaccinationScheduleRepositoryService } from './vaccination-schedule.repository.service';
 import { FeedDefinitionRepositoryService } from './feed-definition.repository.service';
 import { FeedDefinition } from '../models/feed-definition';
+import { newId } from '../utils/id';
+import { toDateOnlyIsoLocal, fromDateOnlyIsoLocal } from '../utils/date';
 
 
 
@@ -32,6 +34,7 @@ private get stallId(): string {
   if (!sid) throw new Error('Keine stallId im Login-User gefunden. Bitte neu einloggen.');
   return sid;
 }
+
 
 getDisplayAge(h: Horse, ref = new Date()): number {
   const year = ref.getFullYear();
@@ -56,6 +59,8 @@ private horses: Horse[] = [];
 
 async loadHorsesFromDb() {
   this.horses = await this.horseRepo.loadAll(this.stallId);
+
+  await this.migrateFarrierEntryIds();
 }
 
 
@@ -93,6 +98,38 @@ async deleteHorse(h: Horse) {
   this.horses = this.horses.filter(x => x !== h);
 }
 
+private async migrateFarrierEntryIds() {
+  let anyChange = false;
+
+  for (const h of this.horses) {
+    if (!h.farrierEntries?.length) continue;
+
+    let changed = false;
+    const next = h.farrierEntries.map(e => {
+      if (e.id) return e;
+      changed = true;
+      return { ...e, id: newId('farrier:') };
+    });
+
+    if (changed) {
+      // wir schreiben die IDs dauerhaft zurück in die DB
+      const updatedHorse: Horse = { ...h, farrierEntries: next };
+      const res = await this.horseRepo.update(updatedHorse);
+
+      // lokalen Cache sauber aktualisieren
+      h._rev = res.rev;
+      h.farrierEntries = next;
+      anyChange = true;
+    }
+  }
+
+  if (anyChange) {
+    // UI tick
+    this.horses = [...this.horses];
+  }
+}
+
+
 
 // in data.service.ts
 async addFarrierEntry(horseId: string, entry: FarrierEntry) {
@@ -108,29 +145,36 @@ async addFarrierEntry(horseId: string, entry: FarrierEntry) {
   this.horses = [...this.horses];
 }
 
-async updateFarrierEntry(horseId: string, index: number, patch: Partial<FarrierEntry>) {
+async updateFarrierEntryById(horseId: string, entryId: string, patch: Partial<FarrierEntry>) {
   const h = this.horses.find(x => x._id === horseId);
   if (!h) throw new Error('Horse not found');
-  if (!h.farrierEntries || !h.farrierEntries[index]) throw new Error('Entry not found');
+  if (!h.farrierEntries) throw new Error('No farrier entries');
 
-  h.farrierEntries[index] = { ...h.farrierEntries[index], ...patch };
+  const idx = h.farrierEntries.findIndex(e => e.id === entryId);
+  if (idx < 0) throw new Error('Entry not found');
+
+  h.farrierEntries[idx] = { ...h.farrierEntries[idx], ...patch };
 
   const res = await this.horseRepo.update(h);
   h._rev = res.rev;
   this.horses = [...this.horses];
 }
 
-async deleteFarrierEntry(horseId: string, index: number) {
+
+async deleteFarrierEntryById(horseId: string, entryId: string) {
   const h = this.horses.find(x => x._id === horseId);
   if (!h) throw new Error('Horse not found');
-  if (!h.farrierEntries || !h.farrierEntries[index]) throw new Error('Entry not found');
+  if (!h.farrierEntries) throw new Error('No farrier entries');
 
-  h.farrierEntries = h.farrierEntries.filter((_, i) => i !== index);
+  const before = h.farrierEntries.length;
+  h.farrierEntries = h.farrierEntries.filter(e => e.id !== entryId);
+  if (h.farrierEntries.length === before) throw new Error('Entry not found');
 
   const res = await this.horseRepo.update(h);
   h._rev = res.rev;
   this.horses = [...this.horses];
 }
+
 
 
 async addVaccination(horseId: string, vac: Vaccination) {
@@ -489,11 +533,9 @@ countKraftfutterUsages(defId: string): number {
 
   // chronologisch auswerten (wichtig!)
   const sorted = [...this.feedLog].sort((a, b) => {
-  const d = a.date.getTime() - b.date.getTime();
-  if (d !== 0) return d;
-
-  // gleicher Tag → nach Erstellung sortieren
-  return new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime();
+  const da = fromDateOnlyIsoLocal(a.date).getTime();
+  const db = fromDateOnlyIsoLocal(b.date).getTime();
+  return da - db;
 });
 
 
@@ -553,9 +595,16 @@ countKraftfutterUsages(defId: string): number {
     return this.feedLog;
   }
 
-  async addFeed(type: 'heu' | 'stroh', amount: number, price?: number, date?: Date) {
+  async addFeed(
+  type: 'heu' | 'stroh',
+  amount: number,
+  price?: number,
+  dateIso?: string
+) {
+  const iso = dateIso ?? toDateOnlyIsoLocal(new Date());
+
   const entry: FeedLogEntry = {
-    date: date ?? new Date(),
+    date: iso,                 // ✅ STRING
     type,
     action: 'add',
     amount: Number(amount),
@@ -566,8 +615,13 @@ countKraftfutterUsages(defId: string): number {
   this.recomputeStocks();
 
   try {
-    const res = await this.feedRepo.add(this.stallId, type, entry.amount, entry.price, entry.date);
-
+    const res = await this.feedRepo.add(
+      this.stallId,
+      type,
+      entry.amount,
+      entry.price,
+      iso                          // ✅ STRING
+    );
     entry._id = res.id;
     entry._rev = res.rev;
   } catch (e) {
@@ -575,9 +629,16 @@ countKraftfutterUsages(defId: string): number {
   }
 }
 
-async consumeFeed(type: 'heu' | 'stroh', amount: number, date?: Date) {
+
+async consumeFeed(
+  type: 'heu' | 'stroh',
+  amount: number,
+  dateIso?: string
+) {
+  const iso = dateIso ?? toDateOnlyIsoLocal(new Date());
+
   const entry: FeedLogEntry = {
-    date: date ?? new Date(),
+    date: iso,
     type,
     action: 'consume',
     amount: Number(amount)
@@ -587,14 +648,19 @@ async consumeFeed(type: 'heu' | 'stroh', amount: number, date?: Date) {
   this.recomputeStocks();
 
   try {
-    const res = await this.feedRepo.consume(this.stallId, type, entry.amount, entry.date);
-
+    const res = await this.feedRepo.consume(
+      this.stallId,
+      type,
+      entry.amount,
+      iso
+    );
     entry._id = res.id;
     entry._rev = res.rev;
   } catch (e) {
     console.error('Error consuming feed:', e);
   }
 }
+
 
 
 canConsume(type: 'heu' | 'stroh', amount: number): boolean {
@@ -628,10 +694,7 @@ async deleteFeed(entry: FeedLogEntry) {
 async updateFeed(entry: FeedLogEntry, patch: Partial<FeedLogEntry>) {
   Object.assign(entry, patch);
 
-  // wichtig: falls date als String reinkommt
-  if (typeof (entry.date as any) === 'string') {
-    entry.date = new Date(entry.date as any);
-  }
+ 
 
   this.recomputeStocks();
 
@@ -700,6 +763,8 @@ async deleteKraftfutter(delivery: KraftfutterDelivery) {
     await this.loadKraftfutterFromDb();
   }
 }
+
+
 
 
 }

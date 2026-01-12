@@ -15,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { Horse, FarrierEntry } from '../../models/horse';
-
+import { toDateOnlyIsoLocal, fromDateOnlyIsoLocal } from '../../utils/date';
 
 
 
@@ -73,7 +73,7 @@ selectedHorseId: string | null = null;
     if (data?.entry) {
       const e = data.entry;
       this.treatmentType = (e.type === 'Beschlagen') ? 'beschlagen' : 'ausgeschnitten';
-      this.treatmentDate = e.date ? new Date(e.date) : new Date();
+      this.treatmentDate = e.date ? fromDateOnlyIsoLocal(e.date) : new Date();
       this.comment = e.comment ?? '';
 
       // Hoof-Arrays aus Entry in UI-Flags umsetzen
@@ -126,9 +126,9 @@ selectedHorseId: string | null = null;
   }
 
   private formatDate(d: Date | null): string {
-    const date = d ?? new Date();
-    return new Date(date).toISOString().slice(0, 10); // YYYY-MM-DD
-  }
+  return toDateOnlyIsoLocal(d ?? new Date());
+}
+
 
   save() {
     const hoovesMapped = this.selectedHooves
@@ -148,6 +148,7 @@ selectedHorseId: string | null = null;
       .filter(Boolean) as FarrierEntry['hooves'];
 
     const entry: FarrierEntry = {
+      id: this.data.entry?.id,
       date: this.formatDate(this.treatmentDate),
       type: this.treatmentType === 'beschlagen' ? 'Beschlagen' : 'Ausgeschnitten',
       comment: this.comment?.trim() || undefined,

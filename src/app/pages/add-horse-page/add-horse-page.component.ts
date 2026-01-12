@@ -17,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { toDateOnlyIsoLocal, fromDateOnlyIsoLocal } from '../../utils/date';
 
 
 
@@ -101,7 +102,7 @@ export class AddHorsePageComponent {
         name: this.horse.name,
         age: this.horse.age,
         gender: this.horse.gender,
-        birth: this.horse.birth ? new Date(this.horse.birth) : '',
+        birth: this.horse.birth ? fromDateOnlyIsoLocal(this.horse.birth) : '',
         breed: this.horse.breed,
         father: this.horse.pedigree?.father,
         mother: this.horse.pedigree?.mother,
@@ -168,7 +169,7 @@ private clearControlError(ctrl: AbstractControl | null | undefined, key: string)
 
     const v = this.form.value;
 
-    const birthIso = v.birth ? new Date(v.birth).toISOString().slice(0, 10) : '';
+    const birthIso = v.birth ? toDateOnlyIsoLocal(new Date(v.birth)) : '';
     const currentYear = new Date().getFullYear();
     const ageBaseYear = birthIso ? undefined : currentYear;
 

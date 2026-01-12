@@ -23,6 +23,7 @@ import { DataService } from '../../services/data.service';
 import { FeedLogEntry } from '../../models/feed';
 import { KraftfutterPageComponent } from '../../pages/kraftfutter-page/kraftfutter-page.component';
 import { FutterplanPageComponent } from '../futterplan-page/futterplan-page.component';
+import { toDateOnlyIsoLocal, fromDateOnlyIsoLocal } from '../../utils/date';
 
 
 @Component({
@@ -72,7 +73,7 @@ export class HorseFeedPageComponent {
     .filter(log => {
       if (log.action !== 'consume') return false;
       if (this.selectedYear === 'all') return true;
-      return log.date.getFullYear() === this.selectedYear;
+      return fromDateOnlyIsoLocal(log.date).getFullYear() === this.selectedYear;
     })
     .reduce((sum, log) => sum + (log.amount ?? 0), 0);
 }
@@ -151,10 +152,13 @@ async edit(entry: FeedLogEntry) {
   return this.feedLog
     .filter(log => {
       if (this.selectedYear === 'all') return true;
-      return new Date(log.date).getFullYear() === this.selectedYear;
+      return fromDateOnlyIsoLocal(log.date).getFullYear() === this.selectedYear;
     })
     .sort((a, b) => {
-      const d = new Date(b.date).getTime() - new Date(a.date).getTime();
+      const d =
+  fromDateOnlyIsoLocal(b.date).getTime() -
+  fromDateOnlyIsoLocal(a.date).getTime();
+
       if (d !== 0) return d;
 
       // gleicher Tag → neueste Buchung zuerst
