@@ -66,18 +66,26 @@ export class HorseFeedPageComponent {
  selectedYear: number | 'all' = new Date().getFullYear();
   availableYears: (number | 'all')[] = [];
 
-   loading = true;
+  // Monat-Filter
+selectedMonth: number | 'all' = new Date().getMonth() + 1; // 1..12
+availableMonths: (number | 'all')[] = ['all', 1,2,3,4,5,6,7,8,9,10,11,12];
 
-  get totalConsumedThisYear(): number {
-  return this.feedLog
-    .filter(log => {
-      if (log.action !== 'consume') return false;
-      if (this.selectedYear === 'all') return true;
-      return fromDateOnlyIsoLocal(log.date).getFullYear() === this.selectedYear;
-    })
-    .reduce((sum, log) => sum + (log.amount ?? 0), 0);
+monthLabel(m: number | 'all') {
+  if (m === 'all') return 'Alle Monate';
+  return String(m).padStart(2, '0'); // 01..12
 }
 
+onYearChange() {
+  if (this.selectedYear === 'all') this.selectedMonth = 'all';
+}
+
+   loading = true;
+
+get totalConsumedFiltered(): number {
+  return this.filteredFeedLog()
+    .filter(log => log.action === 'consume')
+    .reduce((sum, log) => sum + (log.amount ?? 0), 0);
+}
 
 
 
@@ -151,17 +159,21 @@ async edit(entry: FeedLogEntry) {
   filteredFeedLog() {
   return this.feedLog
     .filter(log => {
-      if (this.selectedYear === 'all') return true;
-      return fromDateOnlyIsoLocal(log.date).getFullYear() === this.selectedYear;
+      const d = fromDateOnlyIsoLocal(log.date);
+      const y = d.getFullYear();
+      const m = d.getMonth() + 1;
+
+      const yearOk = this.selectedYear === 'all' || y === this.selectedYear;
+      const monthOk = this.selectedMonth === 'all' || m === this.selectedMonth;
+
+      return yearOk && monthOk;
     })
     .sort((a, b) => {
       const d =
-  fromDateOnlyIsoLocal(b.date).getTime() -
-  fromDateOnlyIsoLocal(a.date).getTime();
+        fromDateOnlyIsoLocal(b.date).getTime() -
+        fromDateOnlyIsoLocal(a.date).getTime();
 
       if (d !== 0) return d;
-
-      // gleicher Tag → neueste Buchung zuerst
       return new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime();
     });
 }
