@@ -10,11 +10,12 @@ export class FeedRepositoryService {
 
   async loadFeed(stallId: string): Promise<FeedLogEntry[]> {
   const res = await this.api.find({
-    selector: { docType: 'feedLog', stallId }
+    selector: { docType: 'feedLog' }, // stallId NICHT mitsenden (Backend setzt es aus Token)
+    sort: [{ date: 'desc' }, { createdAt: 'desc' }],
+    limit: 1000
   });
 
   return (res.docs || []) as FeedLogEntry[];
-
 }
 
 
