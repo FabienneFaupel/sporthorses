@@ -47,6 +47,18 @@ export class FarrierPageComponent {
   selectedYear: number | 'all' = new Date().getFullYear();
   availableYears: (number | 'all')[] = [];
 
+  selectedMonth: number | 'all' = new Date().getMonth() + 1;
+availableMonths: (number | 'all')[] = ['all', 1,2,3,4,5,6,7,8,9,10,11,12];
+
+monthLabel(m: number | 'all') {
+  if (m === 'all') return 'Alle Monate';
+  return String(m).padStart(2, '0'); // 01..12
+}
+
+onYearChange() {
+  if (this.selectedYear === 'all') this.selectedMonth = 'all';
+}
+
   constructor(
     private dialog: MatDialog,
     private dataService: DataService
@@ -72,9 +84,14 @@ export class FarrierPageComponent {
 filteredFarrierEntries(horse: Horse) {
   return (horse.farrierEntries ?? [])
     .filter(entry => {
-      if (this.selectedYear === 'all') return true;
-      return Number(entry.date.slice(0, 4)) === this.selectedYear;
+      // entry.date ist bei dir "YYYY-MM-DD"
+      const y = Number(entry.date.slice(0, 4));
+      const m = Number(entry.date.slice(5, 7));
 
+      const yearOk = this.selectedYear === 'all' || y === this.selectedYear;
+      const monthOk = this.selectedMonth === 'all' || m === this.selectedMonth;
+
+      return yearOk && monthOk;
     })
     .sort((a, b) => b.date.localeCompare(a.date));
 }
