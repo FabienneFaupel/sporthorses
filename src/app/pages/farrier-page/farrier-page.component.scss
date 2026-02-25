@@ -131,3 +131,7 @@ hr {
 }
 
 
+.tab-swipe-area {
+  touch-action: pan-y; /* passt perfekt zu deinem globalen pan-y */
+}
+

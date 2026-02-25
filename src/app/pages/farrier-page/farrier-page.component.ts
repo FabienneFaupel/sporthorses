@@ -201,4 +201,39 @@ filteredFarrierEntries(horse: Horse) {
 }
 
 
+
+selectedTabIndex = 0;
+
+private touchStartX = 0;
+private touchStartY = 0;
+
+onTouchStart(e: TouchEvent) {
+  const t = e.changedTouches[0];
+  this.touchStartX = t.clientX;
+  this.touchStartY = t.clientY;
+}
+
+onTouchEnd(e: TouchEvent) {
+  const t = e.changedTouches[0];
+  const dx = t.clientX - this.touchStartX;
+  const dy = t.clientY - this.touchStartY;
+
+  const absX = Math.abs(dx);
+  const absY = Math.abs(dy);
+
+  // 1) nur "echte" horizontale Swipes
+  if (absX < 60) return;      // Schwelle (nicht zu empfindlich)
+  if (absY > absX) return;    // wenn eher vertikal gescrolled -> ignorieren
+
+  // 2) index ändern
+  if (dx < 0) {
+    // swipe nach links -> nächstes Pferd
+    this.selectedTabIndex = Math.min(this.selectedTabIndex + 1, this.horses.length - 1);
+  } else {
+    // swipe nach rechts -> vorheriges Pferd
+    this.selectedTabIndex = Math.max(this.selectedTabIndex - 1, 0);
+  }
+}
+
+
 }

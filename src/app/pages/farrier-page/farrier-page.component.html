@@ -37,8 +37,14 @@
   <p>Noch kein Pferd angelegt.</p>
 </div>
 
-
-    <mat-tab-group  *ngIf="!loading && horses?.length">
+<!--vorher ohne das div class tab swipe area und bei mat tab group nicht index sondern <mat-tab-group  *ngIf="!loading && horses?.length">-->
+<div
+  class="tab-swipe-area"
+  *ngIf="!loading && horses?.length"
+  (touchstart)="onTouchStart($event)"
+  (touchend)="onTouchEnd($event)"
+>
+    <mat-tab-group [(selectedIndex)]="selectedTabIndex">
         <mat-tab *ngFor="let horse of horses; let i = index" label="{{ horse.name }}">
             <div class="horse-card">
                 <div class="horse-title-box">
@@ -107,4 +113,5 @@
             </div>
         </mat-tab>
     </mat-tab-group>
+    </div>
 
