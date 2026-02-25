@@ -200,7 +200,7 @@ filteredFarrierEntries(horse: Horse) {
   }
 }
 
-
+//ab hier nur für insta swipe
 
 selectedTabIndex = 0;
 
@@ -234,6 +234,6 @@ onTouchEnd(e: TouchEvent) {
     this.selectedTabIndex = Math.max(this.selectedTabIndex - 1, 0);
   }
 }
-
+//bis hier insta swipe logik
 
 }
