@@ -38,7 +38,7 @@
 </div>
 
 
-    <mat-tab-group *ngIf="!loading && horses?.length">
+    <mat-tab-group [disablePagination]="true" *ngIf="!loading && horses?.length">
         <mat-tab *ngFor="let horse of horses; let i = index" label="{{ horse.name }}">
             <div class="horse-card">
                 <div class="horse-title-box">
