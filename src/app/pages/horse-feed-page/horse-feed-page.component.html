@@ -65,8 +65,28 @@
   
 </div>
 
- <div class="year-summary">
-  Insgesamt {{ totalConsumedFiltered }} Ballen verbraucht
+
+
+<div class="year-summary">
+
+  <div class="sum-total">
+    Insgesamt {{ totalConsumedFiltered }} Ballen verbraucht
+  </div>
+
+  <div class="sum-split">
+
+    <span class="feed-split-item">
+      <img src="/images/heu.svg" class="feed-split-icon">
+      Heu: <strong>{{ totalConsumedHeuFiltered }}</strong>
+    </span>
+
+    <span class="feed-split-item">
+      <img src="/images/stroh.svg" class="feed-split-icon">
+      Stroh: <strong>{{ totalConsumedStrohFiltered }}</strong>
+    </span>
+
+  </div>
+
 </div>
 
 

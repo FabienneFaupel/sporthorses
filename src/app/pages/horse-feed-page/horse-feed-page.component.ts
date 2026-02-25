@@ -87,6 +87,18 @@ get totalConsumedFiltered(): number {
     .reduce((sum, log) => sum + (log.amount ?? 0), 0);
 }
 
+get totalConsumedHeuFiltered(): number {
+  return this.filteredFeedLog()
+    .filter(log => log.action === 'consume' && log.type === 'heu')
+    .reduce((sum, log) => sum + (log.amount ?? 0), 0);
+}
+
+get totalConsumedStrohFiltered(): number {
+  return this.filteredFeedLog()
+    .filter(log => log.action === 'consume' && log.type === 'stroh')
+    .reduce((sum, log) => sum + (log.amount ?? 0), 0);
+}
+
 
 
 async ngOnInit() {
