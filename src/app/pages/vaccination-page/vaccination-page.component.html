@@ -206,7 +206,7 @@
 </mat-card>
 
 
-      <div *ngFor="let vac of horse.vaccinations; let i = index"
+      <div *ngFor="let vac of sortedVaccinations(horse); let i = index"
      class="vaccination-card"
      [ngClass]="getVaccinationDisplayStatus(vac)">
 

@@ -277,6 +277,11 @@ async resetSchedule() {
   this.editPlan = false;
 }
 
+sortedVaccinations(horse: Horse): Vaccination[] {
+  return [...(horse.vaccinations ?? [])]
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
 
 
 
