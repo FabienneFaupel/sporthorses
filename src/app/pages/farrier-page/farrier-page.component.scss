@@ -131,23 +131,3 @@ hr {
 }
 
 
-/* Tab-Header wieder horizontal wischbar machen (trotz global touch-action: pan-y) */
-:host ::ng-deep .mat-mdc-tab-label-container {
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-x !important;     // <- erlaubt horizontales Wischen NUR hier
-}
-
-:host ::ng-deep .mat-mdc-tab-labels {
-  flex-wrap: nowrap !important;
-  white-space: nowrap;
-}
-
-/* optional: Scrollbar verstecken (mobile cleaner) */
-:host ::ng-deep .mat-mdc-tab-label-container::-webkit-scrollbar {
-  display: none;
-}
-:host ::ng-deep .mat-mdc-tab-label-container {
-  scrollbar-width: none;
-}
