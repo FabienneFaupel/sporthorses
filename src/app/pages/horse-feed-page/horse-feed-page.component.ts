@@ -72,7 +72,13 @@ availableMonths: (number | 'all')[] = ['all', 1,2,3,4,5,6,7,8,9,10,11,12];
 
 monthLabel(m: number | 'all') {
   if (m === 'all') return 'Alle Monate';
-  return String(m).padStart(2, '0'); // 01..12
+
+  const names = [
+    'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+    'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
+  ];
+
+  return names[m - 1] ?? String(m);
 }
 
 onYearChange() {
