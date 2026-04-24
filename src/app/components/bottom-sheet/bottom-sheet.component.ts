@@ -20,7 +20,10 @@ constructor(
   items = [
     { label: 'Futterplan',    icon: 'event_note',   link: '/futterplan' },
     { label: 'Futtersorten',   icon: 'inventory_2',     link: '/futtersorten' },
-    { label: 'Statistik',icon: 'bar_chart', link: '/more/turnierbericht' },
+    { label: 'Zuchtplaner',   icon: 'inventory_2',     link: '/zucht' },
+    { label: 'Statistik',    icon: 'bar_chart', link: '/more/turnierbericht' },
+    
+
   ];
 
   go(link: string) {

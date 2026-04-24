@@ -13,6 +13,7 @@ import { authGuard } from './guards/auth.guard';
 import { guestGuard } from './guards/guest.guard';
 import { FuttersortenPageComponent } from './pages/futtersorten-page/futtersorten-page.component';
 import { CalendarPageComponent } from './pages/calendar-page/calendar-page.component';
+import { ZuchtPageComponent } from './pages/zucht-page/zucht-page.component';
 
 export const routes: Routes = [
 
@@ -32,6 +33,8 @@ export const routes: Routes = [
             { path: 'futterplan', component: FutterplanPageComponent },
             { path: 'futtersorten', component: FuttersortenPageComponent },
             { path: 'calendar', component: CalendarPageComponent },
+            { path: 'zucht', component: ZuchtPageComponent },
+
 
 
 
