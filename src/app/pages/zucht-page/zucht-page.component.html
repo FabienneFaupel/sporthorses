@@ -9,7 +9,7 @@
     <div class="hero-horse-info">
       <span>Ausgewählte Stute</span>
       <h2>Lady Million</h2>
-      <p>8 Jahre · Stute</p>
+      <p>9 Jahre · Stute</p>
     </div>
 
     <button mat-icon-button>
@@ -46,16 +46,37 @@
     <span>Fohlen erwartet:</span>
     <strong>04.04.2027 – 18.04.2027</strong>
   </div>
-  <div class="active-cycle-row">
-  <div>
+
+  <div class="foal-born-action">
+  <button mat-raised-button>
+    <mat-icon>celebration</mat-icon>
+    Fohlen ist da
+  </button>
+
+  <p>
+    Danach wird dieser Zuchtzyklus abgeschlossen und ein neuer Zyklus kann gestartet werden.
+  </p>
+</div>
+
+  <div class="active-cycle-row clickable">
+  <div class="cycle-main">
     <span>Aktiver Zuchtzyklus</span>
     <strong>2026 · Diamond Star</strong>
+    <p>Besamt · Fohlen erwartet</p>
   </div>
 
-  <button mat-button>
-    wechseln
-  </button>
+  <div class="cycle-actions">
+    <button mat-icon-button>
+      <mat-icon>add</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="openCycleSheet()">
+  <mat-icon>expand_more</mat-icon>
+</button>
+  </div>
 </div>
+
+
 </mat-card>
   <div class="quick-actions">
     <button mat-raised-button>

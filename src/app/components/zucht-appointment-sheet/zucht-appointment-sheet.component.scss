@@ -1,0 +1,56 @@
+.complete-sheet {
+  padding: 10px 16px 22px;
+}
+
+.sheet-handle {
+  width: 42px;
+  height: 4px;
+  border-radius: 999px;
+  background: #ddd;
+  margin: 0 auto 14px;
+}
+
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  span {
+    color: #777;
+    font-size: 13px;
+  }
+
+  h3 {
+    margin: 2px 0 4px;
+    font-size: 22px;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+}
+
+.sheet-field {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.sheet-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+
+  button {
+    border-radius: 999px;
+  }
+}
+
+.save-button {
+  background: #e235d6 !important;
+  color: white !important;
+}

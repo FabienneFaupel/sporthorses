@@ -1,0 +1,50 @@
+<div class="complete-sheet">
+  <div class="sheet-handle"></div>
+
+  <div class="sheet-header">
+    <div>
+      <span>Termin abschließen</span>
+      <h3>{{ data.appointment.type }}</h3>
+      <p>
+        {{ data.appointment.date }} · {{ data.appointment.time }}<br />
+        {{ data.appointment.location }} · {{ data.appointment.vet }}
+      </p>
+    </div>
+
+    <button mat-icon-button (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-form-field appearance="outline" class="sheet-field">
+    <mat-label>Ergebnis</mat-label>
+    <mat-select [(ngModel)]="selectedResult">
+      <mat-option *ngFor="let option of data.options" [value]="option">
+        {{ option }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="sheet-field">
+    <mat-label>Notiz</mat-label>
+    <textarea
+      matInput
+      rows="3"
+      [(ngModel)]="note"
+      placeholder="z. B. Kontrolle in 14 Tagen, Follikel sichtbar..."
+    ></textarea>
+  </mat-form-field>
+
+  <div class="sheet-actions">
+    <button mat-button (click)="close()">Abbrechen</button>
+
+    <button
+      mat-raised-button
+      class="save-button"
+      [disabled]="!selectedResult"
+      (click)="save()"
+    >
+      Speichern
+    </button>
+  </div>
+</div>
