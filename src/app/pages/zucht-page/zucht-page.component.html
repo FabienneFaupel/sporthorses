@@ -272,117 +272,87 @@
     </mat-tab>
 
     <mat-tab label="Besamung">
-      <mat-card class="section-card">
-        <div class="section-title-row">
-          <h3>Besamungen</h3>
-          <button mat-icon-button>
-            <mat-icon>add</mat-icon>
-          </button>
+  <mat-card class="section-card">
+    <div class="section-title-row">
+      <h3>Besamungen</h3>
+
+      <button mat-icon-button (click)="openInseminationDialog()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <div class="empty-state" *ngIf="inseminationOrders.length === 0">
+      <mat-icon>favorite</mat-icon>
+      <h4>Noch keine Besamung eingetragen</h4>
+      <p>
+        Füge eine Samenbestellung oder einen geplanten Besamungstermin hinzu.
+      </p>
+    </div>
+
+    <div
+      class="insemination-card clickable"
+      *ngFor="let order of inseminationOrders"
+      (click)="openInseminationDialog(order)"
+    >
+      <div class="insemination-header">
+        <div>
+          <span class="label">Samenbestellung</span>
+          <h4>{{ order.stallion }}</h4>
         </div>
 
-        <div class="insemination-card clickable">
-          <div class="insemination-header">
-            <div>
-              <span class="label">Samenbestellung</span>
-              <h4>Diamond Star</h4>
-            </div>
+        <span
+          class="mini-badge"
+          [class.fresh]="order.semenType === 'Frischsamen'"
+        >
+          {{ order.semenType }}
+        </span>
+      </div>
 
-            <span class="mini-badge">Kühlsamen</span>
-          </div>
-
-          <div class="insemination-info-grid">
-            <div>
-              <span>Bestellt am</span>
-              <strong>04.05.2026 · 08:15 Uhr</strong>
-            </div>
-
-            <div>
-              <span>Menge</span>
-              <strong>1 Portion</strong>
-            </div>
-
-            <div>
-              <span>Kosten</span>
-              <strong>450 €</strong>
-            </div>
-
-            <div>
-              <span>Lieferant</span>
-              <strong>Hengststation Nord</strong>
-            </div>
-          </div>
-
-          <div class="delivery-box">
-            <mat-icon>local_shipping</mat-icon>
-            <div>
-              <span>Lieferung an</span>
-              <strong>Tierarztpraxis Müller</strong>
-              <p>Musterstraße 12 · 54290 Trier</p>
-            </div>
-          </div>
-
-          <div class="appointment-box">
-            <mat-icon>favorite</mat-icon>
-            <div>
-              <span>Geplanter Besamungstermin</span>
-              <strong>05.05.2026 · 10:30 Uhr</strong>
-              <p>Tierarzt: Dr. Müller · Ort: Praxis Trier</p>
-            </div>
-          </div>
+      <div class="insemination-info-grid">
+        <div>
+          <span>Bestellt am</span>
+          <strong>{{ formatDate(order.orderDate) }} · {{ order.orderTime }}</strong>
         </div>
 
-        <div class="insemination-card clickable">
-          <div class="insemination-header">
-            <div>
-              <span class="label">Samenbestellung</span>
-              <h4>Royal Champion</h4>
-            </div>
-
-            <span class="mini-badge fresh">Frischsamen</span>
-          </div>
-
-          <div class="insemination-info-grid">
-            <div>
-              <span>Bestellt am</span>
-              <strong>18.04.2026 · 09:45 Uhr</strong>
-            </div>
-
-            <div>
-              <span>Menge</span>
-              <strong>2 Portionen</strong>
-            </div>
-
-            <div>
-              <span>Kosten</span>
-              <strong>680 €</strong>
-            </div>
-
-            <div>
-              <span>Lieferant</span>
-              <strong>Gestüt Sonnenhof</strong>
-            </div>
-          </div>
-
-          <div class="delivery-box">
-            <mat-icon>local_shipping</mat-icon>
-            <div>
-              <span>Lieferung an</span>
-              <strong>Stall Fampel</strong>
-              <p>Hofadresse · Besamung vor Ort</p>
-            </div>
-          </div>
-
-          <div class="appointment-box">
-            <mat-icon>favorite</mat-icon>
-            <div>
-              <span>Geplanter Besamungstermin</span>
-              <strong>19.04.2026 · 14:00 Uhr</strong>
-              <p>Tierarzt: Dr. Schneider · Ort: Stall</p>
-            </div>
-          </div>
+        <div>
+          <span>Kosten</span>
+          <strong>
+  {{ order.costs && order.costs > 0 ? (order.costs + ' €') : '-' }}
+</strong>
         </div>
-      </mat-card>
-    </mat-tab>
+
+        
+      </div>
+
+      <div class="delivery-box" *ngIf="order.stallionStation">
+  <mat-icon>home</mat-icon>
+  <div>
+    <span>Hengststation</span>
+    <strong>{{ order.stallionStation }}</strong>
+  </div>
+</div>
+
+      <div class="appointment-box" *ngIf="order.hasAppointment">
+        <mat-icon>favorite</mat-icon>
+        <div>
+          <span>Geplanter Besamungstermin</span>
+          <strong>
+  {{ formatDate(order.inseminationDate) }}
+  <ng-container *ngIf="order.inseminationTime">
+    · {{ order.inseminationTime }}
+  </ng-container>
+</strong>
+
+<p *ngIf="order.vet || order.location">
+  <ng-container *ngIf="order.vet">Tierarzt: {{ order.vet }}</ng-container>
+  <ng-container *ngIf="order.vet && order.location"> · </ng-container>
+  <ng-container *ngIf="order.location">Ort: {{ order.location }}</ng-container>
+</p>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+</mat-tab>
 
     <mat-tab label="Tierarzt">
       <mat-card class="section-card">

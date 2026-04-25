@@ -18,6 +18,7 @@ import { ZuchtRosseDialogComponent } from '../../components/zucht-rosse-dialog/z
 import { ZuchtZyklusSettingsDialogComponent } from '../../components/zucht-zyklus-settings-dialog/zucht-zyklus-settings-dialog.component';
 import { ZuchtAppointmentSheetComponent } from '../../components/zucht-appointment-sheet/zucht-appointment-sheet.component';
 import { ZuchtChangeSheetComponent } from '../../components/zucht-change-sheet/zucht-change-sheet.component';
+import { ZuchtSamenBestellenDialogComponent } from '../../components/zucht-samen-bestellen-dialog/zucht-samen-bestellen-dialog.component';
 
 type VetStatus = 'geplant' | 'fällig' | 'erledigt' | 'ausgefallen';
 
@@ -49,6 +50,21 @@ interface HeatCycle {
   note: string;
 }
 
+interface InseminationOrder {
+  id: number;
+  stallion: string;
+  semenType: 'Frischsamen' | 'Kühlsamen' | 'TG-Samen';
+  orderDate: string;
+  orderTime: string;
+  costs: number;
+  stallionStation: string; // bleibt
+  inseminationDate: string;
+  inseminationTime: string;
+  vet: string;
+  location: string;
+   hasAppointment?: boolean;
+}
+
 @Component({
   selector: 'app-zucht-page',
   imports: [
@@ -67,12 +83,14 @@ interface HeatCycle {
     MatDialogModule,
 ZuchtRosseDialogComponent,
 ZuchtZyklusSettingsDialogComponent,
+ZuchtSamenBestellenDialogComponent,
   ],
   templateUrl: './zucht-page.component.html',
   styleUrl: './zucht-page.component.scss'
 })
 
 export class ZuchtPageComponent {
+  
 constructor(private bottomSheet: MatBottomSheet,
   private dialog: MatDialog
 ) {}
@@ -243,6 +261,41 @@ openCycleSettingsDialog(): void {
     if (!result) return;
 
     this.cycleSettings = result;
+  });
+}
+
+inseminationOrders: InseminationOrder[] = [];
+
+openInseminationDialog(order?: InseminationOrder): void {
+  const dialogRef = this.dialog.open(ZuchtSamenBestellenDialogComponent, {
+    width: '90vw',
+    maxWidth: '460px',
+    data: {
+      mode: order ? 'edit' : 'create',
+      order: order ? { ...order } : null,
+    },
+  });
+
+  dialogRef.afterClosed().subscribe((result?: InseminationOrder) => {
+    if (!result) return;
+
+    if (order) {
+      const index = this.inseminationOrders.findIndex(o => o.id === order.id);
+
+      if (index !== -1) {
+        this.inseminationOrders[index] = {
+          ...result,
+          id: order.id,
+        };
+      }
+
+      return;
+    }
+
+    this.inseminationOrders.push({
+      ...result,
+      id: Date.now(),
+    });
   });
 }
 }

@@ -1,1 +1,115 @@
-<p>zucht-samen-bestellen-dialog works!</p>
+<div class="insemination-dialog">
+  <h3>{{ title }}</h3>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Hengst</mat-label>
+    <input matInput [(ngModel)]="form.stallion" required />
+  </mat-form-field>
+
+
+
+  <div class="form-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Bestelldatum</mat-label>
+      <input matInput [matDatepicker]="orderPicker" [(ngModel)]="form.orderDate" required />
+      <mat-datepicker-toggle matIconSuffix [for]="orderPicker"></mat-datepicker-toggle>
+      <mat-datepicker #orderPicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Uhrzeit</mat-label>
+      <input matInput type="time" [(ngModel)]="form.orderTime" />
+    </mat-form-field>
+  </div>
+
+  <div class="form-grid">
+    <mat-form-field appearance="outline">
+    <mat-label>Samenart</mat-label>
+    <mat-select [(ngModel)]="form.semenType" required>
+      <mat-option value="Frischsamen">Frischsamen</mat-option>
+      <mat-option value="Kühlsamen">Kühlsamen</mat-option>
+      <mat-option value="TG-Samen">TG-Samen</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Kosten in €</mat-label>
+      <input matInput type="number" min="0" [(ngModel)]="form.costs" />
+    </mat-form-field>
+  </div>
+
+  
+
+  <mat-form-field appearance="outline">
+    <mat-label>Hengststation</mat-label>
+    <input matInput [(ngModel)]="form.stallionStation" />
+  </mat-form-field>
+
+  
+
+<div class="optional-section-toggle">
+  <div>
+    <strong>Besamungstermin</strong>
+    <p>Optional Termin hinterlegen.</p>
+  </div>
+
+  <button
+    mat-stroked-button
+    type="button"
+    (click)="addInseminationAppointment = !addInseminationAppointment"
+  >
+    <mat-icon>
+      {{ addInseminationAppointment ? 'remove' : 'add' }}
+    </mat-icon>
+    {{ addInseminationAppointment ? 'Entfernen' : 'Hinzufügen' }}
+  </button>
+</div>
+
+<div class="appointment-fields" *ngIf="addInseminationAppointment">
+  
+
+  <div class="form-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Datum</mat-label>
+      <input
+        matInput
+        [matDatepicker]="inseminationPicker"
+        [(ngModel)]="form.inseminationDate"
+        required
+      />
+      <mat-datepicker-toggle matIconSuffix [for]="inseminationPicker"></mat-datepicker-toggle>
+      <mat-datepicker #inseminationPicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Uhrzeit</mat-label>
+      <input matInput type="time" [(ngModel)]="form.inseminationTime" />
+    </mat-form-field>
+  </div>
+
+
+  <div class="form-grid">
+  <mat-form-field appearance="outline">
+    <mat-label>Tierarzt</mat-label>
+    <input matInput [(ngModel)]="form.vet" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Ort</mat-label>
+    <input matInput [(ngModel)]="form.location" />
+  </mat-form-field>
+  </div>
+</div>
+<div class="dialog-actions">
+    <button mat-button (click)="close()">Abbrechen</button>
+
+    <button
+      mat-raised-button
+      class="save-button"
+      [disabled]="!isValid"
+      (click)="save()"
+    >
+      Speichern
+    </button>
+  </div>
+</div>
