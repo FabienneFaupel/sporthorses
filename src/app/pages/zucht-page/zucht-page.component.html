@@ -144,9 +144,9 @@
       <mat-card class="section-card cycle-card">
         <div class="section-title-row">
           <h3>Zyklus</h3>
-          <button mat-icon-button>
-            <mat-icon>edit</mat-icon>
-          </button>
+          <button mat-icon-button (click)="openCycleSettingsDialog()">
+  <mat-icon>edit</mat-icon>
+</button>
         </div>
 
         <div class="cycle-settings">
@@ -161,59 +161,81 @@
           </div>
         </div>
 
-        <div class="cycle-flow">
-          <div class="cycle-step done">
-            <div class="step-icon">
-              <mat-icon>local_fire_department</mat-icon>
-            </div>
+        <div class="empty-state" *ngIf="!lastHeatCycle">
+  <mat-icon>local_fire_department</mat-icon>
+  <h4>Noch keine Rosse eingetragen</h4>
+  <p>
+    Sobald du eine Rosse hinzufügst, wird hier die nächste erwartete Rosse berechnet.
+  </p>
+</div>
 
-            <div class="step-content">
-              <span>Letzte Rosse eingetragen</span>
-              <h4>20.04. – 25.04.2026</h4>
-              <p>Starke Rosse · Verhalten deutlich sichtbar</p>
-            </div>
-          </div>
+<div class="cycle-flow" *ngIf="lastHeatCycle">
+  <div class="cycle-step done">
+    <div class="step-icon">
+      <mat-icon>local_fire_department</mat-icon>
+    </div>
 
-          <div class="cycle-connector"></div>
+    <div class="step-content">
+      <span>Letzte Rosse eingetragen</span>
+      <h4>
+        {{ formatDate(lastHeatCycle.startDate) }}
+        <ng-container *ngIf="lastHeatCycle.endDate">
+          – {{ formatDate(lastHeatCycle.endDate) }}
+        </ng-container>
+      </h4>
+      <p>
+        {{ lastHeatCycle.intensity | titlecase }}e Rosse
+        <ng-container *ngIf="lastHeatCycle.note">
+          · {{ lastHeatCycle.note }}
+        </ng-container>
+      </p>
+    </div>
+  </div>
 
-          <div class="cycle-step calculated">
-            <div class="step-icon">
-              <mat-icon>event_repeat</mat-icon>
-            </div>
+  <div class="cycle-connector"></div>
 
-            <div class="step-content">
-              <span>Automatisch berechnet</span>
-              <h4>Nächste Rosse ca. 11.05.2026</h4>
-              <p>Basierend auf 21 Tagen Zykluslänge</p>
-            </div>
-          </div>
-        </div>
+  <div class="cycle-step calculated">
+    <div class="step-icon">
+      <mat-icon>event_repeat</mat-icon>
+    </div>
 
-        <div class="pregnancy-box">
-          <div class="pregnancy-header">
-            <mat-icon>favorite</mat-icon>
-            <div>
-              <span>Trächtigkeit</span>
-              <h4>Kontrolle bestätigt</h4>
-            </div>
-          </div>
+    <div class="step-content">
+      <span>Automatisch berechnet</span>
+      <h4>
+        Nächste Rosse ca. {{ formatDate(nextExpectedHeatDate!) }}
+      </h4>
+      <p>
+        Basierend auf {{ cycleSettings.heatCycleDays }} Tagen Zykluslänge
+      </p>
+    </div>
+  </div>
+</div>
 
-          <div class="pregnancy-line">
-            <span>Kontrolltermin</span>
-            <strong>19.05.2026</strong>
-          </div>
+<div class="pregnancy-box" *ngIf="pregnancyConfirmed">
+  <div class="pregnancy-header">
+    <mat-icon>favorite</mat-icon>
+    <div>
+      <span>Trächtigkeit</span>
+      <h4>Kontrolle bestätigt</h4>
+    </div>
+  </div>
 
-          <div class="pregnancy-line">
-            <span>Ergebnis</span>
-            <strong>tragend</strong>
-          </div>
+  <div class="pregnancy-line">
+    <span>Kontrolltermin</span>
+    <strong>19.05.2026</strong>
+  </div>
 
-          <div class="foal-result">
-            <span>Fohlen erwartet am</span>
-            <strong>04.05.2027</strong>
-            <p>Berechnet ab bestätigtem Kontrolltermin + 350 Tage</p>
-          </div>
-        </div>
+  <div class="pregnancy-line">
+    <span>Ergebnis</span>
+    <strong>tragend</strong>
+  </div>
+
+  <div class="foal-result">
+    <span>Fohlen erwartet am</span>
+    <strong>04.05.2027</strong>
+    <p>Berechnet ab bestätigtem Kontrolltermin + {{ cycleSettings.pregnancyDays }} Tage</p>
+  </div>
+</div>
       </mat-card>
     </mat-tab>
 

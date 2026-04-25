@@ -15,7 +15,7 @@ import {
 } from '@angular/material/bottom-sheet';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ZuchtRosseDialogComponent } from '../../components/zucht-rosse-dialog/zucht-rosse-dialog.component';
-
+import { ZuchtZyklusSettingsDialogComponent } from '../../components/zucht-zyklus-settings-dialog/zucht-zyklus-settings-dialog.component';
 import { ZuchtAppointmentSheetComponent } from '../../components/zucht-appointment-sheet/zucht-appointment-sheet.component';
 import { ZuchtChangeSheetComponent } from '../../components/zucht-change-sheet/zucht-change-sheet.component';
 
@@ -66,6 +66,7 @@ interface HeatCycle {
     ZuchtChangeSheetComponent,
     MatDialogModule,
 ZuchtRosseDialogComponent,
+ZuchtZyklusSettingsDialogComponent,
   ],
   templateUrl: './zucht-page.component.html',
   styleUrl: './zucht-page.component.scss'
@@ -203,6 +204,45 @@ openHeatDialog(heatCycle?: HeatCycle): void {
       ...result,
       id: Date.now(),
     });
+  });
+}
+
+cycleSettings = {
+  heatCycleDays: 21,
+  pregnancyDays: 350,
+};
+
+pregnancyConfirmed = false;
+
+get lastHeatCycle(): HeatCycle | null {
+  if (this.heatCycles.length === 0) return null;
+  return this.heatCycles[this.heatCycles.length - 1];
+}
+
+get nextExpectedHeatDate(): Date | null {
+  if (!this.lastHeatCycle) return null;
+
+  const startDate = new Date(this.lastHeatCycle.startDate);
+  startDate.setDate(startDate.getDate() + this.cycleSettings.heatCycleDays);
+
+  return startDate;
+}
+
+formatDate(date: string | Date): string {
+  return new Intl.DateTimeFormat('de-DE').format(new Date(date));
+}
+
+openCycleSettingsDialog(): void {
+  const dialogRef = this.dialog.open(ZuchtZyklusSettingsDialogComponent, {
+    width: '90vw',
+    maxWidth: '420px',
+    data: { ...this.cycleSettings },
+  });
+
+  dialogRef.afterClosed().subscribe((result?: typeof this.cycleSettings) => {
+    if (!result) return;
+
+    this.cycleSettings = result;
   });
 }
 }
