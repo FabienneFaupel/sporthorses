@@ -1,0 +1,61 @@
+.rosse-dialog {
+  padding: 24px;
+  background: #fbfaff;
+  border-radius: 24px;
+
+  h2 {
+    margin: 0 0 22px;
+    font-size: 28px;
+    font-weight: 500;
+  }
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 14px;
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+
+  button {
+    border-radius: 999px;
+  }
+}
+
+.save-button {
+  background: #dce7ff !important;
+  color: #0054b8 !important;
+}
+
+.empty-state {
+  padding: 22px 14px;
+  text-align: center;
+  border: 1px dashed #ffb7ee;
+  border-radius: 14px;
+  background: #fff4fc;
+
+  mat-icon {
+    color: #e235d6;
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    margin-bottom: 8px;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: #666;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+}

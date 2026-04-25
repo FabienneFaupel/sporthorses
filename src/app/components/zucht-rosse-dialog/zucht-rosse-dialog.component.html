@@ -1,0 +1,58 @@
+<div class="rosse-dialog">
+  <h2>{{ title }}</h2>
+
+  <mat-form-field appearance="outline">
+  <mat-label>Beginn</mat-label>
+  <input
+    matInput
+    [matDatepicker]="startPicker"
+    [(ngModel)]="form.startDate"
+    required
+  />
+  <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+  <mat-datepicker #startPicker></mat-datepicker>
+</mat-form-field>
+
+<mat-form-field appearance="outline">
+  <mat-label>Ende optional</mat-label>
+  <input
+    matInput
+    [matDatepicker]="endPicker"
+    [(ngModel)]="form.endDate"
+  />
+  <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+  <mat-datepicker #endPicker></mat-datepicker>
+</mat-form-field>
+
+  <mat-form-field appearance="outline">
+  <mat-label>Stärke</mat-label>
+  <mat-select [(ngModel)]="form.intensity" required>
+    <mat-option value="leicht">leicht</mat-option>
+    <mat-option value="normal">normal</mat-option>
+    <mat-option value="stark">stark</mat-option>
+  </mat-select>
+</mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Notiz</mat-label>
+    <textarea
+      matInput
+      rows="3"
+      [(ngModel)]="form.note"
+      placeholder="z. B. deutlich rossig, blitzt häufig..."
+    ></textarea>
+  </mat-form-field>
+
+  <div class="dialog-actions">
+    <button mat-button (click)="close()">Abbrechen</button>
+
+   <button
+  mat-raised-button
+  class="save-button"
+  [disabled]="!isValid"
+  (click)="save()"
+>
+  Speichern
+</button>
+  </div>
+</div>

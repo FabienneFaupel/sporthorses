@@ -1,83 +1,83 @@
 <div class="zucht-page">
-  
+
   <mat-card class="zucht-hero-card">
-  <div class="hero-top">
-    <div class="horse-avatar small">
-      <img class="horse-avatar" src="/images/horse.svg"/>
+    <div class="hero-top">
+      <div class="horse-avatar small">
+        <img class="horse-avatar" src="/images/horse.svg" />
+      </div>
+
+      <div class="hero-horse-info">
+        <span>Ausgewählte Stute</span>
+        <h2>Lady Million</h2>
+        <p>9 Jahre · Stute</p>
+      </div>
+
+      <button mat-icon-button>
+        <mat-icon>expand_more</mat-icon>
+      </button>
     </div>
 
-    <div class="hero-horse-info">
-      <span>Ausgewählte Stute</span>
-      <h2>Lady Million</h2>
-      <p>9 Jahre · Stute</p>
+    <div class="hero-status-row">
+      <div>
+        <span>Aktueller Status</span>
+        <strong>Besamt</strong>
+      </div>
+
+      <div>
+        <span>Hengst</span>
+        <strong>Diamond Star</strong>
+      </div>
     </div>
 
-    <button mat-icon-button>
-      <mat-icon>expand_more</mat-icon>
-    </button>
-  </div>
+    <div class="hero-status-row">
+      <div>
+        <span>Letzte Rosse</span>
+        <strong>20.04. – 25.04.</strong>
+      </div>
 
-  <div class="hero-status-row">
-    <div>
-      <span>Aktueller Status</span>
-      <strong>Besamt</strong>
+      <div>
+        <span>Nächste Rosse</span>
+        <strong>ca. 11.05.</strong>
+      </div>
     </div>
 
-    <div>
-      <span>Hengst</span>
-      <strong>Diamond Star</strong>
-    </div>
-  </div>
-
-  <div class="hero-status-row">
-    <div>
-      <span>Letzte Rosse</span>
-      <strong>20.04. – 25.04.</strong>
+    <div class="hero-foal-row">
+      <mat-icon>favorite</mat-icon>
+      <span>Fohlen erwartet:</span>
+      <strong>04.04.2027 – 18.04.2027</strong>
     </div>
 
-    <div>
-      <span>Nächste Rosse</span>
-      <strong>ca. 11.05.</strong>
+    <div class="foal-born-action">
+      <button mat-raised-button>
+        <mat-icon>celebration</mat-icon>
+        Fohlen ist da
+      </button>
+
+      <p>
+        Danach wird dieser Zuchtzyklus abgeschlossen und ein neuer Zyklus kann gestartet werden.
+      </p>
     </div>
-  </div>
 
-  <div class="hero-foal-row">
-    <mat-icon>favorite</mat-icon>
-    <span>Fohlen erwartet:</span>
-    <strong>04.04.2027 – 18.04.2027</strong>
-  </div>
+    <div class="active-cycle-row clickable">
+      <div class="cycle-main">
+        <span>Aktiver Zuchtzyklus</span>
+        <strong>2026 · Diamond Star</strong>
+        <p>Besamt · Fohlen erwartet</p>
+      </div>
 
-  <div class="foal-born-action">
-  <button mat-raised-button>
-    <mat-icon>celebration</mat-icon>
-    Fohlen ist da
-  </button>
+      <div class="cycle-actions">
+        <button mat-icon-button>
+          <mat-icon>add</mat-icon>
+        </button>
 
-  <p>
-    Danach wird dieser Zuchtzyklus abgeschlossen und ein neuer Zyklus kann gestartet werden.
-  </p>
-</div>
-
-  <div class="active-cycle-row clickable">
-  <div class="cycle-main">
-    <span>Aktiver Zuchtzyklus</span>
-    <strong>2026 · Diamond Star</strong>
-    <p>Besamt · Fohlen erwartet</p>
-  </div>
-
-  <div class="cycle-actions">
-    <button mat-icon-button>
-      <mat-icon>add</mat-icon>
-    </button>
-
-    <button mat-icon-button (click)="openCycleSheet()">
-  <mat-icon>expand_more</mat-icon>
-</button>
-  </div>
-</div>
+        <button mat-icon-button (click)="openCycleSheet()">
+          <mat-icon>expand_more</mat-icon>
+        </button>
+      </div>
+    </div>
 
 
-</mat-card>
+  </mat-card>
   <div class="quick-actions">
     <button mat-raised-button>
       <mat-icon>local_fire_department</mat-icon>
@@ -101,298 +101,300 @@
   </div>
 
   <mat-card class="section-card">
-  <h3>Nächste Termine</h3>
+    <h3>Nächste Termine</h3>
 
-  <div class="next-appointment-card" *ngFor="let appointment of nextAppointments">
-    <div class="next-main">
-      <div class="date-box">
-        <strong>{{ appointment.day }}</strong>
-        <span>{{ appointment.month }}</span>
-      </div>
-
-      <div class="next-content">
-        <div class="next-title-row">
-          <h4>{{ appointment.type }}</h4>
-          <span class="mini-badge" [ngClass]="appointment.status">
-            {{ appointment.status }}
-          </span>
+    <div class="next-appointment-card" *ngFor="let appointment of nextAppointments">
+      <div class="next-main">
+        <div class="date-box">
+          <strong>{{ appointment.day }}</strong>
+          <span>{{ appointment.month }}</span>
         </div>
 
-        <p>{{ appointment.date }} · {{ appointment.time }}</p>
-        <p>{{ appointment.location }} · {{ appointment.vet }}</p>
+        <div class="next-content">
+          <div class="next-title-row">
+            <h4>{{ appointment.type }}</h4>
+            <span class="mini-badge" [ngClass]="appointment.status">
+              {{ appointment.status }}
+            </span>
+          </div>
+
+          <p>{{ appointment.date }} · {{ appointment.time }}</p>
+          <p>{{ appointment.location }} · {{ appointment.vet }}</p>
+        </div>
       </div>
+
+      <div class="next-actions">
+        <button mat-button class="action-done" (click)="openCompleteSheet(appointment)">
+          <mat-icon>check</mat-icon>
+          <span>Erledigt</span>
+        </button>
+
+        <button mat-button class="action-cancel" (click)="markCancelled(appointment)">
+          <mat-icon>close</mat-icon>
+          <span>Fällt aus</span>
+        </button>
+      </div>
+
+
     </div>
-
-    <div class="next-actions">
-  <button
-    mat-button
-    class="action-done"
-    (click)="openCompleteSheet(appointment)"
-  >
-    <mat-icon>check</mat-icon>
-    <span>Erledigt</span>
-  </button>
-
-  <button
-    mat-button
-    class="action-cancel"
-    (click)="markCancelled(appointment)"
-  >
-    <mat-icon>close</mat-icon>
-    <span>Fällt aus</span>
-  </button>
-</div>
-
-    
-  </div>
-</mat-card>
+  </mat-card>
 
   <mat-tab-group mat-stretch-tabs="true" class="zucht-tabs">
     <mat-tab label="Übersicht">
-  <mat-card class="section-card cycle-card">
-    <div class="section-title-row">
-      <h3>Zyklus</h3>
-      <button mat-icon-button>
-        <mat-icon>edit</mat-icon>
-      </button>
-    </div>
-
-    <div class="cycle-settings">
-      <div>
-        <span>Rosse-Zyklus</span>
-        <strong>21 Tage</strong>
-      </div>
-
-      <div>
-        <span>Trächtigkeit</span>
-        <strong>350 Tage</strong>
-      </div>
-    </div>
-
-    <div class="cycle-flow">
-      <div class="cycle-step done">
-        <div class="step-icon">
-          <mat-icon>local_fire_department</mat-icon>
+      <mat-card class="section-card cycle-card">
+        <div class="section-title-row">
+          <h3>Zyklus</h3>
+          <button mat-icon-button>
+            <mat-icon>edit</mat-icon>
+          </button>
         </div>
 
-        <div class="step-content">
-          <span>Letzte Rosse eingetragen</span>
-          <h4>20.04. – 25.04.2026</h4>
-          <p>Starke Rosse · Verhalten deutlich sichtbar</p>
-        </div>
-      </div>
+        <div class="cycle-settings">
+          <div>
+            <span>Rosse-Zyklus</span>
+            <strong>21 Tage</strong>
+          </div>
 
-      <div class="cycle-connector"></div>
-
-      <div class="cycle-step calculated">
-        <div class="step-icon">
-          <mat-icon>event_repeat</mat-icon>
+          <div>
+            <span>Trächtigkeit</span>
+            <strong>350 Tage</strong>
+          </div>
         </div>
 
-        <div class="step-content">
-          <span>Automatisch berechnet</span>
-          <h4>Nächste Rosse ca. 11.05.2026</h4>
-          <p>Basierend auf 21 Tagen Zykluslänge</p>
+        <div class="cycle-flow">
+          <div class="cycle-step done">
+            <div class="step-icon">
+              <mat-icon>local_fire_department</mat-icon>
+            </div>
+
+            <div class="step-content">
+              <span>Letzte Rosse eingetragen</span>
+              <h4>20.04. – 25.04.2026</h4>
+              <p>Starke Rosse · Verhalten deutlich sichtbar</p>
+            </div>
+          </div>
+
+          <div class="cycle-connector"></div>
+
+          <div class="cycle-step calculated">
+            <div class="step-icon">
+              <mat-icon>event_repeat</mat-icon>
+            </div>
+
+            <div class="step-content">
+              <span>Automatisch berechnet</span>
+              <h4>Nächste Rosse ca. 11.05.2026</h4>
+              <p>Basierend auf 21 Tagen Zykluslänge</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="pregnancy-box">
-      <div class="pregnancy-header">
-        <mat-icon>favorite</mat-icon>
-        <div>
-          <span>Trächtigkeit</span>
-          <h4>Kontrolle bestätigt</h4>
+        <div class="pregnancy-box">
+          <div class="pregnancy-header">
+            <mat-icon>favorite</mat-icon>
+            <div>
+              <span>Trächtigkeit</span>
+              <h4>Kontrolle bestätigt</h4>
+            </div>
+          </div>
+
+          <div class="pregnancy-line">
+            <span>Kontrolltermin</span>
+            <strong>19.05.2026</strong>
+          </div>
+
+          <div class="pregnancy-line">
+            <span>Ergebnis</span>
+            <strong>tragend</strong>
+          </div>
+
+          <div class="foal-result">
+            <span>Fohlen erwartet am</span>
+            <strong>04.05.2027</strong>
+            <p>Berechnet ab bestätigtem Kontrolltermin + 350 Tage</p>
+          </div>
         </div>
-      </div>
-
-      <div class="pregnancy-line">
-        <span>Kontrolltermin</span>
-        <strong>19.05.2026</strong>
-      </div>
-
-      <div class="pregnancy-line">
-        <span>Ergebnis</span>
-        <strong>tragend</strong>
-      </div>
-
-      <div class="foal-result">
-        <span>Fohlen erwartet am</span>
-        <strong>04.05.2027</strong>
-        <p>Berechnet ab bestätigtem Kontrolltermin + 350 Tage</p>
-      </div>
-    </div>
-  </mat-card>
-</mat-tab>
+      </mat-card>
+    </mat-tab>
 
     <mat-tab label="Rosse">
       <mat-card class="section-card">
         <div class="section-title-row">
-        <h3>Rosse-Einträge</h3>
-        <button mat-icon-button>
+          <h3>Rosse-Einträge</h3>
+
+          <button mat-icon-button (click)="openHeatDialog()">
             <mat-icon>add</mat-icon>
-        </button>
+          </button>
         </div>
 
-        <div class="record-card clickable">
+        <div class="empty-state" *ngIf="heatCycles.length === 0">
+          <mat-icon>local_fire_department</mat-icon>
+          <h4>Noch keine Rosse eingetragen</h4>
+          <p>
+            Füge die erste Rosse hinzu, damit später der Zyklus automatisch berechnet werden kann.
+          </p>
+        </div>
+
+        <div class="record-card clickable" *ngFor="let heat of heatCycles" (click)="openHeatDialog(heat)">
           <div>
-            <h4>20.04. – 25.04.2026</h4>
-            <p>Deutlich rossig, häufiges Blitzen, anhänglich.</p>
+            <h4>
+              {{ heat.startDate }}
+              <ng-container *ngIf="heat.endDate"> – {{ heat.endDate }}</ng-container>
+            </h4>
+            <p>{{ heat.note || 'Keine Notiz hinterlegt.' }}</p>
           </div>
-          <span class="mini-badge">stark</span>
+
+          <span class="mini-badge">{{ heat.intensity }}</span>
         </div>
       </mat-card>
     </mat-tab>
 
     <mat-tab label="Besamung">
-  <mat-card class="section-card">
-    <div class="section-title-row">
-      <h3>Besamungen</h3>
-      <button mat-icon-button>
-        <mat-icon>add</mat-icon>
-      </button>
-    </div>
-
-    <div class="insemination-card clickable">
-      <div class="insemination-header">
-        <div>
-          <span class="label">Samenbestellung</span>
-          <h4>Diamond Star</h4>
+      <mat-card class="section-card">
+        <div class="section-title-row">
+          <h3>Besamungen</h3>
+          <button mat-icon-button>
+            <mat-icon>add</mat-icon>
+          </button>
         </div>
 
-        <span class="mini-badge">Kühlsamen</span>
-      </div>
+        <div class="insemination-card clickable">
+          <div class="insemination-header">
+            <div>
+              <span class="label">Samenbestellung</span>
+              <h4>Diamond Star</h4>
+            </div>
 
-      <div class="insemination-info-grid">
-        <div>
-          <span>Bestellt am</span>
-          <strong>04.05.2026 · 08:15 Uhr</strong>
+            <span class="mini-badge">Kühlsamen</span>
+          </div>
+
+          <div class="insemination-info-grid">
+            <div>
+              <span>Bestellt am</span>
+              <strong>04.05.2026 · 08:15 Uhr</strong>
+            </div>
+
+            <div>
+              <span>Menge</span>
+              <strong>1 Portion</strong>
+            </div>
+
+            <div>
+              <span>Kosten</span>
+              <strong>450 €</strong>
+            </div>
+
+            <div>
+              <span>Lieferant</span>
+              <strong>Hengststation Nord</strong>
+            </div>
+          </div>
+
+          <div class="delivery-box">
+            <mat-icon>local_shipping</mat-icon>
+            <div>
+              <span>Lieferung an</span>
+              <strong>Tierarztpraxis Müller</strong>
+              <p>Musterstraße 12 · 54290 Trier</p>
+            </div>
+          </div>
+
+          <div class="appointment-box">
+            <mat-icon>favorite</mat-icon>
+            <div>
+              <span>Geplanter Besamungstermin</span>
+              <strong>05.05.2026 · 10:30 Uhr</strong>
+              <p>Tierarzt: Dr. Müller · Ort: Praxis Trier</p>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <span>Menge</span>
-          <strong>1 Portion</strong>
-        </div>
+        <div class="insemination-card clickable">
+          <div class="insemination-header">
+            <div>
+              <span class="label">Samenbestellung</span>
+              <h4>Royal Champion</h4>
+            </div>
 
-        <div>
-          <span>Kosten</span>
-          <strong>450 €</strong>
-        </div>
+            <span class="mini-badge fresh">Frischsamen</span>
+          </div>
 
-        <div>
-          <span>Lieferant</span>
-          <strong>Hengststation Nord</strong>
-        </div>
-      </div>
+          <div class="insemination-info-grid">
+            <div>
+              <span>Bestellt am</span>
+              <strong>18.04.2026 · 09:45 Uhr</strong>
+            </div>
 
-      <div class="delivery-box">
-        <mat-icon>local_shipping</mat-icon>
-        <div>
-          <span>Lieferung an</span>
-          <strong>Tierarztpraxis Müller</strong>
-          <p>Musterstraße 12 · 54290 Trier</p>
-        </div>
-      </div>
+            <div>
+              <span>Menge</span>
+              <strong>2 Portionen</strong>
+            </div>
 
-      <div class="appointment-box">
-        <mat-icon>favorite</mat-icon>
-        <div>
-          <span>Geplanter Besamungstermin</span>
-          <strong>05.05.2026 · 10:30 Uhr</strong>
-          <p>Tierarzt: Dr. Müller · Ort: Praxis Trier</p>
-        </div>
-      </div>
-    </div>
+            <div>
+              <span>Kosten</span>
+              <strong>680 €</strong>
+            </div>
 
-    <div class="insemination-card clickable">
-      <div class="insemination-header">
-        <div>
-          <span class="label">Samenbestellung</span>
-          <h4>Royal Champion</h4>
-        </div>
+            <div>
+              <span>Lieferant</span>
+              <strong>Gestüt Sonnenhof</strong>
+            </div>
+          </div>
 
-        <span class="mini-badge fresh">Frischsamen</span>
-      </div>
+          <div class="delivery-box">
+            <mat-icon>local_shipping</mat-icon>
+            <div>
+              <span>Lieferung an</span>
+              <strong>Stall Fampel</strong>
+              <p>Hofadresse · Besamung vor Ort</p>
+            </div>
+          </div>
 
-      <div class="insemination-info-grid">
-        <div>
-          <span>Bestellt am</span>
-          <strong>18.04.2026 · 09:45 Uhr</strong>
+          <div class="appointment-box">
+            <mat-icon>favorite</mat-icon>
+            <div>
+              <span>Geplanter Besamungstermin</span>
+              <strong>19.04.2026 · 14:00 Uhr</strong>
+              <p>Tierarzt: Dr. Schneider · Ort: Stall</p>
+            </div>
+          </div>
         </div>
-
-        <div>
-          <span>Menge</span>
-          <strong>2 Portionen</strong>
-        </div>
-
-        <div>
-          <span>Kosten</span>
-          <strong>680 €</strong>
-        </div>
-
-        <div>
-          <span>Lieferant</span>
-          <strong>Gestüt Sonnenhof</strong>
-        </div>
-      </div>
-
-      <div class="delivery-box">
-        <mat-icon>local_shipping</mat-icon>
-        <div>
-          <span>Lieferung an</span>
-          <strong>Stall Fampel</strong>
-          <p>Hofadresse · Besamung vor Ort</p>
-        </div>
-      </div>
-
-      <div class="appointment-box">
-        <mat-icon>favorite</mat-icon>
-        <div>
-          <span>Geplanter Besamungstermin</span>
-          <strong>19.04.2026 · 14:00 Uhr</strong>
-          <p>Tierarzt: Dr. Schneider · Ort: Stall</p>
-        </div>
-      </div>
-    </div>
-  </mat-card>
-</mat-tab>
+      </mat-card>
+    </mat-tab>
 
     <mat-tab label="Tierarzt">
-  <mat-card class="section-card">
-    <div class="section-title-row">
-      <h3>Tierarzttermine</h3>
-      <button mat-icon-button>
-        <mat-icon>add</mat-icon>
-      </button>
-    </div>
-
-    <div
-      class="vet-card clickable"
-      *ngFor="let appointment of vetAppointments"
-    >
-      <div class="vet-date">
-        <strong>{{ appointment.day }}</strong>
-        <span>{{ appointment.month }}</span>
-      </div>
-
-      <div class="vet-content">
-        <div class="vet-header">
-          <h4>{{ appointment.type }}</h4>
-          <span class="mini-badge" [ngClass]="appointment.status">
-            {{ appointment.status }}
-          </span>
+      <mat-card class="section-card">
+        <div class="section-title-row">
+          <h3>Tierarzttermine</h3>
+          <button mat-icon-button>
+            <mat-icon>add</mat-icon>
+          </button>
         </div>
 
-        <p>{{ appointment.date }} · {{ appointment.time }}</p>
-        <p>{{ appointment.location }} · {{ appointment.vet }}</p>
+        <div class="vet-card clickable" *ngFor="let appointment of vetAppointments">
+          <div class="vet-date">
+            <strong>{{ appointment.day }}</strong>
+            <span>{{ appointment.month }}</span>
+          </div>
 
-        <div class="result-box" *ngIf="appointment.resultText">
-          <span>Ergebnis</span>
-          <strong>{{ appointment.resultText }}</strong>
+          <div class="vet-content">
+            <div class="vet-header">
+              <h4>{{ appointment.type }}</h4>
+              <span class="mini-badge" [ngClass]="appointment.status">
+                {{ appointment.status }}
+              </span>
+            </div>
+
+            <p>{{ appointment.date }} · {{ appointment.time }}</p>
+            <p>{{ appointment.location }} · {{ appointment.vet }}</p>
+
+            <div class="result-box" *ngIf="appointment.resultText">
+              <span>Ergebnis</span>
+              <strong>{{ appointment.resultText }}</strong>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </mat-card>
-</mat-tab>
+      </mat-card>
+    </mat-tab>
   </mat-tab-group>
 </div>

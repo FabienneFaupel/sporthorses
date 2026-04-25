@@ -13,6 +13,8 @@ import {
   MatBottomSheet,
   MatBottomSheetModule,
 } from '@angular/material/bottom-sheet';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ZuchtRosseDialogComponent } from '../../components/zucht-rosse-dialog/zucht-rosse-dialog.component';
 
 import { ZuchtAppointmentSheetComponent } from '../../components/zucht-appointment-sheet/zucht-appointment-sheet.component';
 import { ZuchtChangeSheetComponent } from '../../components/zucht-change-sheet/zucht-change-sheet.component';
@@ -39,6 +41,14 @@ interface CompleteSheetResult {
   note: string;
 }
 
+interface HeatCycle {
+  id: number;
+  startDate: string;
+  endDate: string;
+  intensity: 'leicht' | 'normal' | 'stark';
+  note: string;
+}
+
 @Component({
   selector: 'app-zucht-page',
   imports: [
@@ -54,13 +64,17 @@ interface CompleteSheetResult {
     MatBottomSheetModule,
     ZuchtAppointmentSheetComponent,
     ZuchtChangeSheetComponent,
+    MatDialogModule,
+ZuchtRosseDialogComponent,
   ],
   templateUrl: './zucht-page.component.html',
   styleUrl: './zucht-page.component.scss'
 })
 
 export class ZuchtPageComponent {
-constructor(private bottomSheet: MatBottomSheet) {}
+constructor(private bottomSheet: MatBottomSheet,
+  private dialog: MatDialog
+) {}
 
   vetAppointments: VetAppointment[] = [
     {
@@ -156,4 +170,39 @@ constructor(private bottomSheet: MatBottomSheet) {}
     appointment.resultText = 'Termin ist ausgefallen';
     appointment.note = '';
   }
+
+  heatCycles: HeatCycle[] = [];
+
+openHeatDialog(heatCycle?: HeatCycle): void {
+  const dialogRef = this.dialog.open(ZuchtRosseDialogComponent, {
+    width: '90vw',
+    maxWidth: '420px',
+    data: {
+      mode: heatCycle ? 'edit' : 'create',
+      heatCycle: heatCycle ? { ...heatCycle } : null,
+    },
+  });
+
+  dialogRef.afterClosed().subscribe((result?: HeatCycle) => {
+    if (!result) return;
+
+    if (heatCycle) {
+      const index = this.heatCycles.findIndex(h => h.id === heatCycle.id);
+
+      if (index !== -1) {
+        this.heatCycles[index] = {
+          ...result,
+          id: heatCycle.id,
+        };
+      }
+
+      return;
+    }
+
+    this.heatCycles.push({
+      ...result,
+      id: Date.now(),
+    });
+  });
+}
 }
