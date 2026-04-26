@@ -350,34 +350,46 @@ openInseminationDialog(order?: InseminationOrder): void {
     },
   });
 
-  dialogRef.afterClosed().subscribe((result?: InseminationOrder) => {
-    if (!result) return;
+  dialogRef.afterClosed().subscribe((result?: any) => {
+  if (!result) return;
 
-    // 🔁 EDIT
-    if (order) {
-      const index = this.inseminationOrders.findIndex(o => o.id === order.id);
+  if (result.action === 'delete' && order) {
+    this.inseminationOrders = this.inseminationOrders.filter(o => o.id !== order.id);
 
-      if (index !== -1) {
-        this.inseminationOrders[index] = {
-          ...result,
-          id: order.id,
-        };
-      }
+    this.vetAppointments = this.vetAppointments.filter(
+      appointment =>
+        !(
+          appointment.type === 'Besamung' &&
+          appointment.stallion === order.stallion
+        )
+    );
 
-      return;
+    return;
+  }
+
+  if (result.action !== 'save' || !result.order) return;
+
+  if (order) {
+    const index = this.inseminationOrders.findIndex(o => o.id === order.id);
+
+    if (index !== -1) {
+      this.inseminationOrders[index] = {
+        ...result.order,
+        id: order.id,
+      };
     }
 
-    // ➕ NEU
-    const newOrder = {
-      ...result,
-      id: Date.now(),
-    };
+    return;
+  }
 
-    this.inseminationOrders.push(newOrder);
+  const newOrder = {
+    ...result.order,
+    id: Date.now(),
+  };
 
-    // 👉 HIER passiert die Magie
-    this.createVetAppointmentFromInsemination(newOrder);
-  });
+  this.inseminationOrders.push(newOrder);
+  this.createVetAppointmentFromInsemination(newOrder);
+});
 }
 openVetAppointmentDialog(appointment?: VetAppointment): void {
   const dialogRef = this.dialog.open(ZuchtTierarztTerminDialogComponent, {

@@ -79,3 +79,16 @@
   }
 }
 
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.delete-button {
+  color: #a30000 !important;
+}

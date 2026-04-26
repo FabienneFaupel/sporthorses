@@ -107,11 +107,26 @@ form: InseminationOrder = {
     this.dialogRef.close();
   }
 
-  save(): void {
-    if (!this.isValid) return;
-    this.dialogRef.close({
-  ...this.form,
-  hasAppointment: this.addInseminationAppointment
-});
-  }
+save(): void {
+  if (!this.isValid) return;
+
+  this.dialogRef.close({
+    action: 'save',
+    order: {
+      ...this.form,
+      hasAppointment: this.addInseminationAppointment,
+    },
+  });
+}
+
+  delete(): void {
+  const confirmed = confirm('Möchtest du diese Besamung wirklich löschen?');
+
+  if (!confirmed) return;
+
+  this.dialogRef.close({
+    action: 'delete',
+    order: this.form,
+  });
+}
 }
