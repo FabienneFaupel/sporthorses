@@ -22,7 +22,7 @@
     <button
       class="cycle-item"
       *ngFor="let cycle of cycles"
-      [class.active]="cycle.id === activeCycleId"
+      [class.active]="cycle._id === activeCycleId"
       (click)="selectCycle(cycle.id)"
     >
       <mat-icon class="check-icon" *ngIf="cycle.id === activeCycleId">check</mat-icon>
@@ -36,7 +36,7 @@
       <button
         mat-icon-button
         class="delete-cycle"
-        (click)="deleteCycle(cycle.id, $event)"
+        (click)="deleteCycle(cycle._id, $event)"
       >
         <mat-icon>delete</mat-icon>
       </button>

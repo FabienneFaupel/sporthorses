@@ -17,7 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
 interface InseminationOrder {
-  id: number;
+  id: string;
   stallion: string;
   semenType: 'Frischsamen' | 'Kühlsamen' | 'TG-Samen';
   orderDate: string;
@@ -58,7 +58,7 @@ export class ZuchtSamenBestellenDialogComponent {
   addInseminationAppointment = false;
 
 form: InseminationOrder = {
-  id: 0,
+  id: '',
   stallion: '',
   semenType: 'TG-Samen',
   orderDate: this.getToday(),

@@ -19,7 +19,7 @@ import { MatSelectModule } from '@angular/material/select';
 type VetStatus = 'geplant' | 'fällig' | 'erledigt' | 'ausgefallen';
 
 interface VetAppointment {
-  id: number;
+  id: string;
   type: string;
   date: string;
   day: string;
@@ -61,19 +61,19 @@ interface DialogData {
 })
 export class ZuchtTierarztTerminDialogComponent {
 form: VetAppointment = {
-    id: 0,
-    type: '',
-    date: this.getToday(),
-    day: this.getDay(this.getToday()),
-    month: this.getMonth(this.getToday()),
-    time: '',
-    location: '',
-    vet: '',
-    status: 'geplant',
-    result: '',
-    resultText: '',
-    note: '',
-  };
+  id: '',
+  type: '',
+  date: this.getToday(),
+  day: this.getDay(this.getToday()),
+  month: this.getMonth(this.getToday()),
+  time: '',
+  location: '',
+  vet: '',
+  status: 'geplant',
+  result: '',
+  resultText: '',
+  note: '',
+};
 
   resultOptions: Record<string, string[]> = {
   Follikelkontrolle: [

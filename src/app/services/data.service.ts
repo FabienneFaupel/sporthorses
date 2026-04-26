@@ -12,7 +12,8 @@ import { FeedDefinitionRepositoryService } from './feed-definition.repository.se
 import { FeedDefinition } from '../models/feed-definition';
 import { newId } from '../utils/id';
 import { toDateOnlyIsoLocal, fromDateOnlyIsoLocal } from '../utils/date';
-
+import { BreedingCycle } from '../models/breeding-cycle';
+import { BreedingCycleRepositoryService } from './breeding-cycle.repository.service';
 
 
 @Injectable({
@@ -27,6 +28,7 @@ export class DataService {
   private auth: AuthService,
   private vacScheduleRepo: VaccinationScheduleRepositoryService,
   private feedDefRepo: FeedDefinitionRepositoryService,
+  private breedingRepo: BreedingCycleRepositoryService,
 ) {}
 
 private get stallId(): string {
@@ -762,6 +764,63 @@ async deleteKraftfutter(delivery: KraftfutterDelivery) {
     // Rollback
     await this.loadKraftfutterFromDb();
   }
+}
+
+
+//Zucht
+
+private breedingCycles: BreedingCycle[] = [];
+
+getBreedingCycles(): BreedingCycle[] {
+  return this.breedingCycles;
+}
+
+async loadBreedingCyclesForHorse(horseId: string): Promise<void> {
+  this.breedingCycles = await this.breedingRepo.loadByHorse(this.stallId, horseId);
+}
+
+async createBreedingCycle(horseId: string, year: number, stallion = ''): Promise<BreedingCycle> {
+  const cycle: Omit<BreedingCycle, '_id' | '_rev' | 'docType' | 'stallId' | 'createdAt' | 'updatedAt'> = {
+    horseId,
+    year,
+    stallion,
+    status: 'aktiv',
+    heatCycles: [],
+    inseminationOrders: [],
+    vetAppointments: [],
+    cycleSettings: {
+      heatCycleDays: 21,
+      pregnancyDays: 350,
+    },
+  };
+
+  const res = await this.breedingRepo.create(this.stallId, cycle);
+
+  const saved: BreedingCycle = {
+    ...cycle,
+    _id: res.id,
+    _rev: res.rev,
+    docType: 'breeding_cycle',
+    stallId: this.stallId,
+  };
+
+  this.breedingCycles = [saved, ...this.breedingCycles];
+  return saved;
+}
+
+async updateBreedingCycle(cycle: BreedingCycle): Promise<void> {
+  const res = await this.breedingRepo.update(cycle);
+
+  this.breedingCycles = this.breedingCycles.map(c =>
+    c._id === cycle._id
+      ? { ...cycle, _rev: res.rev }
+      : c
+  );
+}
+
+async deleteBreedingCycle(cycle: BreedingCycle): Promise<void> {
+  await this.breedingRepo.remove(cycle);
+  this.breedingCycles = this.breedingCycles.filter(c => c._id !== cycle._id);
 }
 
 

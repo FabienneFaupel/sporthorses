@@ -7,6 +7,7 @@ import {
 } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { Horse } from '../../models/horse';
 
 @Component({
   selector: 'app-zucht-horse-select-sheet',
@@ -20,7 +21,7 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './zucht-horse-select-sheet.component.scss'
 })
 export class ZuchtHorseSelectSheetComponent {
-horses: any[] = [];
+horses: Horse[] = [];
   selectedHorseId: string | null = null;
   search = '';
 
@@ -32,15 +33,15 @@ horses: any[] = [];
     this.selectedHorseId = data.selectedHorseId ?? null;
   }
 
-  get filteredHorses(): any[] {
-    return this.horses.filter((horse: any) =>
-      horse.name?.toLowerCase().includes(this.search.toLowerCase())
-    );
-  }
+  get filteredHorses(): Horse[] {
+  return this.horses.filter((horse) =>
+    horse.name?.toLowerCase().includes(this.search.toLowerCase())
+  );
+}
 
-  select(horse: any): void {
-    this.sheetRef.dismiss(horse);
-  }
+select(horse: Horse): void {
+  this.sheetRef.dismiss(horse);
+}
 
   close(): void {
     this.sheetRef.dismiss();

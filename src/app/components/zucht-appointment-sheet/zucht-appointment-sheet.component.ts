@@ -14,7 +14,7 @@ import {
 } from '@angular/material/bottom-sheet';
 
 interface VetAppointment {
-  id: number;
+  id: string;
   type: string;
   date: string;
   day: string;

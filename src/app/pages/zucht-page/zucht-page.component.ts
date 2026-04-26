@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { MatTabsModule } from '@angular/material/tabs';
@@ -23,61 +23,22 @@ import { ZuchtTierarztTerminDialogComponent } from '../../components/zucht-tiera
 
 import { DataService } from '../../services/data.service';
 import { Horse } from '../../models/horse';
-import { MatMenuModule } from '@angular/material/menu';
+
 import { ZuchtHorseSelectSheetComponent } from '../../components/zucht-horse-select-sheet/zucht-horse-select-sheet.component';
-
-type VetStatus = 'geplant' | 'fällig' | 'erledigt' | 'ausgefallen';
-
-interface VetAppointment {
-  id: number;
-  type: string;
-  date: string;
-  day: string;
-  month: string;
-  time: string;
-  location: string;
-  vet: string;
-  status: VetStatus;
-  result?: string;
-  resultText?: string;
-  note?: string;
-  stallion?: string;
-}
+import {
+  BreedingCycle,
+  HeatCycle,
+  InseminationOrder,
+  VetAppointment,
+} from '../../models/breeding-cycle';
 
 interface CompleteSheetResult {
   result: string;
   note: string;
 }
 
-interface HeatCycle {
-  id: number;
-  startDate: string;
-  endDate: string;
-  intensity: 'leicht' | 'normal' | 'stark';
-  note: string;
-}
 
-interface InseminationOrder {
-  id: number;
-  stallion: string;
-  semenType: 'Frischsamen' | 'Kühlsamen' | 'TG-Samen';
-  orderDate: string;
-  orderTime: string;
-  stallionStation: string;
-  inseminationDate: string;
-  inseminationTime: string;
-  vet: string;
-  location: string;
-  hasAppointment?: boolean;
-}
 
-interface BreedingCycle {
-  id: number;
-  horseId: string;
-  year: number;
-  stallion: string;
-  status: 'aktiv' | 'fohlen geboren' | 'nicht tragend';
-}
 
 
 @Component({
@@ -100,7 +61,6 @@ ZuchtRosseDialogComponent,
 ZuchtZyklusSettingsDialogComponent,
 ZuchtSamenBestellenDialogComponent,
 ZuchtTierarztTerminDialogComponent,
-MatMenuModule,
 ZuchtHorseSelectSheetComponent,
   ],
   templateUrl: './zucht-page.component.html',
@@ -117,8 +77,8 @@ constructor(
 
 horses: Horse[] = [];
 selectedHorse: Horse | null = null;
-breedingCycles: BreedingCycle[] = [];
-activeCycleId: number | null = null;
+
+
 
 async ngOnInit(): Promise<void> {
   if (this.data.getHorses().length === 0) {
@@ -126,15 +86,35 @@ async ngOnInit(): Promise<void> {
   }
 
   this.horses = this.data.getHorses();
+
   this.selectedHorse =
-  this.mares.find(h => h.name.toLowerCase().includes('dorina')) ??
-  this.mares[0] ??
-  this.horses[0] ??
-  null;
+    this.mares.find(h => h.name.toLowerCase().includes('dorina')) ??
+    this.mares[0] ??
+    this.horses[0] ??
+    null;
+
+  if (this.selectedHorse?._id) {
+    await this.data.loadBreedingCyclesForHorse(this.selectedHorse._id);
+    this.activeCycleId = this.selectedHorseCycles[0]?._id ?? null;
+  }
 }
 
-selectHorse(horse: Horse): void {
+async selectHorse(horse: Horse): Promise<void> {
   this.selectedHorse = horse;
+
+  if (!horse._id) return;
+
+  await this.data.loadBreedingCyclesForHorse(horse._id);
+  this.activeCycleId = this.selectedHorseCycles[0]?._id ?? null;
+}
+
+private async saveActiveCycle(): Promise<void> {
+  if (!this.activeCycle) return;
+  await this.data.updateBreedingCycle(this.activeCycle);
+}
+
+private newEntryId(prefix: string): string {
+  return `${prefix}:${Date.now()}`;
 }
 
 getSelectedHorseSubtitle(): string {
@@ -149,7 +129,7 @@ getSelectedHorseSubtitle(): string {
   return `${age} Jahre · ${gender}`;
 }
 
-  vetAppointments: VetAppointment[] = [];
+  
 
   resultOptions: Record<string, string[]> = {
   Follikelkontrolle: [
@@ -174,6 +154,31 @@ getSelectedHorseSubtitle(): string {
   Sonstiges: ['Erledigt', 'Kontrolle nötig', 'Unklar'],
 };
 
+activeCycleId: string | null = null;
+
+get breedingCycles(): BreedingCycle[] {
+  return this.data.getBreedingCycles();
+}
+
+get heatCycles(): HeatCycle[] {
+  return this.activeCycle?.heatCycles ?? [];
+}
+
+get inseminationOrders(): InseminationOrder[] {
+  return this.activeCycle?.inseminationOrders ?? [];
+}
+
+get vetAppointments(): VetAppointment[] {
+  return this.activeCycle?.vetAppointments ?? [];
+}
+
+get cycleSettings() {
+  return this.activeCycle?.cycleSettings ?? {
+    heatCycleDays: 21,
+    pregnancyDays: 350,
+  };
+}
+
   get nextAppointments(): VetAppointment[] {
     return this.vetAppointments.filter(
       appointment =>
@@ -190,14 +195,16 @@ getSelectedHorseSubtitle(): string {
       panelClass: 'vet-bottom-sheet',
     });
 
-    sheetRef.afterDismissed().subscribe((result?: CompleteSheetResult) => {
-      if (!result) return;
+    sheetRef.afterDismissed().subscribe(async (result?: CompleteSheetResult) => {
+  if (!result || !this.activeCycle) return;
 
-      appointment.status = 'erledigt';
-      appointment.result = result.result;
-      appointment.resultText = result.result;
-      appointment.note = result.note;
-    });
+  appointment.status = 'erledigt';
+  appointment.result = result.result;
+  appointment.resultText = result.result;
+  appointment.note = result.note;
+
+  await this.saveActiveCycle();
+});
   }
 
   openCycleSheet(): void {
@@ -207,15 +214,11 @@ getSelectedHorseSubtitle(): string {
       cycles: this.selectedHorseCycles,
       activeCycleId: this.activeCycleId,
       currentYear: new Date().getFullYear(),
-      defaultStallion:
-        this.latestInseminationOrder?.stallion ||
-        this.activeCycle?.stallion ||
-        '',
       horseId: this.selectedHorse?._id,
     },
   });
 
-  sheetRef.afterDismissed().subscribe(result => {
+  sheetRef.afterDismissed().subscribe(async result => {
     if (!result || !this.selectedHorse?._id) return;
 
     if (result.action === 'select') {
@@ -224,39 +227,39 @@ getSelectedHorseSubtitle(): string {
     }
 
     if (result.action === 'create') {
-      const newCycle: BreedingCycle = {
-        id: Date.now(),
-        horseId: this.selectedHorse._id,
-        year: result.year,
-        stallion: this.latestInseminationOrder?.stallion || '',
-        status: 'aktiv',
-      };
+      const cycle = await this.data.createBreedingCycle(
+        this.selectedHorse._id,
+        result.year,
+        this.latestInseminationOrder?.stallion || ''
+      );
 
-      this.breedingCycles.push(newCycle);
-      this.activeCycleId = newCycle.id;
+      this.activeCycleId = cycle._id ?? null;
       return;
     }
 
     if (result.action === 'delete') {
-      this.breedingCycles = this.breedingCycles.filter(
-        cycle => cycle.id !== result.cycleId
-      );
+      const cycle = this.breedingCycles.find(c => c._id === result.cycleId);
+      if (!cycle) return;
+
+      await this.data.deleteBreedingCycle(cycle);
 
       if (this.activeCycleId === result.cycleId) {
-        this.activeCycleId = this.selectedHorseCycles[0]?.id ?? null;
+        this.activeCycleId = this.selectedHorseCycles[0]?._id ?? null;
       }
     }
   });
 }
 
-  markCancelled(appointment: VetAppointment): void {
-    appointment.status = 'ausgefallen';
-    appointment.result = '';
-    appointment.resultText = 'Termin ist ausgefallen';
-    appointment.note = '';
-  }
+  async markCancelled(appointment: VetAppointment): Promise<void> {
+  appointment.status = 'ausgefallen';
+  appointment.result = '';
+  appointment.resultText = 'Termin ist ausgefallen';
+  appointment.note = '';
 
-  heatCycles: HeatCycle[] = [];
+  await this.saveActiveCycle();
+}
+
+  
 
 openHeatDialog(heatCycle?: HeatCycle): void {
   const dialogRef = this.dialog.open(ZuchtRosseDialogComponent, {
@@ -268,46 +271,45 @@ openHeatDialog(heatCycle?: HeatCycle): void {
     },
   });
 
-  dialogRef.afterClosed().subscribe((result?: any) => {
-  if (!result) return;
+  dialogRef.afterClosed().subscribe(async (result?: any) => {
+  if (!result || !this.activeCycle) return;
 
   if (result.action === 'delete' && heatCycle) {
-    this.heatCycles = this.heatCycles.filter(h => h.id !== heatCycle.id);
+    this.activeCycle.heatCycles = this.activeCycle.heatCycles.filter(
+      h => h.id !== heatCycle.id
+    );
+    await this.saveActiveCycle();
     return;
   }
 
   if (result.action !== 'save' || !result.heatCycle) return;
 
   if (heatCycle) {
-    const index = this.heatCycles.findIndex(h => h.id === heatCycle.id);
+    const index = this.activeCycle.heatCycles.findIndex(h => h.id === heatCycle.id);
 
     if (index !== -1) {
-      this.heatCycles[index] = {
+      this.activeCycle.heatCycles[index] = {
         ...result.heatCycle,
         id: heatCycle.id,
       };
     }
-
-    return;
+  } else {
+    this.activeCycle.heatCycles.push({
+      ...result.heatCycle,
+      id: this.newEntryId('heat'),
+    });
   }
 
-  this.heatCycles.push({
-    ...result.heatCycle,
-    id: Date.now(),
-  });
+  await this.saveActiveCycle();
 });
 }
 
-cycleSettings = {
-  heatCycleDays: 21,
-  pregnancyDays: 350,
-};
+
 
 pregnancyConfirmed = false;
 
 get lastHeatCycle(): HeatCycle | null {
-  if (this.heatCycles.length === 0) return null;
-  return this.heatCycles[this.heatCycles.length - 1];
+  return this.sortedHeatCycles[0] ?? null;
 }
 
 get nextExpectedHeatDate(): Date | null {
@@ -330,14 +332,15 @@ openCycleSettingsDialog(): void {
     data: { ...this.cycleSettings },
   });
 
-  dialogRef.afterClosed().subscribe((result?: typeof this.cycleSettings) => {
-    if (!result) return;
+  dialogRef.afterClosed().subscribe(async (result?: typeof this.cycleSettings) => {
+  if (!result || !this.activeCycle) return;
 
-    this.cycleSettings = result;
-  });
+  this.activeCycle.cycleSettings = result;
+  await this.saveActiveCycle();
+});
 }
 
-inseminationOrders: InseminationOrder[] = [];
+
 
 openInseminationDialog(order?: InseminationOrder): void {
   const dialogRef = this.dialog.open(ZuchtSamenBestellenDialogComponent, {
@@ -349,45 +352,45 @@ openInseminationDialog(order?: InseminationOrder): void {
     },
   });
 
-  dialogRef.afterClosed().subscribe((result?: any) => {
-  if (!result) return;
+  dialogRef.afterClosed().subscribe(async (result?: any) => {
+  if (!result || !this.activeCycle) return;
 
   if (result.action === 'delete' && order) {
-    this.inseminationOrders = this.inseminationOrders.filter(o => o.id !== order.id);
+    this.activeCycle.inseminationOrders =
+      this.activeCycle.inseminationOrders.filter(o => o.id !== order.id);
 
-    this.vetAppointments = this.vetAppointments.filter(
-      appointment =>
-        !(
-          appointment.type === 'Besamung' &&
-          appointment.stallion === order.stallion
-        )
-    );
+    this.activeCycle.vetAppointments =
+      this.activeCycle.vetAppointments.filter(
+        appointment =>
+          !(appointment.type === 'Besamung' && appointment.stallion === order.stallion)
+      );
 
+    await this.saveActiveCycle();
     return;
   }
 
   if (result.action !== 'save' || !result.order) return;
 
   if (order) {
-    const index = this.inseminationOrders.findIndex(o => o.id === order.id);
+    const index = this.activeCycle.inseminationOrders.findIndex(o => o.id === order.id);
 
     if (index !== -1) {
-      this.inseminationOrders[index] = {
+      this.activeCycle.inseminationOrders[index] = {
         ...result.order,
         id: order.id,
       };
     }
+  } else {
+    const newOrder: InseminationOrder = {
+      ...result.order,
+      id: this.newEntryId('insemination'),
+    };
 
-    return;
+    this.activeCycle.inseminationOrders.push(newOrder);
+    this.createVetAppointmentFromInsemination(newOrder);
   }
 
-  const newOrder = {
-    ...result.order,
-    id: Date.now(),
-  };
-
-  this.inseminationOrders.push(newOrder);
-  this.createVetAppointmentFromInsemination(newOrder);
+  await this.saveActiveCycle();
 });
 }
 openVetAppointmentDialog(appointment?: VetAppointment): void {
@@ -404,43 +407,45 @@ openVetAppointmentDialog(appointment?: VetAppointment): void {
 },
   });
 
-  dialogRef.afterClosed().subscribe((result?: any) => {
-  if (!result) return;
+  dialogRef.afterClosed().subscribe(async (result?: any) => {
+  if (!result || !this.activeCycle) return;
 
   if (result.action === 'delete' && appointment) {
-    this.vetAppointments = this.vetAppointments.filter(
-      a => a.id !== appointment.id
-    );
+    this.activeCycle.vetAppointments =
+      this.activeCycle.vetAppointments.filter(a => a.id !== appointment.id);
+
+    await this.saveActiveCycle();
     return;
   }
 
   if (result.action !== 'save' || !result.appointment) return;
 
   if (appointment) {
-    const index = this.vetAppointments.findIndex(a => a.id === appointment.id);
+    const index = this.activeCycle.vetAppointments.findIndex(a => a.id === appointment.id);
 
     if (index !== -1) {
-      this.vetAppointments[index] = {
+      this.activeCycle.vetAppointments[index] = {
         ...result.appointment,
         id: appointment.id,
       };
     }
-
-    return;
+  } else {
+    this.activeCycle.vetAppointments.push({
+      ...result.appointment,
+      id: this.newEntryId('vet'),
+    });
   }
 
-  this.vetAppointments.push({
-    ...result.appointment,
-    id: Date.now(),
-  });
+  await this.saveActiveCycle();
 });
 }
 
 private createVetAppointmentFromInsemination(order: InseminationOrder): void {
+  if (!this.activeCycle) return;
   if (!order.hasAppointment || !order.inseminationDate) return;
 
-  this.vetAppointments.push({
-    id: Date.now(),
+  this.activeCycle.vetAppointments.push({
+    id: this.newEntryId('vet'),
     type: 'Besamung',
     date: order.inseminationDate,
     day: new Date(order.inseminationDate).getDate().toString().padStart(2, '0'),
@@ -616,7 +621,7 @@ get selectedHorseCycles(): BreedingCycle[] {
 }
 
 get activeCycle(): BreedingCycle | null {
-  return this.selectedHorseCycles.find(cycle => cycle.id === this.activeCycleId) ?? null;
+  return this.selectedHorseCycles.find(cycle => cycle._id === this.activeCycleId) ?? null;
 }
 
 get sortedVetAppointments(): VetAppointment[] {

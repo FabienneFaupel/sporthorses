@@ -27,7 +27,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 })
 export class ZuchtChangeSheetComponent {
 cycles: any[] = [];
-  activeCycleId: number | null = null;
+  activeCycleId: string | null = null;
   showCreateForm = false;
 
   form = {
@@ -48,12 +48,12 @@ cycles: any[] = [];
     };
   }
 
-  selectCycle(cycleId: number): void {
-    this.bottomSheetRef.dismiss({
-      action: 'select',
-      cycleId,
-    });
-  }
+  selectCycle(cycleId: string): void {
+  this.bottomSheetRef.dismiss({
+    action: 'select',
+    cycleId,
+  });
+}
 
   createCycle(): void {
     if (!this.form.year) return;
@@ -64,7 +64,7 @@ cycles: any[] = [];
     });
   }
 
-  deleteCycle(cycleId: number, event: Event): void {
+  deleteCycle(cycleId: string, event: Event): void {
   event.stopPropagation();
 
   const confirmed = confirm('Möchtest du diesen Zuchtzyklus wirklich löschen?');

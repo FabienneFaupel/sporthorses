@@ -16,7 +16,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 
 interface HeatCycle {
-  id: number;
+  id: string;
   startDate: string;
   endDate: string;
   intensity: 'leicht' | 'normal' | 'stark';
@@ -53,7 +53,7 @@ MatIconModule,
 })
 export class ZuchtRosseDialogComponent {
 form: HeatCycle = {
-  id: 0,
+  id: '',
   startDate: this.getToday(),
   endDate: '',
   intensity: 'normal',
