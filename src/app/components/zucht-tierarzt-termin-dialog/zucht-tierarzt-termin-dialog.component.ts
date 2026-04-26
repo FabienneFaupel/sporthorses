@@ -168,6 +168,20 @@ form: VetAppointment = {
     this.form.resultText = '';
   }
 
-  this.dialogRef.close(this.form);
+  this.dialogRef.close({
+  action: 'save',
+  appointment: this.form,
+});
+}
+
+delete(): void {
+  const confirmed = confirm('Möchtest du diesen Tierarzttermin wirklich löschen?');
+
+  if (!confirmed) return;
+
+  this.dialogRef.close({
+    action: 'delete',
+    appointment: this.form,
+  });
 }
 }

@@ -405,27 +405,36 @@ openVetAppointmentDialog(appointment?: VetAppointment): void {
 },
   });
 
-  dialogRef.afterClosed().subscribe((result?: VetAppointment) => {
-    if (!result) return;
+  dialogRef.afterClosed().subscribe((result?: any) => {
+  if (!result) return;
 
-    if (appointment) {
-      const index = this.vetAppointments.findIndex(a => a.id === appointment.id);
+  if (result.action === 'delete' && appointment) {
+    this.vetAppointments = this.vetAppointments.filter(
+      a => a.id !== appointment.id
+    );
+    return;
+  }
 
-      if (index !== -1) {
-        this.vetAppointments[index] = {
-          ...result,
-          id: appointment.id,
-        };
-      }
+  if (result.action !== 'save' || !result.appointment) return;
 
-      return;
+  if (appointment) {
+    const index = this.vetAppointments.findIndex(a => a.id === appointment.id);
+
+    if (index !== -1) {
+      this.vetAppointments[index] = {
+        ...result.appointment,
+        id: appointment.id,
+      };
     }
 
-    this.vetAppointments.push({
-      ...result,
-      id: Date.now(),
-    });
+    return;
+  }
+
+  this.vetAppointments.push({
+    ...result.appointment,
+    id: Date.now(),
   });
+});
 }
 
 private createVetAppointmentFromInsemination(order: InseminationOrder): void {
