@@ -519,10 +519,30 @@ get isPregnant(): boolean {
   return !!this.confirmedPregnancyAppointment;
 }
 
+get latestVetAppointmentWithResult(): VetAppointment | null {
+  const appointmentsWithResult = this.vetAppointments.filter(appointment =>
+    appointment.status === 'erledigt' &&
+    !!appointment.resultText?.trim()
+  );
+
+  if (appointmentsWithResult.length === 0) return null;
+
+  return [...appointmentsWithResult].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  )[0];
+}
+
 get currentStatusText(): string {
-  if (this.isPregnant) return 'Tragend';
-  if (this.latestInseminationOrder) return 'Besamt';
-  if (this.lastHeatCycle) return 'Rosse erfasst';
+  const latestResult = this.latestVetAppointmentWithResult;
+
+  if (latestResult?.resultText) {
+    return latestResult.resultText;
+  }
+
+  if (this.latestInseminationOrder) {
+    return 'Samen bestellt';
+  }
+
   return 'Noch nicht angegeben';
 }
 
@@ -598,5 +618,25 @@ get selectedHorseCycles(): BreedingCycle[] {
 
 get activeCycle(): BreedingCycle | null {
   return this.selectedHorseCycles.find(cycle => cycle.id === this.activeCycleId) ?? null;
+}
+
+get sortedVetAppointments(): VetAppointment[] {
+  return [...this.vetAppointments].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+}
+
+get sortedInseminationOrders(): InseminationOrder[] {
+  return [...this.inseminationOrders].sort(
+    (a, b) =>
+      new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()
+  );
+}
+
+get sortedHeatCycles(): HeatCycle[] {
+  return [...this.heatCycles].sort(
+    (a, b) =>
+      new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+  );
 }
 }

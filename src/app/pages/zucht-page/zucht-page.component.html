@@ -110,7 +110,7 @@
               </span>
             </div>
 
-            <p>{{ appointment.date }} · {{ appointment.time }}</p>
+            <p>{{ formatDate(appointment.date) }} · {{ appointment.time }}</p>
             <p>{{ appointment.location }} · {{ appointment.vet }}</p>
           </div>
         </div>
@@ -244,7 +244,7 @@
 
 
 
-          <div class="record-card clickable" *ngFor="let heat of heatCycles" (click)="openHeatDialog(heat)">
+          <div class="record-card clickable" *ngFor="let heat of sortedHeatCycles" (click)="openHeatDialog(heat)" >
             <div>
               <h4>
                 {{ formatDate(heat.startDate) }}
@@ -273,7 +273,7 @@
 
 
 
-          <div class="insemination-card clickable" *ngFor="let order of inseminationOrders"
+          <div class="insemination-card clickable" *ngFor="let order of sortedInseminationOrders"
             (click)="openInseminationDialog(order)">
             <div class="insemination-header">
               <div>
@@ -341,7 +341,7 @@
             </button>
           </div>
 
-          <div class="vet-card clickable" *ngFor="let appointment of vetAppointments"
+          <div class="vet-card clickable" *ngFor="let appointment of sortedVetAppointments"
             (click)="openVetAppointmentDialog(appointment)">
             <div class="vet-date">
               <strong>{{ appointment.day }}</strong>
@@ -356,7 +356,7 @@
                 </span>
               </div>
 
-              <p>{{ appointment.date }} · {{ appointment.time }}</p>
+              <p>{{ formatDate(appointment.date) }} · {{ appointment.time }}</p>
               <p>{{ appointment.location }} · {{ appointment.vet }}</p>
 
               <div class="result-box" *ngIf="appointment.resultText">
