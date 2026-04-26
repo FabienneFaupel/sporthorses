@@ -19,6 +19,7 @@ import { ZuchtZyklusSettingsDialogComponent } from '../../components/zucht-zyklu
 import { ZuchtAppointmentSheetComponent } from '../../components/zucht-appointment-sheet/zucht-appointment-sheet.component';
 import { ZuchtChangeSheetComponent } from '../../components/zucht-change-sheet/zucht-change-sheet.component';
 import { ZuchtSamenBestellenDialogComponent } from '../../components/zucht-samen-bestellen-dialog/zucht-samen-bestellen-dialog.component';
+import { ZuchtTierarztTerminDialogComponent } from '../../components/zucht-tierarzt-termin-dialog/zucht-tierarzt-termin-dialog.component';
 
 type VetStatus = 'geplant' | 'fällig' | 'erledigt' | 'ausgefallen';
 
@@ -35,6 +36,7 @@ interface VetAppointment {
   result?: string;
   resultText?: string;
   note?: string;
+  stallion?: string;
 }
 
 interface CompleteSheetResult {
@@ -84,6 +86,7 @@ interface InseminationOrder {
 ZuchtRosseDialogComponent,
 ZuchtZyklusSettingsDialogComponent,
 ZuchtSamenBestellenDialogComponent,
+ZuchtTierarztTerminDialogComponent,
   ],
   templateUrl: './zucht-page.component.html',
   styleUrl: './zucht-page.component.scss'
@@ -95,61 +98,30 @@ constructor(private bottomSheet: MatBottomSheet,
   private dialog: MatDialog
 ) {}
 
-  vetAppointments: VetAppointment[] = [
-    {
-      id: 1,
-      type: 'Besamung',
-      date: '05.05.2026',
-      day: '05',
-      month: 'Mai',
-      time: '10:30 Uhr',
-      location: 'Tierarztpraxis Müller',
-      vet: 'Dr. Müller',
-      status: 'erledigt',
-      result: 'Besamt',
-      resultText: 'Besamt mit Diamond Star',
-      note: 'Kühlsamen von Diamond Star verwendet.',
-    },
-    {
-      id: 2,
-      type: 'Trächtigkeitskontrolle',
-      date: '19.05.2026',
-      day: '19',
-      month: 'Mai',
-      time: '10:30 Uhr',
-      location: 'Tierarztpraxis Müller',
-      vet: 'Ultraschall',
-      status: 'geplant',
-      result: '',
-    },
-    {
-      id: 3,
-      type: 'Nachkontrolle',
-      date: '26.05.2026',
-      day: '26',
-      month: 'Mai',
-      time: '09:00 Uhr',
-      location: 'Stall Fampel',
-      vet: 'Dr. Schneider',
-      status: 'fällig',
-      result: '',
-    },
-  ];
+  vetAppointments: VetAppointment[] = [];
 
   resultOptions: Record<string, string[]> = {
-    Besamung: ['Besamt', 'Nicht besamt', 'Verschoben'],
-    Trächtigkeitskontrolle: [
-      'Tragend',
-      'Nicht tragend',
-      'Unklar',
-      'Nachkontrolle nötig',
-    ],
-    Nachkontrolle: [
-      'Alles unauffällig',
-      'Weitere Kontrolle nötig',
-      'Behandlung nötig',
-    ],
-  };
+  Follikelkontrolle: [
+    'Follikel vorhanden',
+    'Follikel noch zu klein',
+    'Eisprung erfolgt',
+    'Keine Besamung empfohlen',
+    'Kontrolle nötig',
+  ],
+  Besamung: ['Besamt', 'Nicht besamt', 'Verschoben'],
+  Trächtigkeitskontrolle: [
+    'Tragend',
+    'Nicht tragend',
+    'Unklar',
+    'Nachkontrolle nötig',
+  ],
+  Nachkontrolle: [
+    'Alles unauffällig',
+    'Weitere Kontrolle nötig',
+    'Behandlung nötig',
+  ],
+  Sonstiges: ['Erledigt', 'Kontrolle nötig', 'Unklar'],
+};
 
   get nextAppointments(): VetAppointment[] {
     return this.vetAppointments.filter(
@@ -279,6 +251,7 @@ openInseminationDialog(order?: InseminationOrder): void {
   dialogRef.afterClosed().subscribe((result?: InseminationOrder) => {
     if (!result) return;
 
+    // 🔁 EDIT
     if (order) {
       const index = this.inseminationOrders.findIndex(o => o.id === order.id);
 
@@ -292,10 +265,74 @@ openInseminationDialog(order?: InseminationOrder): void {
       return;
     }
 
-    this.inseminationOrders.push({
+    // ➕ NEU
+    const newOrder = {
+      ...result,
+      id: Date.now(),
+    };
+
+    this.inseminationOrders.push(newOrder);
+
+    // 👉 HIER passiert die Magie
+    this.createVetAppointmentFromInsemination(newOrder);
+  });
+}
+openVetAppointmentDialog(appointment?: VetAppointment): void {
+  const dialogRef = this.dialog.open(ZuchtTierarztTerminDialogComponent, {
+    width: '90vw',
+    maxWidth: '460px',
+    data: {
+  mode: appointment ? 'edit' : 'create',
+  appointment: appointment ? { ...appointment } : null,
+  lastStallion: this.inseminationOrders.length
+    ? this.inseminationOrders[this.inseminationOrders.length - 1].stallion
+    : '',
+  stallions: [...new Set(this.inseminationOrders.map(order => order.stallion))],
+},
+  });
+
+  dialogRef.afterClosed().subscribe((result?: VetAppointment) => {
+    if (!result) return;
+
+    if (appointment) {
+      const index = this.vetAppointments.findIndex(a => a.id === appointment.id);
+
+      if (index !== -1) {
+        this.vetAppointments[index] = {
+          ...result,
+          id: appointment.id,
+        };
+      }
+
+      return;
+    }
+
+    this.vetAppointments.push({
       ...result,
       id: Date.now(),
     });
+  });
+}
+
+private createVetAppointmentFromInsemination(order: InseminationOrder): void {
+  if (!order.hasAppointment || !order.inseminationDate) return;
+
+  this.vetAppointments.push({
+    id: Date.now(),
+    type: 'Besamung',
+    date: order.inseminationDate,
+    day: new Date(order.inseminationDate).getDate().toString().padStart(2, '0'),
+    month: new Intl.DateTimeFormat('de-DE', { month: 'short' })
+      .format(new Date(order.inseminationDate))
+      .replace('.', ''),
+    time: order.inseminationTime || '',
+    location: order.location || '',
+    vet: order.vet || '',
+    status: 'geplant',
+    result: '',
+    resultText: '',
+    note: '',
+    stallion: order.stallion,
   });
 }
 }

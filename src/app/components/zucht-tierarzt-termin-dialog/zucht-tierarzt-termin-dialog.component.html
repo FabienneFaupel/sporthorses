@@ -1,1 +1,109 @@
-<p>zucht-tierarzt-termin-dialog works!</p>
+<div class="vet-dialog">
+  <h3>{{ title }}</h3>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Terminart</mat-label>
+    <mat-select [(ngModel)]="form.type" required>
+      <mat-option value="Follikelkontrolle">Follikelkontrolle</mat-option>
+      <mat-option value="Besamung">Besamung</mat-option>
+      <mat-option value="Trächtigkeitskontrolle">Trächtigkeitskontrolle</mat-option>
+      <mat-option value="Nachkontrolle">Nachkontrolle</mat-option>
+      <mat-option value="Sonstiges">Sonstiges</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" *ngIf="form.type === 'Besamung'">
+  <mat-label>Hengst</mat-label>
+  <mat-select [(ngModel)]="form.stallion">
+    <mat-option value="">Kein Hengst ausgewählt</mat-option>
+
+    <mat-option
+      *ngFor="let stallion of data.stallions"
+      [value]="stallion"
+    >
+      {{ stallion }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+  <div class="form-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Datum</mat-label>
+      <input
+        matInput
+        [matDatepicker]="datePicker"
+        [(ngModel)]="form.date"
+        (ngModelChange)="onDateChange()"
+        required
+      />
+      <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
+      <mat-datepicker #datePicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Uhrzeit</mat-label>
+      <input matInput type="time" [(ngModel)]="form.time" />
+    </mat-form-field>
+  </div>
+
+  <div >
+  <mat-form-field appearance="outline">
+    <mat-label>Ort / Praxis / Stall</mat-label>
+    <input matInput [(ngModel)]="form.location" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Tierarzt</mat-label>
+    <input matInput [(ngModel)]="form.vet" />
+  </mat-form-field>
+</div>
+
+<div class="form-grid">
+  <mat-form-field appearance="outline">
+    <mat-label>Status</mat-label>
+    <mat-select [(ngModel)]="form.status">
+      <mat-option value="geplant">geplant</mat-option>
+      <mat-option value="fällig">fällig</mat-option>
+      <mat-option value="erledigt">erledigt</mat-option>
+      <mat-option value="ausgefallen">ausgefallen</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+  <mat-label>Ergebnis optional</mat-label>
+  <mat-select [(ngModel)]="form.result">
+    <mat-option value="">Kein Ergebnis</mat-option>
+
+    <mat-option
+      *ngFor="let option of resultOptions[form.type] || resultOptions['Sonstiges']"
+      [value]="option"
+    >
+      {{ option }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+  </div>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Notiz optional</mat-label>
+    <textarea
+      matInput
+      rows="3"
+      [(ngModel)]="form.note"
+      placeholder="z. B. Follikelgröße, Empfehlung, Kontrolle nötig..."
+    ></textarea>
+  </mat-form-field>
+
+  <div class="dialog-actions">
+    <button mat-button (click)="close()">Abbrechen</button>
+
+    <button
+      mat-raised-button
+      class="save-button"
+      [disabled]="!isValid"
+      (click)="save()"
+    >
+      Speichern
+    </button>
+  </div>
+</div>

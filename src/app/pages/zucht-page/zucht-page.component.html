@@ -358,12 +358,12 @@
       <mat-card class="section-card">
         <div class="section-title-row">
           <h3>Tierarzttermine</h3>
-          <button mat-icon-button>
-            <mat-icon>add</mat-icon>
-          </button>
+          <button mat-icon-button (click)="openVetAppointmentDialog()">
+  <mat-icon>add</mat-icon>
+</button>
         </div>
 
-        <div class="vet-card clickable" *ngFor="let appointment of vetAppointments">
+        <div class="vet-card clickable" *ngFor="let appointment of vetAppointments" (click)="openVetAppointmentDialog(appointment)">
           <div class="vet-date">
             <strong>{{ appointment.day }}</strong>
             <span>{{ appointment.month }}</span>
