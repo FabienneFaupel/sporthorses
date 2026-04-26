@@ -80,6 +80,7 @@ interface BreedingCycle {
   status: 'aktiv' | 'fohlen geboren' | 'nicht tragend';
 }
 
+
 @Component({
   selector: 'app-zucht-page',
   imports: [
@@ -268,27 +269,34 @@ openHeatDialog(heatCycle?: HeatCycle): void {
     },
   });
 
-  dialogRef.afterClosed().subscribe((result?: HeatCycle) => {
-    if (!result) return;
+  dialogRef.afterClosed().subscribe((result?: any) => {
+  if (!result) return;
 
-    if (heatCycle) {
-      const index = this.heatCycles.findIndex(h => h.id === heatCycle.id);
+  if (result.action === 'delete' && heatCycle) {
+    this.heatCycles = this.heatCycles.filter(h => h.id !== heatCycle.id);
+    return;
+  }
 
-      if (index !== -1) {
-        this.heatCycles[index] = {
-          ...result,
-          id: heatCycle.id,
-        };
-      }
+  if (result.action !== 'save' || !result.heatCycle) return;
 
-      return;
+  if (heatCycle) {
+    const index = this.heatCycles.findIndex(h => h.id === heatCycle.id);
+
+    if (index !== -1) {
+      this.heatCycles[index] = {
+        ...result.heatCycle,
+        id: heatCycle.id,
+      };
     }
 
-    this.heatCycles.push({
-      ...result,
-      id: Date.now(),
-    });
+    return;
+  }
+
+  this.heatCycles.push({
+    ...result.heatCycle,
+    id: Date.now(),
   });
+});
 }
 
 cycleSettings = {

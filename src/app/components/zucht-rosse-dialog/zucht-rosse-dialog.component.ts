@@ -28,6 +28,11 @@ interface DialogData {
   heatCycle: HeatCycle | null;
 }
 
+interface HeatDialogResult {
+  action: 'save' | 'delete';
+  heatCycle?: HeatCycle;
+}
+
 
 @Component({
   selector: 'app-zucht-rosse-dialog',
@@ -80,9 +85,23 @@ get isValid(): boolean {
     this.dialogRef.close();
   }
 
-  save(): void {
+ save(): void {
   if (!this.isValid) return;
 
-  this.dialogRef.close(this.form);
+  this.dialogRef.close({
+    action: 'save',
+    heatCycle: this.form,
+  });
+}
+
+delete(): void {
+  const confirmed = confirm('Möchtest du diesen Rosse-Eintrag wirklich löschen?');
+
+  if (!confirmed) return;
+
+  this.dialogRef.close({
+    action: 'delete',
+    heatCycle: this.form,
+  });
 }
 }
