@@ -63,13 +63,12 @@ interface InseminationOrder {
   semenType: 'Frischsamen' | 'Kühlsamen' | 'TG-Samen';
   orderDate: string;
   orderTime: string;
-  costs: number;
-  stallionStation: string; // bleibt
+  stallionStation: string;
   inseminationDate: string;
   inseminationTime: string;
   vet: string;
   location: string;
-   hasAppointment?: boolean;
+  hasAppointment?: boolean;
 }
 
 interface BreedingCycle {

@@ -22,13 +22,12 @@ interface InseminationOrder {
   semenType: 'Frischsamen' | 'Kühlsamen' | 'TG-Samen';
   orderDate: string;
   orderTime: string;
-  costs: number;
-  stallionStation: string; // bleibt
+  stallionStation: string;
   inseminationDate: string;
   inseminationTime: string;
   vet: string;
   location: string;
-   hasAppointment?: boolean;
+  hasAppointment?: boolean;
 }
 
 interface DialogData {
@@ -61,10 +60,9 @@ export class ZuchtSamenBestellenDialogComponent {
 form: InseminationOrder = {
   id: 0,
   stallion: '',
-  semenType: 'Kühlsamen',
+  semenType: 'TG-Samen',
   orderDate: this.getToday(),
   orderTime: '',
-  costs: 0,
   stallionStation: '',
   inseminationDate: this.getToday(),
   inseminationTime: '',
