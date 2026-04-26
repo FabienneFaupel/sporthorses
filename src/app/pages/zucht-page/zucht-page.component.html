@@ -1,21 +1,52 @@
 <div class="zucht-page">
 
   <mat-card class="zucht-hero-card">
-    <div class="hero-top">
-      <div class="horse-avatar small">
-        <img class="horse-avatar" src="/images/horse.svg" />
-      </div>
+    <div
+  class="hero-top horse-select-trigger"
+  [matMenuTriggerFor]="horseMenu"
+>
+  <div class="horse-avatar small">
+    <img src="/images/horse.svg" />
+  </div>
 
-      <div class="hero-horse-info">
-        <span>Ausgewählte Stute</span>
-        <h2>Lady Million</h2>
-        <p>9 Jahre · Stute</p>
-      </div>
+  <div class="hero-horse-info">
+    <span>Ausgewähltes Pferd</span>
+    <h2>{{ selectedHorse?.name || 'Kein Pferd ausgewählt' }}</h2>
+    <p *ngIf="selectedHorse">{{ getSelectedHorseSubtitle() }}</p>
+  </div>
 
-      <button mat-icon-button>
-        <mat-icon>expand_more</mat-icon>
-      </button>
+  <mat-icon class="hero-dropdown-icon">expand_more</mat-icon>
+</div>
+
+<mat-menu
+  #horseMenu="matMenu"
+  panelClass="horse-select-menu"
+  yPosition="below"
+  xPosition="before"
+>
+  <button
+    mat-menu-item
+    class="horse-menu-item"
+    *ngFor="let horse of mares"
+    (click)="selectHorse(horse)"
+  >
+    <mat-icon
+      class="horse-menu-check"
+      *ngIf="selectedHorse?._id === horse._id"
+    >
+      check
+    </mat-icon>
+
+    <div class="horse-menu-avatar">
+      <img src="/images/horse.svg" />
     </div>
+
+    <div class="horse-menu-text">
+      <strong>{{ horse.name }}</strong>
+      <span>{{ getHorseSubtitle(horse) }}</span>
+    </div>
+  </button>
+</mat-menu>
 
     <div class="hero-status-row">
       <div>

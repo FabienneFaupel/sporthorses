@@ -1,5 +1,6 @@
-
-/* Allgemein */
+/* ============================= */
+/* 🔹 ALLGEMEIN                  */
+/* ============================= */
 
 .section-card,
 .zucht-hero-card {
@@ -48,7 +49,9 @@
   }
 }
 
-/* Hero Card */
+/* ============================= */
+/* 🔹 HERO CARD                  */
+/* ============================= */
 
 .zucht-hero-card {
   padding: 14px;
@@ -101,6 +104,8 @@
   }
 }
 
+/* Status */
+
 .hero-status-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -135,6 +140,8 @@
   font-size: 18px;
 }
 
+/* Fohlen */
+
 .hero-foal-row {
   display: flex;
   align-items: center;
@@ -161,6 +168,8 @@
     font-size: 13px;
   }
 }
+
+/* Aktiver Zyklus */
 
 .active-cycle-row {
   margin-top: 14px;
@@ -205,9 +214,36 @@
   }
 }
 
+/* Fohlen Aktion */
 
+.foal-born-action {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #ffd4f5;
 
-/* Quick Actions */
+  button {
+    width: 100%;
+    border-radius: 999px;
+    background: #e235d6 !important;
+    color: white !important;
+  }
+
+  mat-icon {
+    margin-right: 4px;
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: #666;
+    font-size: 12px;
+    line-height: 1.35;
+    text-align: center;
+  }
+}
+
+/* ============================= */
+/* 🔹 QUICK ACTIONS              */
+/* ============================= */
 
 .quick-actions {
   display: grid;
@@ -232,7 +268,9 @@
   }
 }
 
-/* Nächste Termine */
+/* ============================= */
+/* 🔹 NÄCHSTE TERMINE            */
+/* ============================= */
 
 .next-appointment-card {
   border: 1px solid #eee;
@@ -321,7 +359,9 @@
   color: #a30000 !important;
 }
 
-/* Tabs */
+/* ============================= */
+/* 🔹 TABS                       */
+/* ============================= */
 
 .zucht-tabs {
   margin-top: 20px;
@@ -342,7 +382,9 @@
   }
 }
 
-/* Übersicht / Zyklus */
+/* ============================= */
+/* 🔹 ZYKLUS                     */
+/* ============================= */
 
 .cycle-card h3 {
   margin-bottom: 14px;
@@ -509,7 +551,9 @@
   }
 }
 
-/* Rosse */
+/* ============================= */
+/* 🔹 ROSSE / BESAMUNG / VET     */
+/* ============================= */
 
 .record-card {
   display: flex;
@@ -533,8 +577,6 @@
     font-size: 13px;
   }
 }
-
-/* Besamung */
 
 .insemination-card {
   border: 1px solid #eee;
@@ -631,7 +673,7 @@
   }
 }
 
-/* Tierarzt */
+/* Vet */
 
 .vet-card {
   display: flex;
@@ -686,86 +728,70 @@
   }
 }
 
-/* Badge Status */
+/* ============================= */
+/* 🔹 DROPDOWN                   */
+/* ============================= */
 
-.mini-badge.fresh {
-  background: #dce7ff;
-  color: #0054b8;
+::ng-deep .horse-select-menu .mat-mdc-menu-panel {
+  border-radius: 22px;
+  min-width: 360px;
+  max-width: 420px;
+  padding: 10px;
+  background: #fff;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
 }
 
-.mini-badge.geplant,
-.mini-badge.open {
-  background: #eeeeee;
-  color: #333;
+::ng-deep .horse-select-menu .mat-mdc-menu-content {
+  padding: 0;
 }
 
-.mini-badge.fällig,
-.mini-badge.due {
-  background: #fff1cc;
-  color: #8a5a00;
+.horse-menu-item {
+  height: 74px;
+  border-radius: 18px;
+  margin-bottom: 6px;
+
+  &:hover {
+    background: #fde8f8;
+  }
 }
 
-.mini-badge.erledigt,
-.mini-badge.done {
-  background: #dff5e7;
-  color: #167a3d;
-}
-
-.mini-badge.ausgefallen {
-  background: #ffe0e0;
-  color: #a30000;
-}
-
-.active-cycle-row {
-  margin-top: 8px;
-  padding: 9px 10px;
-  border-radius: 12px;
-  background: #eef4ff;
+.horse-menu-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #f6a6e9;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: center;
+  margin-right: 14px;
+  flex-shrink: 0;
+}
 
-  span {
-    display: block;
-    color: #777;
-    font-size: 12px;
-  }
+.horse-menu-avatar img {
+  width: 34px;
+  height: 34px;
+}
+
+.horse-menu-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  line-height: 1.2;
 
   strong {
-    display: block;
-    margin-top: 2px;
-    font-size: 13px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f1f28;
   }
 
-  button {
-    border-radius: 999px;
-    color: #0054b8;
-    font-size: 12px;
+  span {
+    font-size: 15px;
+    color: #777;
+    margin-top: 4px;
   }
 }
 
-.foal-born-action {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid #ffd4f5;
-
-  button {
-    width: 100%;
-    border-radius: 999px;
-    background: #e235d6 !important;
-    color: white !important;
-  }
-
-  mat-icon {
-    margin-right: 4px;
-  }
-
-  p {
-    margin: 8px 0 0;
-    color: #666;
-    font-size: 12px;
-    line-height: 1.35;
-    text-align: center;
-  }
+.horse-menu-check {
+  color: #d83bd1;
+  margin-left: auto;
 }

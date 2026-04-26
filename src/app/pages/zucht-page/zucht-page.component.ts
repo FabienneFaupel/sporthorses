@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { MatTabsModule } from '@angular/material/tabs';
@@ -20,6 +20,10 @@ import { ZuchtAppointmentSheetComponent } from '../../components/zucht-appointme
 import { ZuchtChangeSheetComponent } from '../../components/zucht-change-sheet/zucht-change-sheet.component';
 import { ZuchtSamenBestellenDialogComponent } from '../../components/zucht-samen-bestellen-dialog/zucht-samen-bestellen-dialog.component';
 import { ZuchtTierarztTerminDialogComponent } from '../../components/zucht-tierarzt-termin-dialog/zucht-tierarzt-termin-dialog.component';
+
+import { DataService } from '../../services/data.service';
+import { Horse } from '../../models/horse';
+import { MatMenuModule } from '@angular/material/menu';
 
 type VetStatus = 'geplant' | 'fällig' | 'erledigt' | 'ausgefallen';
 
@@ -87,6 +91,7 @@ ZuchtRosseDialogComponent,
 ZuchtZyklusSettingsDialogComponent,
 ZuchtSamenBestellenDialogComponent,
 ZuchtTierarztTerminDialogComponent,
+MatMenuModule,
   ],
   templateUrl: './zucht-page.component.html',
   styleUrl: './zucht-page.component.scss'
@@ -94,9 +99,39 @@ ZuchtTierarztTerminDialogComponent,
 
 export class ZuchtPageComponent {
   
-constructor(private bottomSheet: MatBottomSheet,
-  private dialog: MatDialog
+constructor(
+  private bottomSheet: MatBottomSheet,
+  private dialog: MatDialog,
+  private data: DataService
 ) {}
+
+horses: Horse[] = [];
+selectedHorse: Horse | null = null;
+
+async ngOnInit(): Promise<void> {
+  if (this.data.getHorses().length === 0) {
+    await this.data.loadHorsesFromDb();
+  }
+
+  this.horses = this.data.getHorses();
+  this.selectedHorse = this.horses[0] ?? null;
+}
+
+selectHorse(horse: Horse): void {
+  this.selectedHorse = horse;
+}
+
+getSelectedHorseSubtitle(): string {
+  if (!this.selectedHorse) return '';
+
+  const age = this.data.getDisplayAge(this.selectedHorse);
+  const gender =
+    (this.selectedHorse as any).gender ||
+    (this.selectedHorse as any).sex ||
+    'Pferd';
+
+  return `${age} Jahre · ${gender}`;
+}
 
   vetAppointments: VetAppointment[] = [];
 
@@ -333,6 +368,28 @@ private createVetAppointmentFromInsemination(order: InseminationOrder): void {
     resultText: '',
     note: '',
     stallion: order.stallion,
+  });
+}
+
+getHorseSubtitle(horse: Horse): string {
+  const age = this.data.getDisplayAge(horse);
+
+  const gender =
+    (horse as any).gender ||
+    (horse as any).sex ||
+    'Pferd';
+
+  return `${age} Jahre · ${gender}`;
+}
+
+get mares(): Horse[] {
+  return this.horses.filter(h => {
+    const gender =
+      (h as any).gender ||
+      (h as any).sex ||
+      '';
+
+    return gender.toLowerCase() === 'stute';
   });
 }
 }
