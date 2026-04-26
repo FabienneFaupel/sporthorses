@@ -1,9 +1,9 @@
 <div class="zucht-page">
 
   <mat-card class="zucht-hero-card">
-    <div
+<div
   class="hero-top horse-select-trigger"
-  [matMenuTriggerFor]="horseMenu"
+  (click)="openHorseSelectSheet()"
 >
   <div class="horse-avatar small">
     <img src="/images/horse.svg" />
@@ -17,36 +17,6 @@
 
   <mat-icon class="hero-dropdown-icon">expand_more</mat-icon>
 </div>
-
-<mat-menu
-  #horseMenu="matMenu"
-  panelClass="horse-select-menu"
-  yPosition="below"
-  xPosition="before"
->
-  <button
-    mat-menu-item
-    class="horse-menu-item"
-    *ngFor="let horse of mares"
-    (click)="selectHorse(horse)"
-  >
-    <mat-icon
-      class="horse-menu-check"
-      *ngIf="selectedHorse?._id === horse._id"
-    >
-      check
-    </mat-icon>
-
-    <div class="horse-menu-avatar">
-      <img src="/images/horse.svg" />
-    </div>
-
-    <div class="horse-menu-text">
-      <strong>{{ horse.name }}</strong>
-      <span>{{ getHorseSubtitle(horse) }}</span>
-    </div>
-  </button>
-</mat-menu>
 
     <div class="hero-status-row">
       <div>

@@ -24,6 +24,7 @@ import { ZuchtTierarztTerminDialogComponent } from '../../components/zucht-tiera
 import { DataService } from '../../services/data.service';
 import { Horse } from '../../models/horse';
 import { MatMenuModule } from '@angular/material/menu';
+import { ZuchtHorseSelectSheetComponent } from '../../components/zucht-horse-select-sheet/zucht-horse-select-sheet.component';
 
 type VetStatus = 'geplant' | 'fällig' | 'erledigt' | 'ausgefallen';
 
@@ -92,6 +93,7 @@ ZuchtZyklusSettingsDialogComponent,
 ZuchtSamenBestellenDialogComponent,
 ZuchtTierarztTerminDialogComponent,
 MatMenuModule,
+ZuchtHorseSelectSheetComponent,
   ],
   templateUrl: './zucht-page.component.html',
   styleUrl: './zucht-page.component.scss'
@@ -114,7 +116,11 @@ async ngOnInit(): Promise<void> {
   }
 
   this.horses = this.data.getHorses();
-  this.selectedHorse = this.horses[0] ?? null;
+  this.selectedHorse =
+  this.mares.find(h => h.name.toLowerCase().includes('dorina')) ??
+  this.mares[0] ??
+  this.horses[0] ??
+  null;
 }
 
 selectHorse(horse: Horse): void {
@@ -390,6 +396,21 @@ get mares(): Horse[] {
       '';
 
     return gender.toLowerCase() === 'stute';
+  });
+}
+
+openHorseSelectSheet(): void {
+  const sheetRef = this.bottomSheet.open(ZuchtHorseSelectSheetComponent, {
+    panelClass: 'horse-select-sheet-panel',
+    data: {
+      horses: this.mares,
+      selectedHorseId: this.selectedHorse?._id,
+    },
+  });
+
+  sheetRef.afterDismissed().subscribe((horse?: Horse) => {
+    if (!horse) return;
+    this.selectHorse(horse);
   });
 }
 }

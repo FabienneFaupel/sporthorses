@@ -1,0 +1,34 @@
+<div class="horse-sheet">
+  <div class="sheet-handle"></div>
+
+  <div class="sheet-header">
+    <h2>Pferd auswählen</h2>
+
+    <button mat-icon-button (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="horse-search">
+    <mat-icon>search</mat-icon>
+    <input [(ngModel)]="search" placeholder="Pferd suchen..." />
+  </div>
+
+  <button
+    class="horse-sheet-item"
+    *ngFor="let horse of filteredHorses"
+    [class.selected]="horse._id === selectedHorseId"
+    (click)="select(horse)"
+  >
+    <div class="horse-sheet-avatar">
+      <img src="/images/horse.svg" />
+    </div>
+
+    <div class="horse-sheet-text">
+      <strong>{{ horse.name }}</strong>
+      <span>{{ horse.age }} Jahre · {{ horse.gender }}</span>
+    </div>
+
+    <mat-icon *ngIf="horse._id === selectedHorseId">check</mat-icon>
+  </button>
+</div>
