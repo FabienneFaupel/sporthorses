@@ -103,6 +103,21 @@
   <mat-card class="section-card">
     <h3>Nächste Termine</h3>
 
+    <div class="empty-state" *ngIf="vetAppointments.length === 0">
+    
+    <h4>Noch keine Termine angelegt</h4>
+    <p>Füge einen Tierarzttermin hinzu oder erstelle ihn direkt über eine Besamung.</p>
+  </div>
+
+  <div
+    class="empty-state"
+    *ngIf="vetAppointments.length > 0 && nextAppointments.length === 0"
+  >
+    
+    <p>Alle Termine sind erledigt oder abgeschlossen.</p>
+  </div>
+
+
     <div class="next-appointment-card" *ngFor="let appointment of nextAppointments">
       <div class="next-main">
         <div class="date-box">
@@ -137,6 +152,7 @@
 
 
     </div>
+    
   </mat-card>
 
   <mat-tab-group mat-stretch-tabs="true" class="zucht-tabs">
@@ -162,7 +178,7 @@
         </div>
 
         <div class="empty-state" *ngIf="!lastHeatCycle">
-  <mat-icon>local_fire_department</mat-icon>
+  
   <h4>Noch keine Rosse eingetragen</h4>
   <p>
     Sobald du eine Rosse hinzufügst, wird hier die nächste erwartete Rosse berechnet.
@@ -249,13 +265,7 @@
           </button>
         </div>
 
-        <div class="empty-state" *ngIf="heatCycles.length === 0">
-          <mat-icon>local_fire_department</mat-icon>
-          <h4>Noch keine Rosse eingetragen</h4>
-          <p>
-            Füge die erste Rosse hinzu, damit später der Zyklus automatisch berechnet werden kann.
-          </p>
-        </div>
+        
 
         <div class="record-card clickable" *ngFor="let heat of heatCycles" (click)="openHeatDialog(heat)">
           <div>
@@ -281,13 +291,7 @@
       </button>
     </div>
 
-    <div class="empty-state" *ngIf="inseminationOrders.length === 0">
-      <mat-icon>favorite</mat-icon>
-      <h4>Noch keine Besamung eingetragen</h4>
-      <p>
-        Füge eine Samenbestellung oder einen geplanten Besamungstermin hinzu.
-      </p>
-    </div>
+    
 
     <div
       class="insemination-card clickable"
