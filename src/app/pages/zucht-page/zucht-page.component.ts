@@ -72,6 +72,14 @@ interface InseminationOrder {
    hasAppointment?: boolean;
 }
 
+interface BreedingCycle {
+  id: number;
+  horseId: string;
+  year: number;
+  stallion: string;
+  status: 'aktiv' | 'fohlen geboren' | 'nicht tragend';
+}
+
 @Component({
   selector: 'app-zucht-page',
   imports: [
@@ -109,6 +117,8 @@ constructor(
 
 horses: Horse[] = [];
 selectedHorse: Horse | null = null;
+breedingCycles: BreedingCycle[] = [];
+activeCycleId: number | null = null;
 
 async ngOnInit(): Promise<void> {
   if (this.data.getHorses().length === 0) {
@@ -191,10 +201,53 @@ getSelectedHorseSubtitle(): string {
   }
 
   openCycleSheet(): void {
-    this.bottomSheet.open(ZuchtChangeSheetComponent, {
-      panelClass: 'vet-bottom-sheet',
-    });
-  }
+  const sheetRef = this.bottomSheet.open(ZuchtChangeSheetComponent, {
+    panelClass: 'vet-bottom-sheet',
+    data: {
+      cycles: this.selectedHorseCycles,
+      activeCycleId: this.activeCycleId,
+      currentYear: new Date().getFullYear(),
+      defaultStallion:
+        this.latestInseminationOrder?.stallion ||
+        this.activeCycle?.stallion ||
+        '',
+      horseId: this.selectedHorse?._id,
+    },
+  });
+
+  sheetRef.afterDismissed().subscribe(result => {
+    if (!result || !this.selectedHorse?._id) return;
+
+    if (result.action === 'select') {
+      this.activeCycleId = result.cycleId;
+      return;
+    }
+
+    if (result.action === 'create') {
+      const newCycle: BreedingCycle = {
+        id: Date.now(),
+        horseId: this.selectedHorse._id,
+        year: result.year,
+        stallion: this.latestInseminationOrder?.stallion || '',
+        status: 'aktiv',
+      };
+
+      this.breedingCycles.push(newCycle);
+      this.activeCycleId = newCycle.id;
+      return;
+    }
+
+    if (result.action === 'delete') {
+      this.breedingCycles = this.breedingCycles.filter(
+        cycle => cycle.id !== result.cycleId
+      );
+
+      if (this.activeCycleId === result.cycleId) {
+        this.activeCycleId = this.selectedHorseCycles[0]?.id ?? null;
+      }
+    }
+  });
+}
 
   markCancelled(appointment: VetAppointment): void {
     appointment.status = 'ausgefallen';
@@ -412,5 +465,109 @@ openHorseSelectSheet(): void {
     if (!horse) return;
     this.selectHorse(horse);
   });
+}
+
+get latestInseminationOrder(): InseminationOrder | null {
+  if (this.inseminationOrders.length === 0) return null;
+
+  return [...this.inseminationOrders].sort(
+    (a, b) =>
+      new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()
+  )[0];
+}
+
+get confirmedPregnancyAppointment(): VetAppointment | null {
+  return (
+    this.vetAppointments.find(appointment =>
+      appointment.type === 'Trächtigkeitskontrolle' &&
+      appointment.status === 'erledigt' &&
+      appointment.resultText?.toLowerCase() === 'tragend'
+    ) ?? null
+  );
+}
+
+get isPregnant(): boolean {
+  return !!this.confirmedPregnancyAppointment;
+}
+
+get currentStatusText(): string {
+  if (this.isPregnant) return 'Tragend';
+  if (this.latestInseminationOrder) return 'Besamt';
+  if (this.lastHeatCycle) return 'Rosse erfasst';
+  return 'Noch nicht angegeben';
+}
+
+get stallionLabel(): string {
+  return this.isPregnant ? 'Hengst' : 'Hengst (Samen bestellt)';
+}
+
+get currentStallionText(): string {
+  return this.latestInseminationOrder?.stallion || 'Noch nicht angegeben';
+}
+
+get lastHeatText(): string {
+  if (!this.lastHeatCycle) return 'Noch nicht angegeben';
+
+  const start = this.formatDate(this.lastHeatCycle.startDate);
+
+  if (!this.lastHeatCycle.endDate) {
+    return start;
+  }
+
+  return `${start} – ${this.formatDate(this.lastHeatCycle.endDate)}`;
+}
+
+get nextHeatText(): string {
+  if (!this.nextExpectedHeatDate) return '-';
+
+  return `ca. ${this.formatDate(this.nextExpectedHeatDate)}`;
+}
+
+get foalExpectedDate(): Date | null {
+  const appointment = this.confirmedPregnancyAppointment;
+  if (!appointment) return null;
+
+  const date = new Date(appointment.date);
+  date.setDate(date.getDate() + this.cycleSettings.pregnancyDays);
+
+  return date;
+}
+
+get foalExpectedText(): string {
+  if (!this.foalExpectedDate) return '';
+
+  return this.formatDate(this.foalExpectedDate);
+}
+
+get activeCycleTitle(): string {
+  if (!this.activeCycle) return 'Noch kein Zuchtzyklus';
+
+  if (!this.activeCycle.stallion) {
+    return `${this.activeCycle.year}`;
+  }
+
+  return `${this.activeCycle.year} · ${this.activeCycle.stallion}`;
+}
+
+get activeCycleSubtitle(): string {
+  if (!this.activeCycle) return 'Lege einen Zyklus für dieses Pferd an';
+
+  if (this.isPregnant) return 'Tragend · Fohlen erwartet';
+  if (this.latestInseminationOrder) return 'Besamt · Trächtigkeitskontrolle offen';
+  if (this.lastHeatCycle) return 'Rosse erfasst';
+
+  return this.activeCycle.status;
+}
+
+get selectedHorseCycles(): BreedingCycle[] {
+  if (!this.selectedHorse?._id) return [];
+
+  return this.breedingCycles
+    .filter(cycle => cycle.horseId === this.selectedHorse!._id)
+    .sort((a, b) => b.year - a.year);
+}
+
+get activeCycle(): BreedingCycle | null {
+  return this.selectedHorseCycles.find(cycle => cycle.id === this.activeCycleId) ?? null;
 }
 }

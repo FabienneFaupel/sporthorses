@@ -1,54 +1,51 @@
 <div class="zucht-page">
 
   <mat-card class="zucht-hero-card">
-<div
-  class="hero-top horse-select-trigger"
-  (click)="openHorseSelectSheet()"
->
-  <div class="horse-avatar small">
-    <img src="/images/horse.svg" />
-  </div>
+    <div class="hero-top horse-select-trigger" (click)="openHorseSelectSheet()">
+      <div class="horse-avatar small">
+        <img src="/images/horse.svg" />
+      </div>
 
-  <div class="hero-horse-info">
-    <span>Ausgewähltes Pferd</span>
-    <h2>{{ selectedHorse?.name || 'Kein Pferd ausgewählt' }}</h2>
-    <p *ngIf="selectedHorse">{{ getSelectedHorseSubtitle() }}</p>
-  </div>
+      <div class="hero-horse-info">
+        <span>Ausgewähltes Pferd</span>
+        <h2>{{ selectedHorse?.name || 'Kein Pferd ausgewählt' }}</h2>
+        <p *ngIf="selectedHorse">{{ getSelectedHorseSubtitle() }}</p>
+      </div>
 
-  <mat-icon class="hero-dropdown-icon">expand_more</mat-icon>
-</div>
+      <mat-icon class="hero-dropdown-icon">expand_more</mat-icon>
+    </div>
 
     <div class="hero-status-row">
       <div>
         <span>Aktueller Status</span>
-        <strong>Besamt</strong>
+        <strong>{{ currentStatusText }}</strong>
       </div>
 
       <div>
-        <span>Hengst</span>
-        <strong>Diamond Star</strong>
+        <span>{{ stallionLabel }}</span>
+        <strong>{{ currentStallionText }}</strong>
       </div>
     </div>
 
     <div class="hero-status-row">
       <div>
         <span>Letzte Rosse</span>
-        <strong>20.04. – 25.04.</strong>
+        <strong>{{ lastHeatText }}</strong>
       </div>
 
       <div>
         <span>Nächste Rosse</span>
-        <strong>ca. 11.05.</strong>
+        <strong>{{ nextHeatText }}</strong>
       </div>
     </div>
 
-    <div class="hero-foal-row">
+    <div class="hero-foal-row" *ngIf="isPregnant">
       <mat-icon>favorite</mat-icon>
       <span>Fohlen erwartet:</span>
-      <strong>04.04.2027 – 18.04.2027</strong>
+      <strong>{{ foalExpectedText }}</strong>
     </div>
 
-    <div class="foal-born-action">
+    <div class="foal-born-action" *ngIf="isPregnant">
       <button mat-raised-button>
         <mat-icon>celebration</mat-icon>
         Fohlen ist da
@@ -59,323 +56,73 @@
       </p>
     </div>
 
-    <div class="active-cycle-row clickable">
+    <div class="active-cycle-row clickable" (click)="openCycleSheet()">
       <div class="cycle-main">
         <span>Aktiver Zuchtzyklus</span>
-        <strong>2026 · Diamond Star</strong>
-        <p>Besamt · Fohlen erwartet</p>
+        <strong>{{ activeCycleTitle }}</strong>
+        <p>{{ activeCycleSubtitle }}</p>
       </div>
 
       <div class="cycle-actions">
-        <button mat-icon-button>
-          <mat-icon>add</mat-icon>
-        </button>
-
-        <button mat-icon-button (click)="openCycleSheet()">
-          <mat-icon>expand_more</mat-icon>
-        </button>
-      </div>
-    </div>
-
-
-  </mat-card>
-  <div class="quick-actions">
-    <button mat-raised-button>
-      <mat-icon>local_fire_department</mat-icon>
-      Rosse
-    </button>
-
-    <button mat-raised-button>
-      <mat-icon>medical_services</mat-icon>
-      Termin
-    </button>
-
-    <button mat-raised-button>
-      <mat-icon>favorite</mat-icon>
-      Besamung
-    </button>
-
-    <button mat-raised-button>
-      <mat-icon>shopping_bag</mat-icon>
-      Samen
-    </button>
-  </div>
-
-  <mat-card class="section-card">
-    <h3>Nächste Termine</h3>
-
-    <div class="empty-state" *ngIf="vetAppointments.length === 0">
-    
-    <h4>Noch keine Termine angelegt</h4>
-    <p>Füge einen Tierarzttermin hinzu oder erstelle ihn direkt über eine Besamung.</p>
-  </div>
-
-  <div
-    class="empty-state"
-    *ngIf="vetAppointments.length > 0 && nextAppointments.length === 0"
+        <button
+    mat-icon-button
+    (click)="openCycleSheet(); $event.stopPropagation()"
   >
-    
-    <p>Alle Termine sind erledigt oder abgeschlossen.</p>
-  </div>
-
-
-    <div class="next-appointment-card" *ngFor="let appointment of nextAppointments">
-      <div class="next-main">
-        <div class="date-box">
-          <strong>{{ appointment.day }}</strong>
-          <span>{{ appointment.month }}</span>
-        </div>
-
-        <div class="next-content">
-          <div class="next-title-row">
-            <h4>{{ appointment.type }}</h4>
-            <span class="mini-badge" [ngClass]="appointment.status">
-              {{ appointment.status }}
-            </span>
-          </div>
-
-          <p>{{ appointment.date }} · {{ appointment.time }}</p>
-          <p>{{ appointment.location }} · {{ appointment.vet }}</p>
-        </div>
+    <mat-icon>expand_more</mat-icon>
+  </button>
       </div>
-
-      <div class="next-actions">
-        <button mat-button class="action-done" (click)="openCompleteSheet(appointment)">
-          <mat-icon>check</mat-icon>
-          <span>Erledigt</span>
-        </button>
-
-        <button mat-button class="action-cancel" (click)="markCancelled(appointment)">
-          <mat-icon>close</mat-icon>
-          <span>Fällt aus</span>
-        </button>
-      </div>
-
-
     </div>
-    
+
+
   </mat-card>
 
-  <mat-tab-group mat-stretch-tabs="true" class="zucht-tabs">
-    <mat-tab label="Übersicht">
-      <mat-card class="section-card cycle-card">
-        <div class="section-title-row">
-          <h3>Zyklus</h3>
-          <button mat-icon-button (click)="openCycleSettingsDialog()">
-  <mat-icon>edit</mat-icon>
-</button>
-        </div>
+  <ng-container *ngIf="activeCycle">
+    <div class="quick-actions">
+      <button mat-raised-button>
+        <mat-icon>local_fire_department</mat-icon>
+        Rosse
+      </button>
 
-        <div class="cycle-settings">
-          <div>
-            <span>Rosse-Zyklus</span>
-            <strong>21 Tage</strong>
-          </div>
+      <button mat-raised-button>
+        <mat-icon>medical_services</mat-icon>
+        Termin
+      </button>
 
-          <div>
-            <span>Trächtigkeit</span>
-            <strong>350 Tage</strong>
-          </div>
-        </div>
+      <button mat-raised-button>
+        <mat-icon>favorite</mat-icon>
+        Besamung
+      </button>
 
-        <div class="empty-state" *ngIf="!lastHeatCycle">
-  
-  <h4>Noch keine Rosse eingetragen</h4>
-  <p>
-    Sobald du eine Rosse hinzufügst, wird hier die nächste erwartete Rosse berechnet.
-  </p>
-</div>
-
-<div class="cycle-flow" *ngIf="lastHeatCycle">
-  <div class="cycle-step done">
-    <div class="step-icon">
-      <mat-icon>local_fire_department</mat-icon>
-    </div>
-
-    <div class="step-content">
-      <span>Letzte Rosse eingetragen</span>
-      <h4>
-        {{ formatDate(lastHeatCycle.startDate) }}
-        <ng-container *ngIf="lastHeatCycle.endDate">
-          – {{ formatDate(lastHeatCycle.endDate) }}
-        </ng-container>
-      </h4>
-      <p>
-        {{ lastHeatCycle.intensity | titlecase }}e Rosse
-        <ng-container *ngIf="lastHeatCycle.note">
-          · {{ lastHeatCycle.note }}
-        </ng-container>
-      </p>
-    </div>
-  </div>
-
-  <div class="cycle-connector"></div>
-
-  <div class="cycle-step calculated">
-    <div class="step-icon">
-      <mat-icon>event_repeat</mat-icon>
-    </div>
-
-    <div class="step-content">
-      <span>Automatisch berechnet</span>
-      <h4>
-        Nächste Rosse ca. {{ formatDate(nextExpectedHeatDate!) }}
-      </h4>
-      <p>
-        Basierend auf {{ cycleSettings.heatCycleDays }} Tagen Zykluslänge
-      </p>
-    </div>
-  </div>
-</div>
-
-<div class="pregnancy-box" *ngIf="pregnancyConfirmed">
-  <div class="pregnancy-header">
-    <mat-icon>favorite</mat-icon>
-    <div>
-      <span>Trächtigkeit</span>
-      <h4>Kontrolle bestätigt</h4>
-    </div>
-  </div>
-
-  <div class="pregnancy-line">
-    <span>Kontrolltermin</span>
-    <strong>19.05.2026</strong>
-  </div>
-
-  <div class="pregnancy-line">
-    <span>Ergebnis</span>
-    <strong>tragend</strong>
-  </div>
-
-  <div class="foal-result">
-    <span>Fohlen erwartet am</span>
-    <strong>04.05.2027</strong>
-    <p>Berechnet ab bestätigtem Kontrolltermin + {{ cycleSettings.pregnancyDays }} Tage</p>
-  </div>
-</div>
-      </mat-card>
-    </mat-tab>
-
-    <mat-tab label="Rosse">
-      <mat-card class="section-card">
-        <div class="section-title-row">
-          <h3>Rosse-Einträge</h3>
-
-          <button mat-icon-button (click)="openHeatDialog()">
-            <mat-icon>add</mat-icon>
-          </button>
-        </div>
-
-        
-
-        <div class="record-card clickable" *ngFor="let heat of heatCycles" (click)="openHeatDialog(heat)">
-          <div>
-            <h4>
-              {{ heat.startDate }}
-              <ng-container *ngIf="heat.endDate"> – {{ heat.endDate }}</ng-container>
-            </h4>
-            <p>{{ heat.note || 'Keine Notiz hinterlegt.' }}</p>
-          </div>
-
-          <span class="mini-badge">{{ heat.intensity }}</span>
-        </div>
-      </mat-card>
-    </mat-tab>
-
-    <mat-tab label="Besamung">
-  <mat-card class="section-card">
-    <div class="section-title-row">
-      <h3>Besamungen</h3>
-
-      <button mat-icon-button (click)="openInseminationDialog()">
-        <mat-icon>add</mat-icon>
+      <button mat-raised-button>
+        <mat-icon>shopping_bag</mat-icon>
+        Samen
       </button>
     </div>
 
-    
+    <mat-card class="section-card">
+      <h3>Nächste Termine</h3>
 
-    <div
-      class="insemination-card clickable"
-      *ngFor="let order of inseminationOrders"
-      (click)="openInseminationDialog(order)"
-    >
-      <div class="insemination-header">
-        <div>
-          <span class="label">Samenbestellung</span>
-          <h4>{{ order.stallion }}</h4>
-        </div>
+      <div class="empty-state" *ngIf="vetAppointments.length === 0">
 
-        <span
-          class="mini-badge"
-          [class.fresh]="order.semenType === 'Frischsamen'"
-        >
-          {{ order.semenType }}
-        </span>
+        <h4>Noch keine Termine angelegt</h4>
+        <p>Füge einen Tierarzttermin hinzu oder erstelle ihn direkt über eine Besamung.</p>
       </div>
 
-      <div class="insemination-info-grid">
-        <div>
-          <span>Bestellt am</span>
-          <strong>{{ formatDate(order.orderDate) }} · {{ order.orderTime }}</strong>
-        </div>
+      <div class="empty-state" *ngIf="vetAppointments.length > 0 && nextAppointments.length === 0">
 
-        <div>
-          <span>Kosten</span>
-          <strong>
-  {{ order.costs && order.costs > 0 ? (order.costs + ' €') : '-' }}
-</strong>
-        </div>
-
-        
+        <p>Alle Termine sind erledigt oder abgeschlossen.</p>
       </div>
 
-      <div class="delivery-box" *ngIf="order.stallionStation">
-  <mat-icon>home</mat-icon>
-  <div>
-    <span>Hengststation</span>
-    <strong>{{ order.stallionStation }}</strong>
-  </div>
-</div>
 
-      <div class="appointment-box" *ngIf="order.hasAppointment">
-        <mat-icon>favorite</mat-icon>
-        <div>
-          <span>Geplanter Besamungstermin</span>
-          <strong>
-  {{ formatDate(order.inseminationDate) }}
-  <ng-container *ngIf="order.inseminationTime">
-    · {{ order.inseminationTime }}
-  </ng-container>
-</strong>
-
-<p *ngIf="order.vet || order.location">
-  <ng-container *ngIf="order.vet">Tierarzt: {{ order.vet }}</ng-container>
-  <ng-container *ngIf="order.vet && order.location"> · </ng-container>
-  <ng-container *ngIf="order.location">Ort: {{ order.location }}</ng-container>
-</p>
-        </div>
-      </div>
-    </div>
-  </mat-card>
-</mat-tab>
-
-    <mat-tab label="Tierarzt">
-      <mat-card class="section-card">
-        <div class="section-title-row">
-          <h3>Tierarzttermine</h3>
-          <button mat-icon-button (click)="openVetAppointmentDialog()">
-  <mat-icon>add</mat-icon>
-</button>
-        </div>
-
-        <div class="vet-card clickable" *ngFor="let appointment of vetAppointments" (click)="openVetAppointmentDialog(appointment)">
-          <div class="vet-date">
+      <div class="next-appointment-card" *ngFor="let appointment of nextAppointments">
+        <div class="next-main">
+          <div class="date-box">
             <strong>{{ appointment.day }}</strong>
             <span>{{ appointment.month }}</span>
           </div>
 
-          <div class="vet-content">
-            <div class="vet-header">
+          <div class="next-content">
+            <div class="next-title-row">
               <h4>{{ appointment.type }}</h4>
               <span class="mini-badge" [ngClass]="appointment.status">
                 {{ appointment.status }}
@@ -384,14 +131,261 @@
 
             <p>{{ appointment.date }} · {{ appointment.time }}</p>
             <p>{{ appointment.location }} · {{ appointment.vet }}</p>
-
-            <div class="result-box" *ngIf="appointment.resultText">
-              <span>Ergebnis</span>
-              <strong>{{ appointment.resultText }}</strong>
-            </div>
           </div>
         </div>
-      </mat-card>
-    </mat-tab>
-  </mat-tab-group>
+
+        <div class="next-actions">
+          <button mat-button class="action-done" (click)="openCompleteSheet(appointment)">
+            <mat-icon>check</mat-icon>
+            <span>Erledigt</span>
+          </button>
+
+          <button mat-button class="action-cancel" (click)="markCancelled(appointment)">
+            <mat-icon>close</mat-icon>
+            <span>Fällt aus</span>
+          </button>
+        </div>
+
+
+      </div>
+
+    </mat-card>
+
+    <mat-tab-group mat-stretch-tabs="true" class="zucht-tabs">
+      <mat-tab label="Übersicht">
+        <mat-card class="section-card cycle-card">
+          <div class="section-title-row">
+            <h3>Zyklus</h3>
+            <button mat-icon-button (click)="openCycleSettingsDialog()">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+
+          <div class="cycle-settings">
+            <div>
+              <span>Rosse-Zyklus</span>
+              <strong>21 Tage</strong>
+            </div>
+
+            <div>
+              <span>Trächtigkeit</span>
+              <strong>350 Tage</strong>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="!lastHeatCycle">
+
+            <h4>Noch keine Rosse eingetragen</h4>
+            <p>
+              Sobald du eine Rosse hinzufügst, wird hier die nächste erwartete Rosse berechnet.
+            </p>
+          </div>
+
+          <div class="cycle-flow" *ngIf="lastHeatCycle">
+            <div class="cycle-step done">
+              <div class="step-icon">
+                <mat-icon>local_fire_department</mat-icon>
+              </div>
+
+              <div class="step-content">
+                <span>Letzte Rosse eingetragen</span>
+                <h4>
+                  {{ formatDate(lastHeatCycle.startDate) }}
+                  <ng-container *ngIf="lastHeatCycle.endDate">
+                    – {{ formatDate(lastHeatCycle.endDate) }}
+                  </ng-container>
+                </h4>
+                <p>
+                  {{ lastHeatCycle.intensity | titlecase }}e Rosse
+                  <ng-container *ngIf="lastHeatCycle.note">
+                    · {{ lastHeatCycle.note }}
+                  </ng-container>
+                </p>
+              </div>
+            </div>
+
+            <div class="cycle-connector"></div>
+
+            <div class="cycle-step calculated">
+              <div class="step-icon">
+                <mat-icon>event_repeat</mat-icon>
+              </div>
+
+              <div class="step-content">
+                <span>Automatisch berechnet</span>
+                <h4>
+                  Nächste Rosse ca. {{ formatDate(nextExpectedHeatDate!) }}
+                </h4>
+                <p>
+                  Basierend auf {{ cycleSettings.heatCycleDays }} Tagen Zykluslänge
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pregnancy-box" *ngIf="isPregnant">
+            <div class="pregnancy-header">
+              <mat-icon>favorite</mat-icon>
+              <div>
+                <span>Trächtigkeit</span>
+                <h4>Kontrolle bestätigt</h4>
+              </div>
+            </div>
+
+            <div class="pregnancy-line">
+              <span>Kontrolltermin</span>
+              <strong>{{ formatDate(confirmedPregnancyAppointment!.date) }}</strong>
+            </div>
+
+            <div class="pregnancy-line">
+              <span>Ergebnis</span>
+              <strong>tragend</strong>
+            </div>
+
+            <div class="foal-result">
+              <span>Fohlen erwartet am</span>
+              <strong>{{ foalExpectedText }}</strong>
+              <p>Berechnet ab bestätigtem Kontrolltermin + {{ cycleSettings.pregnancyDays }} Tage</p>
+            </div>
+          </div>
+        </mat-card>
+      </mat-tab>
+
+      <mat-tab label="Rosse">
+        <mat-card class="section-card">
+          <div class="section-title-row">
+            <h3>Rosse-Einträge</h3>
+
+            <button mat-icon-button (click)="openHeatDialog()">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+
+
+
+          <div class="record-card clickable" *ngFor="let heat of heatCycles" (click)="openHeatDialog(heat)">
+            <div>
+              <h4>
+                {{ formatDate(heat.startDate) }}
+                <ng-container *ngIf="heat.endDate">
+                  – {{ formatDate(heat.endDate) }}
+                </ng-container>
+              </h4>
+
+              <p>{{ heat.note || 'Keine Notiz hinterlegt.' }}</p>
+            </div>
+
+            <span class="mini-badge">{{ heat.intensity }}</span>
+          </div>
+        </mat-card>
+      </mat-tab>
+
+      <mat-tab label="Besamung">
+        <mat-card class="section-card">
+          <div class="section-title-row">
+            <h3>Besamungen</h3>
+
+            <button mat-icon-button (click)="openInseminationDialog()">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+
+
+
+          <div class="insemination-card clickable" *ngFor="let order of inseminationOrders"
+            (click)="openInseminationDialog(order)">
+            <div class="insemination-header">
+              <div>
+                <span class="label">Samenbestellung</span>
+                <h4>{{ order.stallion }}</h4>
+              </div>
+
+              <span class="mini-badge" [class.fresh]="order.semenType === 'Frischsamen'">
+                {{ order.semenType }}
+              </span>
+            </div>
+
+            <div class="insemination-info-grid">
+              <div>
+                <span>Bestellt am</span>
+                <strong>{{ formatDate(order.orderDate) }} · {{ order.orderTime }}</strong>
+              </div>
+
+              <div>
+                <span>Kosten</span>
+                <strong>
+                  {{ order.costs && order.costs > 0 ? (order.costs + ' €') : '-' }}
+                </strong>
+              </div>
+
+
+            </div>
+
+            <div class="delivery-box" *ngIf="order.stallionStation">
+              <mat-icon>home</mat-icon>
+              <div>
+                <span>Hengststation</span>
+                <strong>{{ order.stallionStation }}</strong>
+              </div>
+            </div>
+
+            <div class="appointment-box" *ngIf="order.hasAppointment">
+              <mat-icon>favorite</mat-icon>
+              <div>
+                <span>Geplanter Besamungstermin</span>
+                <strong>
+                  {{ formatDate(order.inseminationDate) }}
+                  <ng-container *ngIf="order.inseminationTime">
+                    · {{ order.inseminationTime }}
+                  </ng-container>
+                </strong>
+
+                <p *ngIf="order.vet || order.location">
+                  <ng-container *ngIf="order.vet">Tierarzt: {{ order.vet }}</ng-container>
+                  <ng-container *ngIf="order.vet && order.location"> · </ng-container>
+                  <ng-container *ngIf="order.location">Ort: {{ order.location }}</ng-container>
+                </p>
+              </div>
+            </div>
+          </div>
+        </mat-card>
+      </mat-tab>
+
+      <mat-tab label="Tierarzt">
+        <mat-card class="section-card">
+          <div class="section-title-row">
+            <h3>Tierarzttermine</h3>
+            <button mat-icon-button (click)="openVetAppointmentDialog()">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+
+          <div class="vet-card clickable" *ngFor="let appointment of vetAppointments"
+            (click)="openVetAppointmentDialog(appointment)">
+            <div class="vet-date">
+              <strong>{{ appointment.day }}</strong>
+              <span>{{ appointment.month }}</span>
+            </div>
+
+            <div class="vet-content">
+              <div class="vet-header">
+                <h4>{{ appointment.type }}</h4>
+                <span class="mini-badge" [ngClass]="appointment.status">
+                  {{ appointment.status }}
+                </span>
+              </div>
+
+              <p>{{ appointment.date }} · {{ appointment.time }}</p>
+              <p>{{ appointment.location }} · {{ appointment.vet }}</p>
+
+              <div class="result-box" *ngIf="appointment.resultText">
+                <span>Ergebnis</span>
+                <strong>{{ appointment.resultText }}</strong>
+              </div>
+            </div>
+          </div>
+        </mat-card>
+      </mat-tab>
+    </mat-tab-group>
+  </ng-container>
 </div>

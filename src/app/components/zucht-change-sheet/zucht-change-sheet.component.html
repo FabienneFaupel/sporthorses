@@ -1,49 +1,66 @@
-
 <div class="cycle-sheet">
   <div class="sheet-handle"></div>
 
-  <h3>Zuchtzyklus wechseln</h3>
+  <div class="sheet-header">
+    <h3>Zuchtzyklen</h3>
 
-  <div class="cycle-list">
-    <div class="cycle-item active">
-      <mat-icon>check</mat-icon>
-      <div>
-        <strong>2026 · Diamond Star</strong>
-        <p>aktiv</p>
-      </div>
-    </div>
-
-    <div class="cycle-item">
-      <div class="placeholder-icon"></div>
-      <div>
-        <strong>2025 · Secret Star</strong>
-        <p>Fohlen geboren</p>
-      </div>
-    </div>
-
-    <div class="cycle-item">
-      <div class="placeholder-icon"></div>
-      <div>
-        <strong>2024 · Royal Champion</strong>
-        <p>nicht tragend</p>
-      </div>
-    </div>
+    <button mat-icon-button (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
   </div>
 
-  <div class="cycle-actions">
-    <button mat-button>
+  <div class="empty-cycle-state" *ngIf="cycles.length === 0">
+    <div class="empty-icon">
+      <mat-icon>favorite</mat-icon>
+    </div>
+
+    <h4>Noch kein Zuchtzyklus</h4>
+    <p>Lege einen neuen Zyklus für dieses Pferd an.</p>
+  </div>
+
+  <div class="cycle-list" *ngIf="cycles.length > 0">
+    <button
+      class="cycle-item"
+      *ngFor="let cycle of cycles"
+      [class.active]="cycle.id === activeCycleId"
+      (click)="selectCycle(cycle.id)"
+    >
+      <mat-icon class="check-icon" *ngIf="cycle.id === activeCycleId">check</mat-icon>
+      <div class="placeholder-icon" *ngIf="cycle.id !== activeCycleId"></div>
+
+      <div class="cycle-text">
+        <strong>{{ cycle.year }}</strong>
+        <p>{{ cycle.status }}</p>
+      </div>
+
+      <button
+        mat-icon-button
+        class="delete-cycle"
+        (click)="deleteCycle(cycle.id, $event)"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </button>
+  </div>
+
+  <div class="create-cycle-box">
+    <h4>Neuen Zyklus anlegen</h4>
+
+    <div class="year-row">
+      <button mat-icon-button (click)="form.year = form.year - 1">
+        <mat-icon>remove</mat-icon>
+      </button>
+
+      <strong>{{ form.year }}</strong>
+
+      <button mat-icon-button (click)="form.year = form.year + 1">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <button mat-raised-button class="save-cycle" (click)="createCycle()">
       <mat-icon>add</mat-icon>
-      Neuer Zyklus
-    </button>
-
-    <button mat-button>
-      <mat-icon>archive</mat-icon>
-      Archivieren
-    </button>
-
-    <button mat-button class="danger">
-      <mat-icon>delete</mat-icon>
-      Löschen
+      Zyklus {{ form.year }} anlegen
     </button>
   </div>
 </div>
